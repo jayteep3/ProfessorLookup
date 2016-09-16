@@ -1,0 +1,16 @@
+	private SpeechletResponse classesTaughtIntent(IntentRequest intentReq, Session session) {
+ 		SpeechletResponse response = null;
+ 		
+ 		//check state
+ 		if(session.getAttribute(SESSION_KNOCK_STATE) != null 
+ 				&& STATE_WAITING_WHO_DER.compareTo((Integer)session.getAttribute(SESSION_KNOCK_STATE)) == 0) {
+ 			response = newAskResponse("Darwin 116", false,"Professor" prof_var "teaches in Darwin 116",false);
+ 			//Update state
+ 			session.setAttribute(SESSION_KNOCK_STATE, STATE_WAITING_DR_WHO);
+ 		}
+ 		else {
+ 			response = newTellResponse("You have to ask which classes are taught.", false);
+ 		}
+		
+ 		return response;	
+ }
