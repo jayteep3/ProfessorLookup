@@ -42,6 +42,7 @@ public class KnockKnockConversation extends Conversation {
 	//State
 	private final static Integer STATE_WAITING_WHO_DER = 100000;
 	private final static Integer STATE_WAITING_DR_WHO = 100001;
+	private final static Integer STATE_GET_PROFESSOR = 2;
 
 	//Session state storage key
 	
@@ -70,6 +71,9 @@ public class KnockKnockConversation extends Conversation {
 		SpeechletResponse response = null;
 		if(INTENT_OFFICE_HOURS.equals(intentName)){
 		    response = handleOfficeHoursIntent(intentReq, session);
+		}
+		else if (INTENT_CONTACTINFO.equals(intentName)){
+			response = handleContactinformationIntent(intentReq, session);
 		}
 		else if (INTENT_START.equals(intentName)) {
 			response = handleStartJokeIntent(intentReq, session);
@@ -114,19 +118,33 @@ public class KnockKnockConversation extends Conversation {
  		return response;
  	}
 
-	private SpeechletResponse contactinformationIntent(IntentRequest intentReq, Session session){
+	private SpeechletResponse handleContactinformationIntent(IntentRequest intentReq, Session session){
+		// change state
+		// asking what they want
+
+		// don't check for state because it can work requardless of place conversation
+
+		// are we in state two?
+		// two : 2
+		// if we are in state two then do below
+		// else we are screwed
 		Intent intent = intentReq.getIntent();
 		Map<String, Slot> slots = intent.getSlots();
-		Slot professorNameSlot = slots.get("ProfessorName");
+		// may give error if slot is empty
+		String professorNameString = slots.get("ProfessorName").getValue();
 		SpeechletResponse response = null;
-		if(professorNameSlot != null){
-			String professor = professorNameSlot.getValue();
-			response = newTellResponse(professor + "s email is professor@sonoma.edu", false);
+		if(professorNameString != null){
+			//String professor = professorNameSlot.getValue();
+			// change state
+			response = newAskResponse("Would you like " + professorNameString +"'s email or phone?", false, "Do you want phone or email?" ,false);
 		} else {
-			response = newTellResponse("I'm sorry, your professor does not exist", false);
+			response = newAskResponse("Can I have a professor name?", false, "I didn't catch that.  Can I have a professor name?", false);
 		}
 		return response;
 	}
+	// phoneIntent
+	
+	// emailIntent
 
 	private SpeechletResponse handleStartJokeIntent(IntentRequest intentReq, Session session) {
 		SpeechletResponse response = newAskResponse("Knock knock.", false, "I said, Knock knock!", false);
