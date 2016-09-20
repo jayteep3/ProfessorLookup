@@ -34,6 +34,8 @@ public class KnockKnockConversation extends Conversation {
     private final static String INTENT_DR_WHO = "DrWhoIntent";
     private final static String INTENT_OFFICE_HOURS = "officehoursIntent";
     private final static String INTENT_CONTACTINFO = "ContactInformationIntent";
+    private final static String INTENT_PHONE_NUMBER = "PhoneNumberIntent";
+    private final static String INTENT_EMAIL_ADDRESS = "EmailAddressIntent";
     private final static String INTENT_CLASSES = "ClassesTaughtIntent";
     
 	//Slots
@@ -58,6 +60,8 @@ public class KnockKnockConversation extends Conversation {
 		supportedIntentNames.add(INTENT_DR_WHO);
 		supportedIntentNames.add(INTENT_OFFICE_HOURS);
 		supportedIntentNames.add(INTENT_CONTACTINFO);
+		supportedIntentNames.add(INTENT_PHONE_NUMBER);
+		supportedIntentNames.add(INTENT_EMAIL_ADDRESS);
 		supportedIntentNames.add(INTENT_CLASSES);
 
 	}
@@ -73,7 +77,13 @@ public class KnockKnockConversation extends Conversation {
 		    response = handleOfficeHoursIntent(intentReq, session);
 		}
 		else if (INTENT_CONTACTINFO.equals(intentName)){
-			response = handleContactinformationIntent(intentReq, session);
+			response = handleContactInformationIntent(intentReq, session);
+		}
+		else if (INTENT_PHONE_NUMBER.equals(intentName)){
+			response = handlePhoneNumberIntent(intentReq, session);
+		}
+		else if (INTENT_EMAIL_ADDRESS.equals(intentName)){
+			response = handleEmailAddressIntent(intentReq, session);
 		}
 		else if (INTENT_START.equals(intentName)) {
 			response = handleStartJokeIntent(intentReq, session);
@@ -118,7 +128,7 @@ public class KnockKnockConversation extends Conversation {
  		return response;
  	}
 
-	private SpeechletResponse handleContactinformationIntent(IntentRequest intentReq, Session session){
+	private SpeechletResponse handleContactInformationIntent(IntentRequest intentReq, Session session){
 		// change state
 		// asking what they want
 
@@ -131,20 +141,89 @@ public class KnockKnockConversation extends Conversation {
 		Intent intent = intentReq.getIntent();
 		Map<String, Slot> slots = intent.getSlots();
 		// may give error if slot is empty
-		String professorNameString = slots.get("ProfessorName").getValue();
+		String professor_name_string = slots.get("ProfessorName").getValue();
 		SpeechletResponse response = null;
-		if(professorNameString != null){
+		// alexa can respond with null or "?" so both must be covered
+		if(professor_name_string != null || !("?".equals(professor_name_string)))
+		{
 			//String professor = professorNameSlot.getValue();
 			// change state
-			response = newAskResponse("Would you like " + professorNameString +"'s email or phone?", false, "Do you want phone or email?" ,false);
-		} else {
+			response = newAskResponse("Would you like " + professor_name_string +"'s email or phone?", false, "Do you want phone or email?" ,false);
+		}
+		else
+		{
 			response = newAskResponse("Can I have a professor name?", false, "I didn't catch that.  Can I have a professor name?", false);
 		}
 		return response;
 	}
+	// don't do any state checking
+	// if someone says phone
+	// get the phone (dummy phone number)
+	// assignment: code up dummy intents for phoneIntent and emailIntent
 	// phoneIntent
+	private SpeechletResponse handlePhoneNumberIntent(IntentRequest intentReq, Session session)
+	{
+		// get professor_name from intentReq as was done in handleContactInformationIntent
+		// 
+		Intent phone_number_intent = intentReq.getIntent();
+		// assume slot is not empty
+		// assume we get the professor name from the voice recognition
+		String professor_name = phone_number_intent.getSlots().get("ProfessorName").getValue();
+		// assume contact info for the professor is stored in our data structure
+		String phone_number = getContactInfo(professor_name, "phone");
+		SpeechletResponse response = null;
+		if((phone_number != null || "?".equals(phone_number)) && (professor_name != null || "?".equals(professor_name)))
+		{
+			response = newTellResponse("Here is " + professor_name + "'s phone number: " + phone_number, false);
+		}
+		else
+		{
+			// phone number doesn't exist
+			response = newAskResponse("This professor has no phone number.  ", false, "Would you like their email?", false);
+		}
+		return response;
+		// phone number = getFakeinfo(professor_name, "phone")
+		// return response with professor_name and phone number
+	}
+	private SpeechletResponse handleEmailAddressIntent(IntentRequest intentReq, Session session)
+	{
+		Intent email_intent = intentReq.getIntent();
+		String professor_name = email_intent.getSlots().get("ProfessorName").getValue();
+		
+		String email_address = getContactInfo(professor_name, "email");
+		
+		SpeechletResponse response = null;
+		if((email_address != null || "?".equals(email_address)) && (professor_name != null || "?".equals(professor_name)))
+		{
+			response = newTellResponse("Here is " + professor_name + "'s email address: " + email_address, false);
+		}
+		else
+		{
+			response = newAskResponse("This professor has no email address.  ", false, "Would you like their email?", false);
+		}
+		return response;
+	}
+	private String getContactInfo(final String professor_name, final String info_type)
+	{
+		if("phone".equals(info_type))
+		{
+			// assume professor_name exists in database
+			return "(707)-459-6525";
+			 //database.find(professor_name).getProfessorInfo("phone");
+		}
+		if("email".equals(info_type))
+		{
+			return "professor@sonoma.edu";
+		}
+		return "";
+		
+	//gets phonenumber from database
+	// for dummy things and database
+	}
+	// return database.find(professor name)
 	
 	// emailIntent
+	
 
 	private SpeechletResponse handleStartJokeIntent(IntentRequest intentReq, Session session) {
 		SpeechletResponse response = newAskResponse("Knock knock.", false, "I said, Knock knock!", false);
