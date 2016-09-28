@@ -129,26 +129,23 @@ public class KnockKnockConversation extends Conversation {
  	}
 
 	private SpeechletResponse handleContactInformationIntent(IntentRequest intentReq, Session session){
-		// change state
-		// asking what they want
-
-		// don't check for state because it can work requardless of place conversation
-
-		// are we in state two?
-		// two : 2
-		// if we are in state two then do below
-		// else we are screwed
+		
 		Intent intent = intentReq.getIntent();
 		Map<String, Slot> slots = intent.getSlots();
 		// may give error if slot is empty
 		String professor_name_string = slots.get("ProfessorName").getValue();
 		SpeechletResponse response = null;
 		// alexa can respond with null or "?" so both must be covered
-		if(professor_name_string != null || !("?".equals(professor_name_string)))
+		if(professor_name_string != null && !professor_name_string.isEmpty())
 		{
 			//String professor = professorNameSlot.getValue();
 			// change state
-			response = newAskResponse("Would you like " + professor_name_string +"'s email or phone?", false, "Do you want phone or email?" ,false);
+			ProfContact pc = new ProfContact();
+			pc.setName(professor_name_string);
+			pc.GetEmailPhone();
+			response = newTellResponse(pc.getName() + "s email is " + pc.getEmail() +  " his phone is " + pc.getPhone(), false);
+			
+			//response = newAskResponse("Would you like " + professor_name_string +"'s email or phone?", false, "Do you want phone or email?" ,false);
 		}
 		else
 		{
