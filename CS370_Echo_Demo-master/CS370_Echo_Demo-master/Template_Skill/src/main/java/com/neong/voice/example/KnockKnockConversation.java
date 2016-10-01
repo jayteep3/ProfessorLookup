@@ -1,15 +1,14 @@
 package com.neong.voice.example;
-
+import com.neong.voice.Classes.*;
 import com.amazon.speech.slu.Intent;
-import com.amazon.speech.slu.Slot;
+import com.amazon.speech.slu.Slot;	
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.neong.voice.model.base.Conversation;
 import java.io.*;
+import java.sql.SQLException;
 import java.util.*;
-
-
 /**
  * This is an example implementation of a Conversation subclass. It is
  * important to register your intents by adding them to the supportedIntentNames
@@ -27,17 +26,16 @@ import java.util.*;
 // build:
 // mvn assembly:assembly -DdescriptorId=jar-with-dependencies package
 public class KnockKnockConversation extends Conversation {
-    //Intent names
-    ///Intitialize string for each intent
-    private final static String INTENT_START = "StartKnockIntent";
-    private final static String INTENT_WHO_DER = "WhoDerIntent";
-    private final static String INTENT_DR_WHO = "DrWhoIntent";
-    private final static String INTENT_OFFICE_HOURS = "officehoursIntent";
+	//Intent names
+	private final static String INTENT_START = "StartKnockIntent";
+	private final static String INTENT_WHO_DER = "WhoDerIntent";
+	private final static String INTENT_DR_WHO = "DrWhoIntent";
+	private final static String INTENT_OFFICE_HOURS = "officehoursIntent";
     private final static String INTENT_CONTACTINFO = "ContactInformationIntent";
     private final static String INTENT_PHONE_NUMBER = "PhoneNumberIntent";
-    private final static String INTENT_EMAIL_ADDRESS = "EmailAddressIntent";
+    private final static String INTENT_EMAIL_ADDRESS = "ContactInformationEmailIntent";
     private final static String INTENT_CLASSES = "ClassesTaughtIntent";
-    
+    private final static String INTENT_COMBO = "ContactInformationComboIntent";
 	//Slots
 	//private final static String SLOT_RELATIVE_TIME = "timeOfDay";
 
@@ -47,8 +45,6 @@ public class KnockKnockConversation extends Conversation {
 	private final static Integer STATE_GET_PROFESSOR = 2;
 
 	//Session state storage key
-	
-	///
 	private final static String SESSION_KNOCK_STATE = "knockState";
 
 	public KnockKnockConversation() {
@@ -63,6 +59,7 @@ public class KnockKnockConversation extends Conversation {
 		supportedIntentNames.add(INTENT_PHONE_NUMBER);
 		supportedIntentNames.add(INTENT_EMAIL_ADDRESS);
 		supportedIntentNames.add(INTENT_CLASSES);
+		supportedIntentNames.add(INTENT_COMBO);
 
 	}
 
@@ -76,7 +73,7 @@ public class KnockKnockConversation extends Conversation {
 		if(INTENT_OFFICE_HOURS.equals(intentName)){
 		    response = handleOfficeHoursIntent(intentReq, session);
 		}
-		else if (INTENT_CONTACTINFO.equals(intentName)){
+		else if (INTENT_COMBO.equals(intentName)){
 			response = handleContactInformationIntent(intentReq, session);
 		}
 		else if (INTENT_PHONE_NUMBER.equals(intentName)){
@@ -142,7 +139,15 @@ public class KnockKnockConversation extends Conversation {
 			// change state
 			ProfContact pc = new ProfContact();
 			pc.setName(professor_name_string);
-			pc.GetEmailPhone();
+			try
+			{
+				pc.GetEmailPhone();
+			}
+			catch (ClassNotFoundException | SQLException e)
+			{
+				// TODO Auto-generated catch block
+				pc.setPhone(e.toString());
+			}
 			response = newTellResponse(pc.getName() + "s email is " + pc.getEmail() +  " his phone is " + pc.getPhone(), false);
 			
 			//response = newAskResponse("Would you like " + professor_name_string +"'s email or phone?", false, "Do you want phone or email?" ,false);
@@ -221,14 +226,16 @@ public class KnockKnockConversation extends Conversation {
 	
 	// emailIntent
 	
-
-	private SpeechletResponse handleStartJokeIntent(IntentRequest intentReq, Session session) {
+	
+	private SpeechletResponse handleStartJokeIntent(IntentRequest intentReq, Session session)
+	{
 		SpeechletResponse response = newAskResponse("Knock knock.", false, "I said, Knock knock!", false);
 		session.setAttribute(SESSION_KNOCK_STATE, STATE_WAITING_WHO_DER);
 		return response;	
 	}
 	
-	private SpeechletResponse handleWhoThereIntent(IntentRequest intentReq, Session session) {
+	private SpeechletResponse handleWhoThereIntent(IntentRequest intentReq, Session session)
+	{
 		SpeechletResponse response = null;
 		
 		//check state
@@ -245,7 +252,8 @@ public class KnockKnockConversation extends Conversation {
 		return response;	
 	}
 	
-	private SpeechletResponse handleDrWhoIntent(IntentRequest intentReq, Session session) {
+	private SpeechletResponse handleDrWhoIntent(IntentRequest intentReq, Session session)
+	{
 		SpeechletResponse response = null;
 		//check state
 		

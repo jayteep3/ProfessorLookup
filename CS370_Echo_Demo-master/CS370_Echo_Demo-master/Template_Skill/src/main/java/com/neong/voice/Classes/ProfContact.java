@@ -1,3 +1,4 @@
+package com.neong.voice.Classes;
 import java.util.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -6,9 +7,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class ProfContact {
-	private String name;
-	private String phone;
-	private String email;
+	private static String name;
+	private static String phone;
+	private static String email;
 	
 	public String getName(){ return name;}
 	public void setName(String n) { name = n;}
@@ -17,25 +18,27 @@ public class ProfContact {
 	public String getEmail(){ return email;}
 	public void setEmail(String e) {email = e;}
 	
-	public static void GetEmailPhone()
+	public void GetEmailPhone() throws ClassNotFoundException, SQLException
 	{
-		//Connect to DB in here, get prof contact info.
-		try{
 		Connection con = null;
+		//Connect to DB in here, get prof contact info.
+		try
+		{
+
 		Class.forName("com.mysql.jdbc.Driver");
 		con = DriverManager.getConnection("jdbc:mysql://cwolf.cs.sonoma.edu:3306/restrella", "restrella", "abc123");
-		
-		}
-		catch (SQLConnection e) {
-			e.printStrackTrace();
-			return;
-		}
-		if(connection != null) {
-			Statement stmnt = con.createStatement();
-			ResultSet rs =  stmnt.ExecuteQuery("SELECT email, phone FROM professors WHERE (name is Like '" + name + "')");
+		Statement stmnt = con.createStatement();
+			ResultSet rs =  stmnt.executeQuery("SELECT email, phone FROM Professors WHERE (name is Like '" + name + "')");
 			email = rs.getString("email");
-			phone = rs.getString("phone");
+			phone = "yes";
 		}
+		catch (SQLException e)
+	    {
+	        phone = e.toString();
+	    }
+		//if(con != null) {
+			
+		//}
 		
 	}
 }
