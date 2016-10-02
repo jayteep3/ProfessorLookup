@@ -9,6 +9,9 @@ import com.neong.voice.model.base.Conversation;
 import java.io.*;
 import java.sql.SQLException;
 import java.util.*;
+
+//import java.sql.*;
+//import com.mysql.jdbc.Driver;
 /**
  * This is an example implementation of a Conversation subclass. It is
  * important to register your intents by adding them to the supportedIntentNames
@@ -147,6 +150,7 @@ public class KnockKnockConversation extends Conversation {
 			{
 				// TODO Auto-generated catch block
 				pc.setPhone(e.toString());
+				//pc.setEmail("yes");
 			}
 			response = newTellResponse(pc.getName() + "s email is " + pc.getEmail() +  " his phone is " + pc.getPhone(), false);
 			

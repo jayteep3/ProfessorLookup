@@ -2,6 +2,7 @@ package com.neong.voice.Classes;
 import java.util.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -28,9 +29,14 @@ public class ProfContact {
 		Class.forName("com.mysql.jdbc.Driver");
 		con = DriverManager.getConnection("jdbc:mysql://cwolf.cs.sonoma.edu:3306/restrella", "restrella", "abc123");
 		Statement stmnt = con.createStatement();
-			ResultSet rs =  stmnt.executeQuery("SELECT email, phone FROM Professors WHERE (name is Like '" + name + "')");
-			email = rs.getString("email");
-			phone = "yes";
+		email = "yes";
+		String sql = "SELECT email, phone FROM Professors WHERE (lName Like 'Kooshesh')";
+		PreparedStatement prep = con.prepareStatement(sql);
+		ResultSet rs = prep.executeQuery();
+		rs.next();
+		email = rs.getString(0);
+		phone = rs.getString(1);
+
 		}
 		catch (SQLException e)
 	    {
