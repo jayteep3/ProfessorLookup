@@ -29,22 +29,24 @@ public class ProfContact {
 		Class.forName("com.mysql.jdbc.Driver");
 		con = DriverManager.getConnection("jdbc:mysql://cwolf.cs.sonoma.edu:3306/restrella", "restrella", "abc123");
 		Statement stmnt = con.createStatement();
-		email = "yes";
-		String sql = "SELECT email, phone FROM Professors WHERE (lName Like 'Kooshesh')";
-		PreparedStatement prep = con.prepareStatement(sql);
-		ResultSet rs = prep.executeQuery();
+		String sql = "SELECT email, phone FROM Professors WHERE (lName Like '" + name + "')";
+		stmnt = con.createStatement();
+		ResultSet rs = stmnt.executeQuery(sql);
 		rs.next();
-		email = rs.getString(0);
-		phone = rs.getString(1);
+		String em = rs.getString("email");
+		if(!rs.wasNull()){
+			email = em.replace("@", " at ");
+		}
+		String ph = rs.getString("phone");
+		if(!rs.wasNull()){
+			phone = ph;
+		}
 
 		}
 		catch (SQLException e)
 	    {
 	        phone = e.toString();
 	    }
-		//if(con != null) {
-			
-		//}
 		
 	}
 }

@@ -46,10 +46,12 @@ public class KnockKnockConversation extends Conversation {
 	private final static Integer STATE_WAITING_WHO_DER = 100000;
 	private final static Integer STATE_WAITING_DR_WHO = 100001;
 	private final static Integer STATE_GET_PROFESSOR = 2;
+	private final static Integer STATE_GET_EMAIL = 3;
+	private final static Integer STATE_GET_PHONE = 4;
 
 	//Session state storage key
-	private final static String SESSION_KNOCK_STATE = "knockState";
-
+	private final static String SESSION_KNOCK_STATE = "knockState";	
+	private final static String SESSION_PROF_STATE = "profState";
 	public KnockKnockConversation() {
 		super();
 		
@@ -147,10 +149,14 @@ public class KnockKnockConversation extends Conversation {
 				pc.GetEmailPhone();
 			}
 			catch (ClassNotFoundException | SQLException e)
-			{
-				// TODO Auto-generated catch block
+			{	// TODO Auto-generated catch block
 				pc.setPhone(e.toString());
 				//pc.setEmail("yes");
+			}
+			if(pc.getEmail() == null)
+			{
+				response = newAskResponse(pc.getName() + " has no email listed, but their phone is " + pc.getPhone() + " would you like me to repeat that", false, "I did not catch that, did you want me to repeat the phone number", false);
+				
 			}
 			response = newTellResponse(pc.getName() + "s email is " + pc.getEmail() +  " his phone is " + pc.getPhone(), false);
 			
@@ -158,7 +164,7 @@ public class KnockKnockConversation extends Conversation {
 		}
 		else
 		{
-			response = newAskResponse("Can I have a professor name?", false, "I didn't catch that.  Can I have a professor name?", false);
+			response = newAskResponse("I did not hear a professor name, can you try again", false, "I didn't catch that,  Can I have a professor name ", false);
 		}
 		return response;
 	}
@@ -176,7 +182,18 @@ public class KnockKnockConversation extends Conversation {
 		// assume we get the professor name from the voice recognition
 		String professor_name = phone_number_intent.getSlots().get("ProfessorName").getValue();
 		// assume contact info for the professor is stored in our data structure
-		String phone_number = getContactInfo(professor_name, "phone");
+		ProfContact pc = new ProfContact();
+		pc.setName(professor_name);
+		try
+		{
+			pc.GetEmailPhone();
+		}
+		catch (ClassNotFoundException | SQLException e)
+		{	// TODO Auto-generated catch block
+			pc.setPhone(e.toString());
+			//pc.setEmail("yes");
+		}
+		String phone_number = pc.getPhone();
 		SpeechletResponse response = null;
 		if((phone_number != null || "?".equals(phone_number)) && (professor_name != null || "?".equals(professor_name)))
 		{
@@ -195,13 +212,22 @@ public class KnockKnockConversation extends Conversation {
 	{
 		Intent email_intent = intentReq.getIntent();
 		String professor_name = email_intent.getSlots().get("ProfessorName").getValue();
-		
-		String email_address = getContactInfo(professor_name, "email");
+		ProfContact pc = new ProfContact();
+		pc.setName(professor_name);
+		try
+		{
+			pc.GetEmailPhone();
+		}
+		catch (ClassNotFoundException | SQLException e)
+		{	// TODO Auto-generated catch block
+			pc.setPhone(e.toString());
+			//pc.setEmail("yes");
+		}
 		
 		SpeechletResponse response = null;
-		if((email_address != null || "?".equals(email_address)) && (professor_name != null || "?".equals(professor_name)))
+		if(pc.getEmail() != null && !pc.getEmail().isEmpty())
 		{
-			response = newTellResponse("Here is " + professor_name + "'s email address: " + email_address, false);
+			response = newTellResponse("Here is " + professor_name + "'s email address: " + pc.getEmail(), false);
 		}
 		else
 		{
@@ -209,27 +235,6 @@ public class KnockKnockConversation extends Conversation {
 		}
 		return response;
 	}
-	private String getContactInfo(final String professor_name, final String info_type)
-	{
-		if("phone".equals(info_type))
-		{
-			// assume professor_name exists in database
-			return "(707)-459-6525";
-			 //database.find(professor_name).getProfessorInfo("phone");
-		}
-		if("email".equals(info_type))
-		{
-			return "professor@sonoma.edu";
-		}
-		return "";
-		
-	//gets phonenumber from database
-	// for dummy things and database
-	}
-	// return database.find(professor name)
-	
-	// emailIntent
-	
 	
 	private SpeechletResponse handleStartJokeIntent(IntentRequest intentReq, Session session)
 	{
