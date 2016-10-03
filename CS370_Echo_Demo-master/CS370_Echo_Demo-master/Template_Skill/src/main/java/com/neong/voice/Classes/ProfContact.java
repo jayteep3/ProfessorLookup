@@ -19,7 +19,7 @@ public class ProfContact {
 	public String getEmail(){ return email;}
 	public void setEmail(String e) {email = e;}
 	
-	public void GetEmailPhone() throws ClassNotFoundException, SQLException
+	public void GetEmailPhone(String name2) throws ClassNotFoundException, SQLException
 	{
 		Connection con = null;
 		//Connect to DB in here, get prof contact info.
@@ -29,7 +29,7 @@ public class ProfContact {
 		Class.forName("com.mysql.jdbc.Driver");
 		con = DriverManager.getConnection("jdbc:mysql://cwolf.cs.sonoma.edu:3306/restrella", "restrella", "abc123");
 		Statement stmnt = con.createStatement();
-		String sql = "SELECT email, phone FROM Professors WHERE (lName Like '" + name + "')";
+		String sql = "SELECT email, phone FROM Professors WHERE (lName Like '" + name2 + "') OR (lName Like '%" + name2 + "%')";
 		stmnt = con.createStatement();
 		ResultSet rs = stmnt.executeQuery(sql);
 		rs.next();

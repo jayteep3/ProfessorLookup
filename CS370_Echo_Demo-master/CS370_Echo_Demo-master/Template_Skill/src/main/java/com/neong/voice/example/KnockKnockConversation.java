@@ -146,7 +146,7 @@ public class KnockKnockConversation extends Conversation {
 			pc.setName(professor_name_string);
 			try
 			{
-				pc.GetEmailPhone();
+				pc.GetEmailPhone(professor_name_string);
 			}
 			catch (ClassNotFoundException | SQLException e)
 			{	// TODO Auto-generated catch block
@@ -158,7 +158,7 @@ public class KnockKnockConversation extends Conversation {
 				response = newAskResponse(pc.getName() + " has no email listed, but their phone is " + pc.getPhone() + " would you like me to repeat that", false, "I did not catch that, did you want me to repeat the phone number", false);
 				
 			}
-			response = newTellResponse(pc.getName() + "s email is " + pc.getEmail() +  " his phone is " + pc.getPhone(), false);
+			response = newTellResponse(pc.getName() + "s email is " + pc.getEmail() +  " their phone is " + pc.getPhone(), false);
 			
 			//response = newAskResponse("Would you like " + professor_name_string +"'s email or phone?", false, "Do you want phone or email?" ,false);
 		}
@@ -186,7 +186,7 @@ public class KnockKnockConversation extends Conversation {
 		pc.setName(professor_name);
 		try
 		{
-			pc.GetEmailPhone();
+			pc.GetEmailPhone(professor_name);
 		}
 		catch (ClassNotFoundException | SQLException e)
 		{	// TODO Auto-generated catch block
@@ -216,7 +216,7 @@ public class KnockKnockConversation extends Conversation {
 		pc.setName(professor_name);
 		try
 		{
-			pc.GetEmailPhone();
+			pc.GetEmailPhone(professor_name);
 		}
 		catch (ClassNotFoundException | SQLException e)
 		{	// TODO Auto-generated catch block
