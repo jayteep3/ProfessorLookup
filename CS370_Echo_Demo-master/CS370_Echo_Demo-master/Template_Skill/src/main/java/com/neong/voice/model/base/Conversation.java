@@ -27,6 +27,7 @@ import com.neong.voice.model.interfaces.ConversationInterface;
  */
 
 public class Conversation implements ConversationInterface {
+	
     private static final Logger log = LoggerFactory.getLogger(Conversation.class);
 
 	public List<String> supportedIntentNames;

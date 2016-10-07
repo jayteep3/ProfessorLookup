@@ -9,6 +9,7 @@ import com.neong.voice.model.base.Conversation;
 import java.io.*;
 import java.sql.SQLException;
 import java.util.*;
+import java.net.*;
 
 //import java.sql.*;
 //import com.mysql.jdbc.Driver;
@@ -28,8 +29,10 @@ import java.util.*;
 // Template_Skill
 // build:
 // mvn assembly:assembly -DdescriptorId=jar-with-dependencies package
+
 public class KnockKnockConversation extends Conversation {
 	//Intent names
+	private String cachedName = null;
 	private final static String INTENT_START = "StartKnockIntent";
 	private final static String INTENT_WHO_DER = "WhoDerIntent";
 	private final static String INTENT_DR_WHO = "DrWhoIntent";
@@ -39,6 +42,9 @@ public class KnockKnockConversation extends Conversation {
     private final static String INTENT_EMAIL_ADDRESS = "ContactInformationEmailIntent";
     private final static String INTENT_CLASSES = "ClassesTaughtIntent";
     private final static String INTENT_COMBO = "ContactInformationComboIntent";
+    private final static String INTENT_CLARIFY_PROF = "ProfessorNameIntent";
+    private final static String INTENT_YES = "AMAZON.YesIntent";
+    private final static String INTENT_NO = "AMAZON.NoIntent";
 	//Slots
 	//private final static String SLOT_RELATIVE_TIME = "timeOfDay";
 
@@ -48,6 +54,8 @@ public class KnockKnockConversation extends Conversation {
 	private final static Integer STATE_GET_PROFESSOR = 2;
 	private final static Integer STATE_GET_EMAIL = 3;
 	private final static Integer STATE_GET_PHONE = 4;
+	private final static Integer STATE_GET_EMAIL_PHONE = 5;
+	
 
 	//Session state storage key
 	private final static String SESSION_KNOCK_STATE = "knockState";	
@@ -65,6 +73,9 @@ public class KnockKnockConversation extends Conversation {
 		supportedIntentNames.add(INTENT_EMAIL_ADDRESS);
 		supportedIntentNames.add(INTENT_CLASSES);
 		supportedIntentNames.add(INTENT_COMBO);
+		supportedIntentNames.add(INTENT_CLARIFY_PROF);
+		supportedIntentNames.add(INTENT_YES);
+		supportedIntentNames.add(INTENT_NO);
 
 	}
 
@@ -96,6 +107,15 @@ public class KnockKnockConversation extends Conversation {
 		else if (INTENT_DR_WHO.equals(intentName)) {
 			response = handleDrWhoIntent(intentReq, session);
         }
+        else if (INTENT_CLARIFY_PROF.equals(intentName)) {
+        	response = handleProfessorNameIntent(intentReq, session);
+        }
+        else if (INTENT_YES.equals(intentName)){
+        	response = handleYesIntent(intentReq, session);
+        }
+        else if(INTENT_NO.equals(intentName)){
+        	response = handleNoIntent(intentReq, session);
+        }
 		else {
 			response = newTellResponse("Whatchu talkin' bout!", false);
 		}
@@ -103,7 +123,37 @@ public class KnockKnockConversation extends Conversation {
 		
 		return response;
 	}
-
+//STATE_WAITING_DR_WHO.compareTo((Integer)session.getAttribute(SESSION_KNOCK_STATE)) == 0
+	private SpeechletResponse handleYesIntent(IntentRequest intentReq, Session session){
+		SpeechletResponse response = null;
+		ProfContact pc = new ProfContact();
+		pc.setName(cachedName);
+		try{
+		pc.GetEmailPhone(pc.getName());
+		} catch(ClassNotFoundException | SQLException e)
+		{	// TODO Auto-generated catch block
+			pc.setPhone(e.toString());
+			//pc.setEmail("yes");
+		}
+		if(STATE_GET_EMAIL_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
+			response = newTellResponse(pc.getName()+ "s email is " + pc.getEmail() + " their phone number is " + pc.getPhone(), false);
+		}
+		else if (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
+			response = newTellResponse(pc.getName() + "s email address is " + pc.getEmail(), false);
+		}
+		else if (STATE_GET_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
+			response = newTellResponse(pc.getName() + "s phone number is " + pc.getPhone(), false);
+		}
+		else
+			response = newTellResponse("Watchu talkin about willis?", false);
+		return response;
+	}
+	private SpeechletResponse handleNoIntent(IntentRequest intentReq, Session session){
+		if((STATE_GET_EMAIL_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0) || (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0) || 
+				(STATE_GET_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0))
+				return newTellResponse("No thank you? sheesh, last time i help you", false);
+		return newTellResponse("Please ask for professor information first", false);
+	}
     private SpeechletResponse handleOfficeHoursIntent(IntentRequest intentReq, Session session) {
 	
     Intent intent = intentReq.getIntent();
@@ -153,19 +203,83 @@ public class KnockKnockConversation extends Conversation {
 				pc.setPhone(e.toString());
 				//pc.setEmail("yes");
 			}
-			if(pc.getEmail() == null)
-			{
-				response = newAskResponse(pc.getName() + " has no email listed, but their phone is " + pc.getPhone() + " would you like me to repeat that", false, "I did not catch that, did you want me to repeat the phone number", false);
+			
+			// setup
+			String url = "https://moonlight.cs.sonoma.edu/api/v1/directory/person/";
+			String char_set = java.nio.charset.StandardCharsets.UTF_8.name();
+			String param = "Ali%00Kooshesh";
+					//"?search=Ali%20Kooshesh";
+			
+			try
+			{		String query = String.format("search=%s", URLEncoder.encode(param, char_set));
+
+				URLConnection connection = new URL(url + "?" + query).openConnection();
+				//connection.setRequestProperty("Accept-Charset", value);
+				InputStream response2 = connection.getInputStream();
+				try(Scanner scanner = new Scanner(response2))
+				{
+					String response_body = scanner.useDelimiter("\\A").next();
+					pc.setPhone(response_body); //System.out.println(response_body);
+				}
 				
 			}
-			response = newTellResponse(pc.getName() + "s email is " + pc.getEmail() +  " their phone is " + pc.getPhone(), false);
+			catch(IOException e)
+			{
+				pc.setPhone(e.toString());
+			}
+			/*
+			 try {
+		         URL url2 = new URL("https://www.google.com");
+		         URLConnection urlConnection = url2.openConnection();
+		         HttpURLConnection connection = null;
+		         if(urlConnection instanceof HttpURLConnection) {
+		            connection = (HttpURLConnection) urlConnection;
+		         }else {
+		            System.out.println("Please enter an HTTP URL.");
+		            return newTellResponse("sucess", false);
+		         }
+		         
+		         BufferedReader in = new BufferedReader(
+		            new InputStreamReader(connection.getInputStream()));
+		         String urlString = "";
+		         String current;
+		         
+		         while((current = in.readLine()) != null) {
+		            urlString += current;
+		         }
+		         System.out.println(urlString);
+		      }catch(IOException e) {
+		         pc.setPhone(e.toString());//System.out.print(e);//e.printStackTrace();
+		      }*/
+			if(pc.getEmail() == null || pc.getEmail().isEmpty())
+			{
+				response = newAskResponse(pc.getName() + " has no email listed, but their phone is " + pc.getPhone() + " would you like me to repeat that", false, "I did not catch that, did you want me to repeat the phone number", false);
+				session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
+				cachedName = pc.getName();
+			}
+			else if(pc.getPhone() == null || pc.getPhone().isEmpty()){
+				response = newAskResponse(pc.getName() + " has no phone listed, but their email is " + pc.getEmail() + " would you like me to repeat that", false, "I did not catch that, did you want me to repeat the email address", false);
+				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
+				cachedName = pc.getName();
+			}
+			else{
+				response = newTellResponse(pc.getName() + "s email is " + pc.getEmail() +  " their phone is " + pc.getPhone(), false);
+			}
+
 			
 			//response = newAskResponse("Would you like " + professor_name_string +"'s email or phone?", false, "Do you want phone or email?" ,false);
 		}
 		else
 		{
 			response = newAskResponse("I did not hear a professor name, can you try again", false, "I didn't catch that,  Can I have a professor name ", false);
+			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PROFESSOR);
 		}
+		return response;
+	}
+
+	private SpeechletResponse handleProfessorNameIntent (IntentRequest intentReq, Session session){
+		SpeechletResponse response = null;
+		response = handleContactInformationIntent(intentReq, session);
 		return response;
 	}
 	// don't do any state checking
@@ -183,7 +297,11 @@ public class KnockKnockConversation extends Conversation {
 		String professor_name = phone_number_intent.getSlots().get("ProfessorName").getValue();
 		// assume contact info for the professor is stored in our data structure
 		ProfContact pc = new ProfContact();
+		SpeechletResponse response = null;
+		if(professor_name != null && !professor_name.isEmpty())
+		{
 		pc.setName(professor_name);
+		
 		try
 		{
 			pc.GetEmailPhone(professor_name);
@@ -194,15 +312,23 @@ public class KnockKnockConversation extends Conversation {
 			//pc.setEmail("yes");
 		}
 		String phone_number = pc.getPhone();
-		SpeechletResponse response = null;
-		if((phone_number != null || "?".equals(phone_number)) && (professor_name != null || "?".equals(professor_name)))
+		
+		if(phone_number != null && !phone_number.isEmpty())
 		{
 			response = newTellResponse("Here is " + professor_name + "'s phone number: " + phone_number, false);
 		}
-		else
+		else if((phone_number == null || phone_number.isEmpty()) && (pc.getEmail() != null && !pc.getEmail().isEmpty()))
 		{
 			// phone number doesn't exist
-			response = newAskResponse("This professor has no phone number.  ", false, "Would you like their email?", false);
+			response = newAskResponse("This professor has no phone number, would you like their email ", false, "Would you like their email?", false);
+			session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
+			cachedName = pc.getName();
+		}
+		}
+		else
+		{
+			response = newAskResponse("I did not hear a professor name, can you try again", false, "I didn't catch that,  Can I have a professor name ", false);
+			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PROFESSOR);
 		}
 		return response;
 		// phone number = getFakeinfo(professor_name, "phone")
@@ -213,6 +339,9 @@ public class KnockKnockConversation extends Conversation {
 		Intent email_intent = intentReq.getIntent();
 		String professor_name = email_intent.getSlots().get("ProfessorName").getValue();
 		ProfContact pc = new ProfContact();
+		SpeechletResponse response = null;
+		if(professor_name != null && !professor_name.isEmpty())
+		{
 		pc.setName(professor_name);
 		try
 		{
@@ -224,14 +353,24 @@ public class KnockKnockConversation extends Conversation {
 			//pc.setEmail("yes");
 		}
 		
-		SpeechletResponse response = null;
+		
 		if(pc.getEmail() != null && !pc.getEmail().isEmpty())
 		{
-			response = newTellResponse("Here is " + professor_name + "'s email address: " + pc.getEmail(), false);
+			response = newAskResponse("Here is " + professor_name + "'s email address: " + pc.getEmail() + " , would you like me to repeat it?", false, "Would you like me to repeat the email?", false);
+			session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
+			cachedName = pc.getName();
 		}
+		else if( (pc.getEmail() == null || pc.getEmail().isEmpty()) && (pc.getPhone() != null && !pc.getPhone().isEmpty()))
+		{
+			response = newAskResponse("This professor has no email address. Would you like their phone?  ", false, "Would you like their phone?", false);
+			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
+			cachedName = pc.getName();
+		}
+	}
 		else
 		{
-			response = newAskResponse("This professor has no email address.  ", false, "Would you like their email?", false);
+			response = newAskResponse("I did not hear a professor name, can you try again", false, "I didn't catch that,  Can I have a professor name ", false);
+			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PROFESSOR);
 		}
 		return response;
 	}
