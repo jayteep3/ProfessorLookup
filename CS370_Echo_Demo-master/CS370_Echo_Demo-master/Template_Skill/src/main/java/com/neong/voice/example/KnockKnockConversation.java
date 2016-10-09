@@ -207,7 +207,7 @@ public class KnockKnockConversation extends Conversation {
 			// setup
 			String url = "https://moonlight.cs.sonoma.edu/api/v1/directory/person/";
 			String char_set = java.nio.charset.StandardCharsets.UTF_8.name();
-			String param = "Ali%00Kooshesh";
+			String param = "Ali Kooshesh";
 					//"?search=Ali%20Kooshesh";
 			
 			try
