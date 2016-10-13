@@ -5,11 +5,24 @@ import com.amazon.speech.slu.Slot;
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
 import com.amazon.speech.speechlet.SpeechletResponse;
+import com.amazonaws.util.json.JSONArray;
+import com.amazonaws.util.json.JSONException;
+import com.amazonaws.util.json.JSONObject;
 import com.neong.voice.model.base.Conversation;
 import java.io.*;
 import java.sql.SQLException;
 import java.util.*;
 import java.net.*;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import javax.net.ssl.HttpsURLConnection;
+//import org.apache.http.impl.client.DefaultHttpClient;
+//import org.json.*;
+//import org.apache.commons.io.IOUtils;
 
 //import java.sql.*;
 //import com.mysql.jdbc.Driver;
@@ -194,6 +207,7 @@ public class KnockKnockConversation extends Conversation {
 			// change state
 			ProfContact pc = new ProfContact();
 			pc.setName(professor_name_string);
+			/*
 			try
 			{
 				pc.GetEmailPhone(professor_name_string);
@@ -202,31 +216,131 @@ public class KnockKnockConversation extends Conversation {
 			{	// TODO Auto-generated catch block
 				pc.setPhone(e.toString());
 				//pc.setEmail("yes");
-			}
+			}*/
 			
 			// setup
 			String url = "https://moonlight.cs.sonoma.edu/api/v1/directory/person/";
 			String char_set = java.nio.charset.StandardCharsets.UTF_8.name();
 			String param = "Ali Kooshesh";
 					//"?search=Ali%20Kooshesh";
-			
+			// failse when "Ali Kooshesh" is added
+			// succeeds when "Kooshesh" is added
+			String full_url = "https://moonlight.cs.sonoma.edu/api/v1/directory/person/?format=json&search=George%20Ledin";
+			// gives an unknown exception
+			// from front desk: george ledin has no phone number
 			try
-			{		String query = String.format("search=%s", URLEncoder.encode(param, char_set));
+			{
+				//URL obj = new URL(full_url);
+				//HttpURLConnection con =(HttpURLConnection) obj.openConnection();
+				//con.setRequestMethod("Get");
+				//con.setDoOutput(true);
+				//con.connect();
+				//con.setRequestProperty("User-Agent", "Mozilla/5.0");
+				//int response_code = con.getResponseCode();
+				//System.out.println("\nSending 'GET' request to URL: " + full_url);
+				//System
+				/*
+				BufferedReader in = new BufferedReader(
+		                new InputStreamReader(con.getInputStream()));
+		        String inputLine;
+		        StringBuffer response4 = new StringBuffer();
 
-				URLConnection connection = new URL(url + "?" + query).openConnection();
-				//connection.setRequestProperty("Accept-Charset", value);
-				InputStream response2 = connection.getInputStream();
-				try(Scanner scanner = new Scanner(response2))
-				{
-					String response_body = scanner.useDelimiter("\\A").next();
-					pc.setPhone(response_body); //System.out.println(response_body);
-				}
+		        while ((inputLine = in.readLine()) != null) {
+		            response4.append(inputLine);
+		        }
+		        in.close();*/
+		        //pc.setPhone(response4.toString());
+				String query = String.format("search=%s", URLEncoder.encode(param, char_set));
+				StringBuilder result = new StringBuilder();
+				URL url2 = new URL(full_url);
+				HttpURLConnection conn = (HttpURLConnection) url2.openConnection();
+			      conn.setRequestMethod("GET");
+			      BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			      String line;
+			      while ((line = rd.readLine()) != null) {
+			         result.append(line);
+			      }
+			      rd.close();
+			      conn.disconnect();
+			      String json_text = result.toString();
+				//URLConnection connection = new URL(full_url/*url + "?" + query*/).openConnection();
 				
+				/*
+				 HttpClient client = new DefaultHttpClient();
+				    HttpGet request = new HttpGet(url + "?" + query );
+				    HttpResponse response3;
+				    String result = null;
+				    try {
+				        response3 = client.execute(request);         
+				        HttpEntity entity = response3.getEntity();
+
+				        if (entity != null) {
+
+				            // A Simple JSON Response Read
+				            InputStream instream = entity.getContent();
+				            result = instream.toString();
+				            // now you have the string representation of the HTML request
+				            System.out.println("RESPONSE: " + result);
+				            instream.close();
+				            /*
+				            if (response.getStatusLine().getStatusCode() == 200) {
+				                netState.setLogginDone(true);
+				            }*/
+
+				        //}
+				        // Headers
+				        /*
+				        org.apache.http.Header[] headers = response.getAllHeaders();
+				        for (int i = 0; i < headers.length; i++) {
+				            System.out.println(headers[i]);
+				        }
+				     
+				    } catch (ClientProtocolException e1) {
+				        // TODO Auto-generated catch block
+				        pc.setPhone(e1.toString());// e1.printStackTrace();
+				    } catch (IOException e1) {
+				        // TODO Auto-generated catch block
+				        pc.setEmail(e1.toString());//e1.printStackTrace();
+				    }*/
+				
+				
+				// gets the html page with the json
+				
+				//connection.setRequestProperty("Accept-Charset", value);
+				//InputStream response2 = connection.getInputStream();
+				
+				//try(Scanner scanner = new Scanner(response2))
+				//{
+					//String response_body = scanner.useDelimiter("\\A").next();
+					// have the json text but cannot convert it to a json array without triggering an uncatchable exception
+					//JSONArray arr = new JSONArray(response_body);
+					JSONArray arr = new JSONArray(json_text);
+					JSONObject json = arr.getJSONObject(0);
+
+					// assumes response_body is already valid json
+					//JSONObject json = new JSONObject(response2);
+					//JSONObject obj = null;
+					// com.amazonaws.util.json.JSONException: JSONObject[\"display_name\"] not found."
+					//for(int i = 0; i < arr.length(); i++)
+					//{
+						
+						//if(arr.getJSONObject(i).getString("first_name").equals("Janet"))
+						
+							//obj = arr.getJSONObject(0);
+//}
+					//}
+					pc.setEmail(json.getString("email"));
+					pc.setPhone(json.getString("phone") + "   " + arr.toString()/*json.getString("first_name") + " " + json.getString("last_name")*//*result.toString()*//*response_body*//*obj.toString()*//*.getString("first_name")*//*works/*arr.getJSONObject(0).getString("created")*//*obj.getString("id")*//*response_body*//*json.getString("display_name")*/);//json.getString("name")); //System.out.println(response_body);
+				} catch (JSONException e) {
+				
+					pc.setPhone(e.toString());
+
 			}
 			catch(IOException e)
 			{
 				pc.setPhone(e.toString());
 			}
+		
 			/*
 			 try {
 		         URL url2 = new URL("https://www.google.com");

@@ -21,8 +21,10 @@ public class ProfContact {
 	
 	public void GetEmailPhone(String name2) throws ClassNotFoundException, SQLException
 	{
+		/*
 		Connection con = null;
 		//Connect to DB in here, get prof contact info.
+
 		try
 		{
 
@@ -47,6 +49,7 @@ public class ProfContact {
 	    {
 	        phone = e.toString();
 	    }
+	    */
 		
 	}
 }
