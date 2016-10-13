@@ -193,6 +193,7 @@ public class KnockKnockConversation extends Conversation {
  		return response;
  	}
 
+	// don't modify this function
 	private SpeechletResponse handleContactInformationIntent(IntentRequest intentReq, Session session){
 		
 		Intent intent = intentReq.getIntent();
@@ -250,7 +251,8 @@ public class KnockKnockConversation extends Conversation {
 		        }
 		        in.close();*/
 		        //pc.setPhone(response4.toString());
-				String query = String.format("search=%s", URLEncoder.encode(param, char_set));
+				// setup url for call
+				//String query = String.format("search=%s", URLEncoder.encode(param, char_set));
 				StringBuilder result = new StringBuilder();
 				URL url2 = new URL(full_url);
 				HttpURLConnection conn = (HttpURLConnection) url2.openConnection();
@@ -264,45 +266,7 @@ public class KnockKnockConversation extends Conversation {
 			      conn.disconnect();
 			      String json_text = result.toString();
 				//URLConnection connection = new URL(full_url/*url + "?" + query*/).openConnection();
-				
-				/*
-				 HttpClient client = new DefaultHttpClient();
-				    HttpGet request = new HttpGet(url + "?" + query );
-				    HttpResponse response3;
-				    String result = null;
-				    try {
-				        response3 = client.execute(request);         
-				        HttpEntity entity = response3.getEntity();
-
-				        if (entity != null) {
-
-				            // A Simple JSON Response Read
-				            InputStream instream = entity.getContent();
-				            result = instream.toString();
-				            // now you have the string representation of the HTML request
-				            System.out.println("RESPONSE: " + result);
-				            instream.close();
-				            /*
-				            if (response.getStatusLine().getStatusCode() == 200) {
-				                netState.setLogginDone(true);
-				            }*/
-
-				        //}
-				        // Headers
-				        /*
-				        org.apache.http.Header[] headers = response.getAllHeaders();
-				        for (int i = 0; i < headers.length; i++) {
-				            System.out.println(headers[i]);
-				        }
-				     
-				    } catch (ClientProtocolException e1) {
-				        // TODO Auto-generated catch block
-				        pc.setPhone(e1.toString());// e1.printStackTrace();
-				    } catch (IOException e1) {
-				        // TODO Auto-generated catch block
-				        pc.setEmail(e1.toString());//e1.printStackTrace();
-				    }*/
-				
+								
 				
 				// gets the html page with the json
 				
@@ -330,7 +294,7 @@ public class KnockKnockConversation extends Conversation {
 //}
 					//}
 					pc.setEmail(json.getString("email"));
-					pc.setPhone(json.getString("phone") + "   " + arr.toString()/*json.getString("first_name") + " " + json.getString("last_name")*//*result.toString()*//*response_body*//*obj.toString()*//*.getString("first_name")*//*works/*arr.getJSONObject(0).getString("created")*//*obj.getString("id")*//*response_body*//*json.getString("display_name")*/);//json.getString("name")); //System.out.println(response_body);
+					pc.setPhone(json.getString("phone")/* + "   " + arr.toString()*//*json.getString("first_name") + " " + json.getString("last_name")*//*result.toString()*//*response_body*//*obj.toString()*//*.getString("first_name")*//*works/*arr.getJSONObject(0).getString("created")*//*obj.getString("id")*//*response_body*//*json.getString("display_name")*/);//json.getString("name")); //System.out.println(response_body);
 				} catch (JSONException e) {
 				
 					pc.setPhone(e.toString());
