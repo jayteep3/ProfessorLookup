@@ -193,7 +193,7 @@ public class KnockKnockConversation extends Conversation {
  		return response;
  	}
 
-	// don't modify this function
+
 	private SpeechletResponse handleContactInformationIntent(IntentRequest intentReq, Session session){
 		
 		Intent intent = intentReq.getIntent();
@@ -208,7 +208,7 @@ public class KnockKnockConversation extends Conversation {
 			// change state
 			ProfContact pc = new ProfContact();
 			pc.setName(professor_name_string);
-			/*
+			
 			try
 			{
 				pc.GetEmailPhone(professor_name_string);
@@ -216,119 +216,10 @@ public class KnockKnockConversation extends Conversation {
 			catch (ClassNotFoundException | SQLException e)
 			{	// TODO Auto-generated catch block
 				pc.setPhone(e.toString());
-				//pc.setEmail("yes");
-			}*/
+			}
 			
-			// setup
-			String url = "https://moonlight.cs.sonoma.edu/api/v1/directory/person/";
-			String char_set = java.nio.charset.StandardCharsets.UTF_8.name();
-			String param = "Ali Kooshesh";
-					//"?search=Ali%20Kooshesh";
-			// failse when "Ali Kooshesh" is added
-			// succeeds when "Kooshesh" is added
-			String full_url = "https://moonlight.cs.sonoma.edu/api/v1/directory/person/?format=json&search=George%20Ledin";
-			// gives an unknown exception
-			// from front desk: george ledin has no phone number
-			try
-			{
-				//URL obj = new URL(full_url);
-				//HttpURLConnection con =(HttpURLConnection) obj.openConnection();
-				//con.setRequestMethod("Get");
-				//con.setDoOutput(true);
-				//con.connect();
-				//con.setRequestProperty("User-Agent", "Mozilla/5.0");
-				//int response_code = con.getResponseCode();
-				//System.out.println("\nSending 'GET' request to URL: " + full_url);
-				//System
-				/*
-				BufferedReader in = new BufferedReader(
-		                new InputStreamReader(con.getInputStream()));
-		        String inputLine;
-		        StringBuffer response4 = new StringBuffer();
-
-		        while ((inputLine = in.readLine()) != null) {
-		            response4.append(inputLine);
-		        }
-		        in.close();*/
-		        //pc.setPhone(response4.toString());
-				// setup url for call
-				//String query = String.format("search=%s", URLEncoder.encode(param, char_set));
-				StringBuilder result = new StringBuilder();
-				URL url2 = new URL(full_url);
-				HttpURLConnection conn = (HttpURLConnection) url2.openConnection();
-			      conn.setRequestMethod("GET");
-			      BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			      String line;
-			      while ((line = rd.readLine()) != null) {
-			         result.append(line);
-			      }
-			      rd.close();
-			      conn.disconnect();
-			      String json_text = result.toString();
-				//URLConnection connection = new URL(full_url/*url + "?" + query*/).openConnection();
-								
-				
-				// gets the html page with the json
-				
-				//connection.setRequestProperty("Accept-Charset", value);
-				//InputStream response2 = connection.getInputStream();
-				
-				//try(Scanner scanner = new Scanner(response2))
-				//{
-					//String response_body = scanner.useDelimiter("\\A").next();
-					// have the json text but cannot convert it to a json array without triggering an uncatchable exception
-					//JSONArray arr = new JSONArray(response_body);
-					JSONArray arr = new JSONArray(json_text);
-					JSONObject json = arr.getJSONObject(0);
-
-					// assumes response_body is already valid json
-					//JSONObject json = new JSONObject(response2);
-					//JSONObject obj = null;
-					// com.amazonaws.util.json.JSONException: JSONObject[\"display_name\"] not found."
-					//for(int i = 0; i < arr.length(); i++)
-					//{
-						
-						//if(arr.getJSONObject(i).getString("first_name").equals("Janet"))
-						
-							//obj = arr.getJSONObject(0);
-//}
-					//}
-					pc.setEmail(json.getString("email"));
-					pc.setPhone(json.getString("phone")/* + "   " + arr.toString()*//*json.getString("first_name") + " " + json.getString("last_name")*//*result.toString()*//*response_body*//*obj.toString()*//*.getString("first_name")*//*works/*arr.getJSONObject(0).getString("created")*//*obj.getString("id")*//*response_body*//*json.getString("display_name")*/);//json.getString("name")); //System.out.println(response_body);
-				} catch (JSONException e) {
-				
-					pc.setPhone(e.toString());
-
-			}
-			catch(IOException e)
-			{
-				pc.setPhone(e.toString());
-			}
-		
-			/*
-			 try {
-		         URL url2 = new URL("https://www.google.com");
-		         URLConnection urlConnection = url2.openConnection();
-		         HttpURLConnection connection = null;
-		         if(urlConnection instanceof HttpURLConnection) {
-		            connection = (HttpURLConnection) urlConnection;
-		         }else {
-		            System.out.println("Please enter an HTTP URL.");
-		            return newTellResponse("sucess", false);
-		         }
-		         
-		         BufferedReader in = new BufferedReader(
-		            new InputStreamReader(connection.getInputStream()));
-		         String urlString = "";
-		         String current;
-		         
-		         while((current = in.readLine()) != null) {
-		            urlString += current;
-		         }
-		         System.out.println(urlString);
-		      }catch(IOException e) {
-		         pc.setPhone(e.toString());//System.out.print(e);//e.printStackTrace();
-		      }*/
+					
+			
 			if(pc.getEmail() == null || pc.getEmail().isEmpty())
 			{
 				response = newAskResponse(pc.getName() + " has no email listed, but their phone is " + pc.getPhone() + " would you like me to repeat that", false, "I did not catch that, did you want me to repeat the phone number", false);
