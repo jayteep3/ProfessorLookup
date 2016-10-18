@@ -278,10 +278,15 @@ public class KnockKnockConversation extends Conversation {
 		catch (ClassNotFoundException | SQLException e)
 		{	// TODO Auto-generated catch block
 			pc.setPhone(e.toString());
-			//pc.setEmail("yes");
 		}
 		String phone_number = pc.getPhone();
-		
+		/*
+		 * demo for accessing items in a String without causing program to crash 
+		String x = "";
+		for(int i = 0; i < pc.length(); i++)
+			// (char) pc.GetPhone().codePointAt(i) gets 1 ascii number from string and converts it to the character
+			x = x + " " + (char) pc.GetPhone().codePointAt(i);
+		pc.setPhone = x;*/
 		if(phone_number != null && !phone_number.isEmpty())
 		{
 			response = newTellResponse("Here is " + professor_name + "'s phone number: " + phone_number, false);

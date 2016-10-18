@@ -31,43 +31,12 @@ public class ProfContact {
 	
 	public void GetEmailPhone(String name2) throws ClassNotFoundException, SQLException
 	{
-		/*
-		Connection con = null;
-		//Connect to DB in here, get prof contact info.
-
-		try
-		{
-
-		Class.forName("com.mysql.jdbc.Driver");
-		con = DriverManager.getConnection("jdbc:mysql://cwolf.cs.sonoma.edu:3306/restrella", "restrella", "abc123");
-		Statement stmnt = con.createStatement();
-		String sql = "SELECT email, phone FROM Professors WHERE (lName Like '" + name2 + "') OR (lName Like '%" + name2 + "%')";
-		stmnt = con.createStatement();
-		ResultSet rs = stmnt.executeQuery(sql);
-		rs.next();
-		String em = rs.getString("email");
-		if(!rs.wasNull()){
-			email = em.replace("@", " at ");
-		}
-		String ph = rs.getString("phone");
-		if(!rs.wasNull()){
-			phone = ph;
-		}
-
-		}
-		catch (SQLException e)
-	    {
-	        phone = e.toString();
-	    }
-	    */
+		
 		// setup
-		String url = "https://moonlight.cs.sonoma.edu/api/v1/directory/person/";
-		String char_set = java.nio.charset.StandardCharsets.UTF_8.name();
-		String param = "Ali Kooshesh";
-				//"?search=Ali%20Kooshesh";
-				// failse when "Ali Kooshesh" is added
-				// succeeds when "Kooshesh" is added
-		String full_url = "https://moonlight.cs.sonoma.edu/api/v1/directory/person/?format=json&search=George%20Ledin";
+
+		// assume name2 is only a last name
+		// for first and last name name string = first_name + "%20" + last name
+		String full_url = "https://moonlight.cs.sonoma.edu/api/v1/directory/person/?format=json&search=" + name2;
 			// gives an unknown exception
 			// from front desk: george ledin has no phone number
 		try
@@ -149,7 +118,7 @@ public class ProfContact {
 		{
 			phone = e.toString();
 		}
-
+		
 		
 	}
 }
