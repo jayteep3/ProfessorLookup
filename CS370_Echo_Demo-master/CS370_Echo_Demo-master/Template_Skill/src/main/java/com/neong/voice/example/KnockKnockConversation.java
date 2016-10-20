@@ -224,7 +224,7 @@ public class KnockKnockConversation extends Conversation {
 			catch (ClassNotFoundException | SQLException e)
 			{	// TODO Auto-generated catch block
 				//pc.setPhone(e.toString());
-				response = newTellResponse("I'm sorry, " + professor_name_string + " is not in our database"); //ben: assuming this is what this means, not sure
+				response = newTellResponse("I'm sorry, " + professor_name_string + " is not in our database", false); //ben: assuming this is what this means, not sure
 			}
 			if(pc.getEmail() == null || pc.getEmail().isEmpty())
 			{
@@ -324,7 +324,6 @@ public class KnockKnockConversation extends Conversation {
 		catch (ClassNotFoundException | SQLException e)
 		{	// TODO Auto-generated catch block
 			pc.setPhone(e.toString());
-			//pc.setEmail("yes");
 		}
 		
 		
