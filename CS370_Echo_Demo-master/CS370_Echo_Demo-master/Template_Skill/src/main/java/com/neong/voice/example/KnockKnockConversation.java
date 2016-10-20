@@ -201,8 +201,16 @@ public class KnockKnockConversation extends Conversation {
 		// may give error if slot is empty
 		String professor_name_string = slots.get("ProfessorName").getValue();
 		SpeechletResponse response = null;
+		/*
+		 * Need to be able to handle just a professor name as an intent, or asking for a receiving a response within this handler. Not sure if possible.
+		 */
+		if(professor_name_string == "my professor" || professor_name_string == "my teacher" || professor_name_string == "a professor")
+		{
+			response = newAskResponse("What is this professor's name?", false, "I didn't catch that,  Can I have a professor name ", false);
+			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PROFESSOR); //not ideal, presumably wont allow user to respond with just name
+		}
 		// alexa can respond with null or "?" so both must be covered
-		if(professor_name_string != null && !professor_name_string.isEmpty())
+		else if(professor_name_string != null && !professor_name_string.isEmpty())
 		{
 			//String professor = professorNameSlot.getValue();
 			// change state
@@ -215,11 +223,9 @@ public class KnockKnockConversation extends Conversation {
 			}
 			catch (ClassNotFoundException | SQLException e)
 			{	// TODO Auto-generated catch block
-				pc.setPhone(e.toString());
+				//pc.setPhone(e.toString());
+				response = newTellResponse("I'm sorry, " + professor_name_string + " is not in our database"); //ben: assuming this is what this means, not sure
 			}
-			
-					
-			
 			if(pc.getEmail() == null || pc.getEmail().isEmpty())
 			{
 				response = newAskResponse(pc.getName() + " has no email listed, but their phone is " + pc.getPhone() + " would you like me to repeat that", false, "I did not catch that, did you want me to repeat the phone number", false);
