@@ -51,7 +51,7 @@ public class KnockKnockConversation extends Conversation {
 	private final static String INTENT_DR_WHO = "DrWhoIntent";
 	private final static String INTENT_OFFICE_HOURS = "officehoursIntent";
     private final static String INTENT_CONTACTINFO = "ContactInformationIntent";
-    private final static String INTENT_PHONE_NUMBER = "PhoneNumberIntent";
+    private final static String INTENT_PHONE_NUMBER = "ContactInformationPhoneIntent";
     private final static String INTENT_EMAIL_ADDRESS = "ContactInformationEmailIntent";
     private final static String INTENT_CLASSES = "ClassesTaughtIntent";
     private final static String INTENT_COMBO = "ContactInformationComboIntent";
@@ -286,13 +286,7 @@ public class KnockKnockConversation extends Conversation {
 			pc.setPhone(e.toString());
 		}
 		String phone_number = pc.getPhone();
-		/*
-		 * demo for accessing items in a String without causing program to crash 
-		String x = "";
-		for(int i = 0; i < pc.length(); i++)
-			// (char) pc.GetPhone().codePointAt(i) gets 1 ascii number from string and converts it to the character
-			x = x + " " + (char) pc.GetPhone().codePointAt(i);
-		pc.setPhone = x;*/
+		
 		if(phone_number != null && !phone_number.isEmpty())
 		{
 			response = newTellResponse("Here is " + professor_name + "'s phone number: " + phone_number, false);

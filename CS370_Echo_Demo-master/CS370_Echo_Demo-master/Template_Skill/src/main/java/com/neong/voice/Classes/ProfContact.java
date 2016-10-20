@@ -38,30 +38,9 @@ public class ProfContact {
 		// for first and last name name string = first_name + "%20" + last name
 		String full_url = "https://moonlight.cs.sonoma.edu/api/v1/directory/person/?format=json&search=" + name2;
 			// gives an unknown exception
-			// from front desk: george ledin has no phone number
 		try
 		{
-				//URL obj = new URL(full_url);
-				//HttpURLConnection con =(HttpURLConnection) obj.openConnection();
-				//con.setRequestMethod("Get");
-				//con.setDoOutput(true);
-				//con.connect();
-				//con.setRequestProperty("User-Agent", "Mozilla/5.0");
-				//int response_code = con.getResponseCode();
-				//System.out.println("\nSending 'GET' request to URL: " + full_url);
-				//System
-				/*
-				BufferedReader in = new BufferedReader(
-				new InputStreamReader(con.getInputStream()));
-				String inputLine;
-				StringBuffer response4 = new StringBuffer();
-
-				while ((inputLine = in.readLine()) != null)
-				{
-					response4.append(inputLine);
-				}
-				in.close();*/
-				//pc.setPhone(response4.toString());
+				
 				// setup url for https call
 				StringBuilder result = new StringBuilder();
 				URL url2 = new URL(full_url);
@@ -102,11 +81,8 @@ public class ProfContact {
 				//}
 				//}
 				email = json.getString("email");
-				phone = json.getString("phone");/* + "   " + arr.toString()*//*json.getString("first_name") + " " + json.getString("last_name")*//*result.toString()*//*response_body*//*obj.toString()*//*.getString("first_name")*//*works/*arr.getJSONObject(0).getString("created")*//*obj.getString("id")*//*response_body*//*json.getString("display_name")*///json.getString("name")); //System.out.println(response_body);
-				/*String number_part_1 = pc.getPhone().substring(2, 5);
-				String number_part_2 = pc.getPhone().substring(5, 9);
-				String number_part_3 = pc.getPhone().substring(9, 13);
-				pc.setPhone(number_part_1 + "," + number_part_2 + "," + number_part_3);*/
+				phone = json.getString("phone");// + "   " + arr.toString();/**//*json.getString("first_name") + " " + json.getString("last_name")*//*result.toString()*//*response_body*//*obj.toString()*//*.getString("first_name")*//*works/*arr.getJSONObject(0).getString("created")*//*obj.getString("id")*//*response_body*//*json.getString("display_name")*///json.getString("name")); //System.out.println(response_body);
+				
 		}
 		catch (JSONException e)
 		{
