@@ -228,20 +228,35 @@ public class KnockKnockConversation extends Conversation {
 			}
 			if(pc.getEmail() == null || pc.getEmail().isEmpty())
 			{
-				response = newAskResponse(pc.getName() + " has no email listed, but their phone is " + pc.getPhone() + " would you like me to repeat that", false, "I did not catch that, did you want me to repeat the phone number", false);
-				session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
-				cachedName = pc.getName();
+				if(getPhone() == null || pc.getPhone().isEmpty())
+				{
+					//No Phone or Email
+					response = newAskResponse(pc.getName() + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable.", false);
+					cachedName = pc.getName();
+				}
+				else
+				{
+					//Phone, but no Email
+					response = newAskResponse(pc.getName() + " has no email listed, but their phone is " + pc.getPhone() + " would you like me to repeat that", false, "I did not catch that, did you want me to repeat the phone number", false);
+					session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
+					cachedName = pc.getName();
+				}
 			}
-			else if(pc.getPhone() == null || pc.getPhone().isEmpty()){
-				response = newAskResponse(pc.getName() + " has no phone listed, but their email is " + pc.getEmail() + " would you like me to repeat that", false, "I did not catch that, did you want me to repeat the email address", false);
-				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
-				cachedName = pc.getName();
-			}
-			else{
-				response = newTellResponse(pc.getName() + "s email is " + pc.getEmail() +  " their phone is " + pc.getPhone(), false);
-			}
-
-			
+			else
+			{
+				if(getPhone() == null || pc.getPhone().isEmpty())
+				{
+					//Email, but no Phone
+					response = newAskResponse(pc.getName() + " has no phone listed, but their email is " + pc.getEmail() + " would you like me to repeat that", false, "I did not catch that, did you want me to repeat the email address", false);
+					session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
+					cachedName = pc.getName();
+				}
+				else
+				{
+					//Email and Phone
+					response = newTellResponse(pc.getName() + "s email is " + pc.getEmail() +  " their phone is " + pc.getPhone(), false);
+				}
+			}	
 			//response = newAskResponse("Would you like " + professor_name_string +"'s email or phone?", false, "Do you want phone or email?" ,false);
 		}
 		else
@@ -274,32 +289,40 @@ public class KnockKnockConversation extends Conversation {
 		ProfContact pc = new ProfContact();
 		SpeechletResponse response = null;
 		if(professor_name != null && !professor_name.isEmpty())
+		//We have prof name
 		{
-		pc.setName(professor_name);
+			pc.setName(professor_name);
+			
+			try
+			{
+				pc.GetEmailPhone(professor_name);
+			}
+			catch (ClassNotFoundException | SQLException e)
+			{	// TODO Auto-generated catch block
+				pc.setPhone(e.toString());
+			}
+			String phone_number = pc.getPhone();
 		
-		try
-		{
-			pc.GetEmailPhone(professor_name);
-		}
-		catch (ClassNotFoundException | SQLException e)
-		{	// TODO Auto-generated catch block
-			pc.setPhone(e.toString());
-		}
-		String phone_number = pc.getPhone();
-		
-		if(phone_number != null && !phone_number.isEmpty())
-		{
-			response = newTellResponse("Here is " + professor_name + "'s phone number: " + phone_number, false);
-		}
-		else if((phone_number == null || phone_number.isEmpty()) && (pc.getEmail() != null && !pc.getEmail().isEmpty()))
-		{
-			// phone number doesn't exist
-			response = newAskResponse("This professor has no phone number, would you like their email ", false, "Would you like their email?", false);
-			session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
-			cachedName = pc.getName();
-		}
+			if(phone_number != null && !phone_number.isEmpty())
+			{
+				// phone number exists
+				response = newTellResponse("Here is " + professor_name + "'s phone number: " + phone_number, false);
+			}
+			else if(pc.getEmail() != null && !pc.getEmail().isEmpty())
+			{
+				// phone number doesn't exist, but email does
+				response = newAskResponse("This professor has no phone number, would you like their email ", false, "Would you like their email?", false);
+				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
+				cachedName = pc.getName();
+			}
+			else
+			{
+				//neither phone nor email exist
+				response = newAskResponse(pc.getName() + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable.", false);
+			}
 		}
 		else
+		//prof name is null or empty
 		{
 			response = newAskResponse("I did not hear a professor name, can you try again", false, "I didn't catch that,  Can I have a professor name ", false);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PROFESSOR);
@@ -315,32 +338,41 @@ public class KnockKnockConversation extends Conversation {
 		ProfContact pc = new ProfContact();
 		SpeechletResponse response = null;
 		if(professor_name != null && !professor_name.isEmpty())
+		//we have prof name
 		{
-		pc.setName(professor_name);
-		try
-		{
-			pc.GetEmailPhone(professor_name);
-		}
-		catch (ClassNotFoundException | SQLException e)
-		{	// TODO Auto-generated catch block
-			pc.setPhone(e.toString());
-		}
+			pc.setName(professor_name);
+			try
+			{
+				pc.GetEmailPhone(professor_name);
+			}
+			catch (ClassNotFoundException | SQLException e)
+			{	// TODO Auto-generated catch block
+				pc.setPhone(e.toString());
+			}
+			
 		
-		
-		if(pc.getEmail() != null && !pc.getEmail().isEmpty())
-		{
-			response = newAskResponse("Here is " + professor_name + "'s email address: " + pc.getEmail() + " , would you like me to repeat it?", false, "Would you like me to repeat the email?", false);
-			session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
-			cachedName = pc.getName();
+			if(pc.getEmail() != null && !pc.getEmail().isEmpty())
+			{
+				//We have email
+				response = newAskResponse("Here is " + professor_name + "'s email address: " + pc.getEmail() + " , would you like me to repeat it?", false, "Would you like me to repeat the email?", false);
+				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
+				cachedName = pc.getName();
+			}
+			else if(pc.getPhone() != null && !pc.getPhone().isEmpty())
+			{
+				//No email, but we have phone
+				response = newAskResponse("This professor has no email address. Would you like their phone?  ", false, "Would you like their phone?", false);
+				session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
+				cachedName = pc.getName();
+			}
+			else
+			{
+				//No email nor phone
+				response = newAskResponse(pc.getName() + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable.", false);
+			}
 		}
-		else if( (pc.getEmail() == null || pc.getEmail().isEmpty()) && (pc.getPhone() != null && !pc.getPhone().isEmpty()))
-		{
-			response = newAskResponse("This professor has no email address. Would you like their phone?  ", false, "Would you like their phone?", false);
-			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
-			cachedName = pc.getName();
-		}
-	}
 		else
+		//professor name is null or empty
 		{
 			response = newAskResponse("I did not hear a professor name, can you try again", false, "I didn't catch that,  Can I have a professor name ", false);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PROFESSOR);
