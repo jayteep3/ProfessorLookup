@@ -152,7 +152,7 @@ public class KnockKnockConversation extends Conversation {
 		ProfContact pc = new ProfContact();
 		pc.setName(cachedName);
 		GetEmailPhone(pc.getName());
-		else if (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
+		if (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			response = newAskResponse(pc.getName() + "s phone number is " + pc.getPhone() + ", would you like me to repeat that?", false, "would you like me to repeat their phone number?", false);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
 		}
@@ -248,21 +248,12 @@ public class KnockKnockConversation extends Conversation {
 			// change state
 			ProfContact pc = new ProfContact();
 			pc.setName(professor_name_string);
-			
-			try
+			GetEmailPhone(professor_name_string); 
+			if(cachedList.length() > 1)
 			{
-				GetEmailPhone(professor_name_string);
-			}
-			is(cachedList.length() > 1)
-			{
-
+				//TODO
 			}
 			else{
-				catch (ClassNotFoundException | SQLException e)
-			{	// TODO Auto-generated catch block
-				//pc.setPhone(e.toString());
-				response = newTellResponse("I'm sorry, " + professor_name_string + " is not in our database", false); //ben: assuming this is what this means, not sure
-			}
 			if(pc.getEmail() == null || pc.getEmail().isEmpty())
 			{
 				if(getPhone() == null || pc.getPhone().isEmpty())
