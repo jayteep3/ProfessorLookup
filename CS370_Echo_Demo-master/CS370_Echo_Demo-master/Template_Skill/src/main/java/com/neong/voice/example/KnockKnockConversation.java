@@ -45,7 +45,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class KnockKnockConversation extends Conversation {
 	//Intent names
-	private ArrayList<ProfContact> cachedList =
+	private ArrayList<ProfContact> cachedList = new ArrayList <ProfContact>();
 	private String cachedName = null;
 	private final static String INTENT_START = "StartKnockIntent";
 	private final static String INTENT_WHO_DER = "WhoDerIntent";
@@ -151,7 +151,14 @@ public class KnockKnockConversation extends Conversation {
 		SpeechletResponse response = null;
 		ProfContact pc = new ProfContact();
 		pc.setName(cachedName);
-		GetEmailPhone(pc.getName());
+		try
+		{
+			GetEmailPhone(pc.getName());
+		}
+		catch (ClassNotFoundException | SQLException e)
+		{	// TODO Auto-generated catch block
+			pc.setPhone(e.toString());
+		}
 		if (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			response = newAskResponse(pc.getName() + "s phone number is " + pc.getPhone() + ", would you like me to repeat that?", false, "would you like me to repeat their phone number?", false);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
@@ -169,7 +176,14 @@ public class KnockKnockConversation extends Conversation {
 		SpeechletResponse response = null;
 		ProfContact pc = new ProfContact();
 		pc.setName(cachedName);
-		GetEmailPhone(pc.getName());
+		try
+		{
+			GetEmailPhone(pc.getName());
+		}
+		catch (ClassNotFoundException | SQLException e)
+		{	// TODO Auto-generated catch block
+			pc.setPhone(e.toString());
+		}
 		if(STATE_GET_EMAIL_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			response = newTellResponse(pc.getName()+ "s email is " + pc.getEmail() + " their phone number is " + pc.getPhone(), false);
 		}
@@ -219,7 +233,7 @@ public class KnockKnockConversation extends Conversation {
 		SpeechletResponse response = null;
 		String professor = professorNameSlot.getValue();
  		//check state
-		response = newTellResponse(professor + " is teaching CS 315 and CS 115 this semester",false);
+		response = newTellResponse(professor + " is teaching CS 315 and CS 115 this semester", false);
 
 		
 		return response;
@@ -248,15 +262,22 @@ public class KnockKnockConversation extends Conversation {
 			// change state
 			ProfContact pc = new ProfContact();
 			pc.setName(professor_name_string);
-			GetEmailPhone(professor_name_string); 
-			if(cachedList.length() > 1)
+			try
+			{
+				GetEmailPhone(professor_name_string);
+			}
+			catch (ClassNotFoundException | SQLException e)
+			{	// TODO Auto-generated catch block
+				pc.setPhone(e.toString());
+			} 
+			if(cachedList.size() > 1)
 			{
 				//TODO
 			}
 			else{
 			if(pc.getEmail() == null || pc.getEmail().isEmpty())
 			{
-				if(getPhone() == null || pc.getPhone().isEmpty())
+				if(pc.getPhone() == null || pc.getPhone().isEmpty())
 				{
 					//No Phone or Email
 					response = newTellResponse(pc.getName() + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable.", false);
@@ -272,7 +293,7 @@ public class KnockKnockConversation extends Conversation {
 			}
 			else
 			{
-				if(getPhone() == null || pc.getPhone().isEmpty())
+				if(pc.getPhone() == null || pc.getPhone().isEmpty())
 				{
 					//Email, but no Phone
 					response = newAskResponse(pc.getName() + " has no phone listed, but their email is " + pc.getEmail() + " would you like me to repeat that", false, "I did not catch that, did you want me to repeat the email address", false);
@@ -282,7 +303,7 @@ public class KnockKnockConversation extends Conversation {
 				else
 				{
 					//Email and Phone
-					response = newAskResponse(pc.getName() + "s email is " + pc.getEmail() +  " their phone is " + pc.getPhone() + ", would you like me to repeat that?", false, "I did not catch that, did you want me to repeat " + pc.getName() + "\'s contact info?", false);
+					response = newAskResponse(pc.getName() + "s email is " + pc.getEmail() +  " their phone is " + pc.getPhone() + ", would you like me to repeat that?", false, "I did not catch that, did you want me to repeat " + pc.getName() + "'s contact info?", false);
 				}
 			}	
 		}
@@ -327,11 +348,12 @@ private SpeechletResponse handlePhoneNumberIntent(IntentRequest intentReq, Sessi
 			GetEmailPhone(professor_name);
 		}
 		catch (ClassNotFoundException | SQLException e)
-			{	// TODO Auto-generated catch block
-				pc.setPhone(e.toString());
-			}
-			if(cachedList.length() > 1)
-			{}
+		{	// TODO Auto-generated catch block
+			pc.setPhone(e.toString());
+		}
+		if(cachedList.size() > 1){
+		//TODO	
+		}
 		else
 		{
 			String phone_number = pc.getPhone();
@@ -339,7 +361,7 @@ private SpeechletResponse handlePhoneNumberIntent(IntentRequest intentReq, Sessi
 			if(phone_number != null && !phone_number.isEmpty())
 			{		
 					// phone number exists
-				response = newAskResponse("Here is " + professor_name + "'s phone number: " + phone_number + ", would you like me to repeat that or give you more info on " + professor_name + "?", false, "I didn't catch that, would you like me to repeat their phone number or give you more info?");
+				response = newAskResponse("Here is " + professor_name + "'s phone number: " + phone_number + ", would you like me to repeat that or give you more info on " + professor_name + "?", false, "I didn't catch that, would you like me to repeat their phone number or give you more info?", false);
 			}
 			else if(pc.getEmail() != null && !pc.getEmail().isEmpty())
 			{
@@ -383,7 +405,7 @@ private SpeechletResponse handleEmailAddressIntent(IntentRequest intentReq, Sess
 			{	// TODO Auto-generated catch block
 				pc.setPhone(e.toString());
 			}
-			if(cachedList.length() > 1){
+			if(cachedList.size() > 1){
 
 			}
 			else
@@ -405,7 +427,7 @@ private SpeechletResponse handleEmailAddressIntent(IntentRequest intentReq, Sess
 				else
 				{
 				//No email nor phone
-					response = newAskResponse(pc.getName() + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable.", false);
+					response = newTellResponse(pc.getName() + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable.", false);
 				}
 			}
 		}
