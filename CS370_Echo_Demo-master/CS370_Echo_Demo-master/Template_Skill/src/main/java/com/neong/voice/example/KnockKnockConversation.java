@@ -153,14 +153,6 @@ public class KnockKnockConversation extends Conversation {
 		SpeechletResponse response = null;
 		ProfContact pc = new ProfContact();
 		pc = cachedProf;
-		try
-		{
-			GetEmailPhone(pc.getName());
-		}
-		catch (ClassNotFoundException | SQLException e)
-		{	// TODO Auto-generated catch block
-			pc.setPhone(e.toString());
-		}
 		if (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			//We last gave email, so its time to give phone
 			if(pc.getPhone() == null || pc.getPhone().isEmpty()){ // checking if we have phone
@@ -190,14 +182,6 @@ public class KnockKnockConversation extends Conversation {
 		SpeechletResponse response = null;
 		ProfContact pc = new ProfContact();
 		pc = cachedProf;
-		try
-		{
-			GetEmailPhone(pc.getName());
-		}
-		catch (ClassNotFoundException | SQLException e)
-		{	// TODO Auto-generated catch block
-			pc.setPhone(e.toString());
-		}
 		if(STATE_GET_EMAIL_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			response = newTellResponse(pc.getName()+ "s email is " + pc.getEmail() + " their phone number is " + pc.getPhone(), false);
 		}
