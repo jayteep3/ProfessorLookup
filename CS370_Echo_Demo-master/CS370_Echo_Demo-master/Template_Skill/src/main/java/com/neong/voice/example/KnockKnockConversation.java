@@ -46,7 +46,7 @@ import javax.net.ssl.HttpsURLConnection;
 public class KnockKnockConversation extends Conversation {
 	//Intent names
 	private ArrayList<ProfContact> cachedList = new ArrayList <ProfContact>();
-	private String cachedName = null;
+	private ProfContact cachedProf;
 	private final static String INTENT_START = "StartKnockIntent";
 	private final static String INTENT_WHO_DER = "WhoDerIntent";
 	private final static String INTENT_DR_WHO = "DrWhoIntent";
@@ -92,6 +92,8 @@ public class KnockKnockConversation extends Conversation {
 		supportedIntentNames.add(INTENT_CLARIFY_PROF);
 		supportedIntentNames.add(INTENT_YES);
 		supportedIntentNames.add(INTENT_NO);
+		supportedIntentNames.add(INTENT_MORE_INFO);
+		supportedIntentNames.add(INTENT_REPEAT);
 
 	}
 
@@ -150,7 +152,7 @@ public class KnockKnockConversation extends Conversation {
 		//If they have already gotten email/phone, give them the other.
 		SpeechletResponse response = null;
 		ProfContact pc = new ProfContact();
-		pc.setName(cachedName);
+		pc = cachedProf;
 		try
 		{
 			GetEmailPhone(pc.getName());
@@ -160,12 +162,24 @@ public class KnockKnockConversation extends Conversation {
 			pc.setPhone(e.toString());
 		}
 		if (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
+			//We last gave email, so its time to give phone
+			if(pc.getPhone() == null || pc.getPhone().isEmpty()){ // checking if we have phone
+			response = newTellResponse("I'm sorry, I don't have any more contact info for " + pc.getName(), false)
+			}
+			else{
 			response = newAskResponse(pc.getName() + "s phone number is " + pc.getPhone() + ", would you like me to repeat that?", false, "would you like me to repeat their phone number?", false);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
+			}
 		}
 		else if (STATE_GET_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
+			//We last gave phone, so its time to give email
+			if(pc.getEmail() == null || pc.getEmail().isEmpty()){ // checking if we have email
+			response = newTellResponse("I'm sorry, I don't have any more contact info for " + pc.getName(), false)
+			}
+			else{
 			response = newAskResponse(pc.getName() + "s email address is " + pc.getEmail() + ", would you like me to repeat that?", false, "would you like me to repeat their email address?", false);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
+			}
 		}
 		else
 			response = newTellResponse("Watchu talkin about free willie?", false);
@@ -175,7 +189,7 @@ public class KnockKnockConversation extends Conversation {
 	private SpeechletResponse handleRepeatIntent(IntentRequest intentReq, Session session){
 		SpeechletResponse response = null;
 		ProfContact pc = new ProfContact();
-		pc.setName(cachedName);
+		pc = cachedProf;
 		try
 		{
 			GetEmailPhone(pc.getName());
@@ -281,14 +295,14 @@ public class KnockKnockConversation extends Conversation {
 				{
 					//No Phone or Email
 					response = newTellResponse(pc.getName() + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable.", false);
-					cachedName = pc.getName();
+					cachedProf = pc;
 				}
 				else
 				{
 					//Phone, but no Email
 					response = newAskResponse(pc.getName() + " has no email listed, but their phone is " + pc.getPhone() + " would you like me to repeat that", false, "I did not catch that, did you want me to repeat the phone number", false);
 					session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
-					cachedName = pc.getName();
+					cachedProf = pc;
 				}
 			}
 			else
@@ -298,7 +312,7 @@ public class KnockKnockConversation extends Conversation {
 					//Email, but no Phone
 					response = newAskResponse(pc.getName() + " has no phone listed, but their email is " + pc.getEmail() + " would you like me to repeat that", false, "I did not catch that, did you want me to repeat the email address", false);
 					session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
-					cachedName = pc.getName();
+					cachedProf = pc;
 				}
 				else
 				{
@@ -368,7 +382,7 @@ private SpeechletResponse handlePhoneNumberIntent(IntentRequest intentReq, Sessi
 					// phone number doesn't exist, but email does
 				response = newAskResponse("This professor has no phone number, would you like their email ", false, "Would you like their email?", false);
 				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
-				cachedName = pc.getName();
+				cachedProf = pc;
 			}
 			else
 			{
@@ -415,14 +429,14 @@ private SpeechletResponse handleEmailAddressIntent(IntentRequest intentReq, Sess
 				//We have email
 					response = newAskResponse("Here is " + professor_name + "'s email address: " + pc.getEmail()+ ", would you like me to repeat that or give you more info on " + professor_name + "?", false, "I didn't catch that, would you like me to repeat their email or give you more info?", false);
 					session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
-					cachedName = pc.getName();
+					cachedProf = pc;
 				}
 				else if(pc.getPhone() != null && !pc.getPhone().isEmpty())
 				{
 				//No email, but we have phone
 					response = newAskResponse("This professor has no email address listed. Would you like their phone?  ", false, "Would you like their phone?", false);
 					session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
-					cachedName = pc.getName();
+					cachedProf = pc;
 				}
 				else
 				{
