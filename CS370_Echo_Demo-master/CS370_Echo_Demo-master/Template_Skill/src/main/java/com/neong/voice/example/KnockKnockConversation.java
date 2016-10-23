@@ -164,7 +164,7 @@ public class KnockKnockConversation extends Conversation {
 		if (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			//We last gave email, so its time to give phone
 			if(pc.getPhone() == null || pc.getPhone().isEmpty()){ // checking if we have phone
-			response = newTellResponse("I'm sorry, I don't have any more contact info for " + pc.getName(), false)
+			response = newTellResponse("I'm sorry, I don't have any more contact info for " + pc.getName(), false);
 			}
 			else{
 			response = newAskResponse(pc.getName() + "s phone number is " + pc.getPhone() + ", would you like me to repeat that?", false, "would you like me to repeat their phone number?", false);
@@ -174,7 +174,7 @@ public class KnockKnockConversation extends Conversation {
 		else if (STATE_GET_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			//We last gave phone, so its time to give email
 			if(pc.getEmail() == null || pc.getEmail().isEmpty()){ // checking if we have email
-			response = newTellResponse("I'm sorry, I don't have any more contact info for " + pc.getName(), false)
+			response = newTellResponse("I'm sorry, I don't have any more contact info for " + pc.getName(), false);
 			}
 			else{
 			response = newAskResponse(pc.getName() + "s email address is " + pc.getEmail() + ", would you like me to repeat that?", false, "would you like me to repeat their email address?", false);
