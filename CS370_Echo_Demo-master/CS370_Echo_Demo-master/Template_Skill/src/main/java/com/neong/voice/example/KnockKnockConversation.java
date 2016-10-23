@@ -45,6 +45,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class KnockKnockConversation extends Conversation {
 	//Intent names
+	private ArrayList<ProfContact> cachedList =
 	private String cachedName = null;
 	private final static String INTENT_START = "StartKnockIntent";
 	private final static String INTENT_WHO_DER = "WhoDerIntent";
@@ -219,8 +220,13 @@ public class KnockKnockConversation extends Conversation {
 			
 			try
 			{
-				pc.GetEmailPhone(professor_name_string);
+				GetEmailPhone(professor_name_string);
 			}
+			is(cachedList.length() > 1)
+			{
+
+			}
+			else{
 			catch (ClassNotFoundException | SQLException e)
 			{	// TODO Auto-generated catch block
 				//pc.setPhone(e.toString());
@@ -231,7 +237,7 @@ public class KnockKnockConversation extends Conversation {
 				if(getPhone() == null || pc.getPhone().isEmpty())
 				{
 					//No Phone or Email
-					response = newAskResponse(pc.getName() + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable.", false);
+					response = newTellResponse(pc.getName() + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable.", false);
 					cachedName = pc.getName();
 				}
 				else
@@ -259,6 +265,8 @@ public class KnockKnockConversation extends Conversation {
 			}	
 			//response = newAskResponse("Would you like " + professor_name_string +"'s email or phone?", false, "Do you want phone or email?" ,false);
 		}
+		}
+
 		else
 		{
 			response = newAskResponse("I did not hear a professor name, can you try again", false, "I didn't catch that,  Can I have a professor name ", false);
@@ -295,12 +303,16 @@ public class KnockKnockConversation extends Conversation {
 			
 			try
 			{
-				pc.GetEmailPhone(professor_name);
+				GetEmailPhone(professor_name);
 			}
 			catch (ClassNotFoundException | SQLException e)
 			{	// TODO Auto-generated catch block
 				pc.setPhone(e.toString());
 			}
+			if(cachedList.length() > 1)
+			{}
+			else
+			{
 			String phone_number = pc.getPhone();
 		
 			if(phone_number != null && !phone_number.isEmpty())
@@ -318,9 +330,10 @@ public class KnockKnockConversation extends Conversation {
 			else
 			{
 				//neither phone nor email exist
-				response = newAskResponse(pc.getName() + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable.", false);
+				response = newTellResponse(pc.getName() + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable.", false);
 			}
 		}
+	}
 		else
 		//prof name is null or empty
 		{
@@ -343,14 +356,17 @@ public class KnockKnockConversation extends Conversation {
 			pc.setName(professor_name);
 			try
 			{
-				pc.GetEmailPhone(professor_name);
+				GetEmailPhone(professor_name);
 			}
 			catch (ClassNotFoundException | SQLException e)
 			{	// TODO Auto-generated catch block
 				pc.setPhone(e.toString());
 			}
-			
-		
+			if(cachedList.length() > 1){
+
+			}
+			else
+			{
 			if(pc.getEmail() != null && !pc.getEmail().isEmpty())
 			{
 				//We have email
@@ -371,6 +387,7 @@ public class KnockKnockConversation extends Conversation {
 				response = newAskResponse(pc.getName() + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable.", false);
 			}
 		}
+	}
 		else
 		//professor name is null or empty
 		{
@@ -421,5 +438,54 @@ public class KnockKnockConversation extends Conversation {
 		}
 		return response;	
 	}
-	
+	public void GetEmailPhone(String name2) throws ClassNotFoundException, SQLException
+	{
+		
+		String full_url = "https://moonlight.cs.sonoma.edu/api/v1/directory/person/?format=json&search=" + name2;
+		ArrayList<ProfContact> array = new ArrayList<ProfContact>();
+		try
+		{
+			
+				StringBuilder result = new StringBuilder();
+				URL url2 = new URL(full_url);
+				
+				HttpURLConnection conn = (HttpURLConnection) url2.openConnection();
+				conn.setRequestMethod("GET");
+				BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+				String line;
+				while ((line = rd.readLine()) != null)
+				{
+					result.append(line);
+				}
+				rd.close();
+				conn.disconnect();
+				String json_text = result.toString();
+				
+				JSONArray arr = new JSONArray(json_text);
+				
+				
+				for(int i = 0; i < arr.length(); i++){
+					JSONObject json = arr.getJSONObject(i);
+					ProfContact pc = new ProfContact();
+					pc.setEmail(json.getString("email"));
+					pc.setPhone(json.getString("phone"));
+					pc.setName(json.getString("name"));
+					array.add(pc);
+				}
+								
+		}
+		catch (JSONException e)
+		{
+			ProfContact pc = new ProfContact();			
+			pc.setPhone(e.toString());
+
+		}
+		catch(IOException e)
+		{
+			ProfContact pc = new ProfContact();			
+			pc.setPhone(e.toString());
+		}
+		
+		cachedList = array;
+	}
 }
