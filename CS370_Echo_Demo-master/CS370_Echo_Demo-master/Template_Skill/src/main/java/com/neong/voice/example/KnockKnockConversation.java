@@ -141,7 +141,7 @@ public class KnockKnockConversation extends Conversation {
 			response = handleNoIntent(intentReq, session);
 		}
 		else {
-			response = newTellResponse("Whatchu talkin' bout!", false);
+			response = newTellResponse("<speak> Whatchu talkin' bout! </speak>", true);
 		}
 		
 		
@@ -156,25 +156,31 @@ public class KnockKnockConversation extends Conversation {
 		if (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			//We last gave email, so its time to give phone
 			if(pc.getPhone() == null || pc.getPhone().isEmpty()){ // checking if we have phone
-			response = newTellResponse("I'm sorry, I don't have any more contact info for " + pc.getName(), false);
+			String name = pc.getName();
+			response = newTellResponse("<speak>I'm sorry, I don't have any more contact info for " + name + ". </speak>", true);
 			}
 			else{
-			response = newAskResponse(pc.getName() + "s phone number is " + pc.getPhone() + ", would you like me to repeat that?", false, "would you like me to repeat their phone number?", false);
+			String name = pc.getName();
+			String phoneNum = pc.getPhone();
+			response = newAskResponse("<speak>" + name + "s phone number is " +  " <say-as interpret-as=\"telephone\">" + phoneNum + ", would you like me to repeat that? </speak>", true, " <speak> would you like me to repeat their phone number? </speak>", true);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
 			}
 		}
 		else if (STATE_GET_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			//We last gave phone, so its time to give email
 			if(pc.getEmail() == null || pc.getEmail().isEmpty()){ // checking if we have email
-			response = newTellResponse("I'm sorry, I don't have any more contact info for " + pc.getName(), false);
+			String name = pc.getName();
+			response = newTellResponse("<speak>I'm sorry, I don't have any more contact info for " + name + ". </speak>", true);
 			}
 			else{
-			response = newAskResponse(pc.getName() + "s email address is " + pc.getEmail() + ", would you like me to repeat that?", false, "would you like me to repeat their email address?", false);
+			String email = pc.getEmail();
+			String name = pc.getName();
+			response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out">" + email + ", would you like me to repeat that? </speak>", true, " <speak> would you like me to repeat their email address? </speak>", true);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 			}
 		}
 		else
-			response = newTellResponse("Watchu talkin about free willie?", false);
+			response = newTellResponse("<speak> Watchu talkin about free willie? </speak>", true);
 		return response;
 	}
 
@@ -183,16 +189,23 @@ public class KnockKnockConversation extends Conversation {
 		ProfContact pc = new ProfContact();
 		pc = cachedProf;
 		if(STATE_GET_EMAIL_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
-			response = newTellResponse(pc.getName()+ "s email is " + pc.getEmail() + " their phone number is " + pc.getPhone(), false);
+			String name = pc.getName();
+			String email = pc.getEmail();
+			String phone = pc.getPhone();
+			response = newTellResponse("<speak>" + name + "s email is " + " <say-as interpret-as=\"spell-out">" + email + " their phone number is " + " <say-as interpret-as=\"telephone">" + phone ". </speak>", true);
 		}
 		else if (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
-			response = newTellResponse(pc.getName() + "s email address is " + pc.getEmail(), false);
+			String name = pc.getName();
+			String email = pc.getEmail();
+			response = newTellResponse("<speak>" + name + "s email address is " + " <say-as interpret-as=\"spell-out">" + email + ". </speak>", true);
 		}
 		else if (STATE_GET_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
-			response = newTellResponse(pc.getName() + "s phone number is " + pc.getPhone(), false);
+			String name = pc.getName();
+			String phone = pc.getPhone();
+			response = newTellResponse("<speak>" + name + "s phone number is " + " <say-as interpret-as=\"telephone">" + phone + ". </speak>", true);
 		}
 		else
-			response = newTellResponse("Watchu talkin about willis?", false);
+			response = newTellResponse("<speak> Watchu talkin about willis? </speak>", true);
 		return response;
 	}
 	private SpeechletResponse handleYesIntent(IntentRequest intentReq, Session session){
@@ -202,14 +215,14 @@ public class KnockKnockConversation extends Conversation {
 		}	
 		else
 		{
-			return newTellResponse("That wasn't a yes or no question, dumb dumb.", false);
+			return newTellResponse("<speak> That wasn't a yes or no question, dumb dumb.</speak>", true);
 		}
 	}
 	private SpeechletResponse handleNoIntent(IntentRequest intentReq, Session session){
 		if((STATE_GET_EMAIL_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0) || (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0) || 
 			(STATE_GET_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0))
-			return newTellResponse("No thank you? sheesh, last time i help you", false);
-		return newTellResponse("Please ask for professor information first", false);
+			return newTellResponse("<speak> No thank you? sheesh, last time i help you.</speak>", true);
+		return newTellResponse("<speak> Please ask for professor information first.</speak">, true);
 	}
 	private SpeechletResponse handleOfficeHoursIntent(IntentRequest intentReq, Session session) {
 
@@ -219,7 +232,7 @@ public class KnockKnockConversation extends Conversation {
 		SpeechletResponse response = null;
 		String professor = professorNameSlot.getValue();
 
-		return newTellResponse(professor + " has office hours Wednesdays at 8 AM", false);
+		return newTellResponse("<speak>" + professor + " has office hours Wednesdays at 8 AM. </speak>", true);
 	// return a tell response object within SpeechletResponse
 	// what is the difference between ask and tell (does alexa use both)
 	}
@@ -230,8 +243,9 @@ public class KnockKnockConversation extends Conversation {
 		Slot professorNameSlot = slots.get("ProfessorName");
 		SpeechletResponse response = null;
 		String professor = professorNameSlot.getValue();
+		String cs = CS;
  		//check state
-		response = newTellResponse(professor + " is teaching CS 315 and CS 115 this semester", false);
+		response = newTellResponse("<speak>" + professor + " is teaching " + "<say-as interpret-as=\"characters\">" + cs + "315 and " + "<say-as interpret-as=\"characters\">" + cs + "115 this semester" ". </speak>", true);
 
 		
 		return response;
@@ -250,7 +264,7 @@ public class KnockKnockConversation extends Conversation {
 		 */
 		if(professor_name_string == "my professor" || professor_name_string == "my teacher" || professor_name_string == "a professor")
 		{
-			response = newAskResponse("What is this professor's name?", false, "I didn't catch that,  Can I have a professor name ", false);
+			response = newAskResponse("<speak> What is this professor's name? </speak>", true, "<speak> I didn't catch that,  Can I have a professor name </speak>", true);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PROFESSOR); //not ideal, presumably wont allow user to respond with just name
 		}
 		// alexa can respond with null or "?" so both must be covered
@@ -278,13 +292,16 @@ public class KnockKnockConversation extends Conversation {
 				if(pc.getPhone() == null || pc.getPhone().isEmpty())
 				{
 					//No Phone or Email
-					response = newTellResponse(pc.getName() + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable.", false);
+					String name = pc.getName();
+					response = newTellResponse("<speak>" + name + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable. </speak>", true);
 					cachedProf = pc;
 				}
 				else
 				{
 					//Phone, but no Email
-					response = newAskResponse(pc.getName() + " has no email listed, but their phone is " + pc.getPhone() + " would you like me to repeat that", false, "I did not catch that, did you want me to repeat the phone number", false);
+					String name = pc.getName();
+					String phone = pc.getPhone();
+					response = newAskResponse("<speak>" + name + " has no email listed, but their phone is " + " <say-as interpret-as=\"telephone">" + phone + " would you like me to repeat that. </speak>", true, "<speak> I did not catch that, did you want me to repeat the phone number </speak>", true);
 					session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
 					cachedProf = pc;
 				}
@@ -294,14 +311,19 @@ public class KnockKnockConversation extends Conversation {
 				if(pc.getPhone() == null || pc.getPhone().isEmpty())
 				{
 					//Email, but no Phone
-					response = newAskResponse(pc.getName() + " has no phone listed, but their email is " + pc.getEmail() + " would you like me to repeat that", false, "I did not catch that, did you want me to repeat the email address", false);
+					String name = pc.getName();
+					String email = pc.getEmail();
+					response = newAskResponse("<speak>" + name + " has no phone listed, but their email is " + " <say-as interpret-as=\"spell-out">" + email + " would you like me to repeat that. </speak>", true, "<speak> I did not catch that, did you want me to repeat the email address. </speak>", true);
 					session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 					cachedProf = pc;
 				}
 				else
 				{
 					//Email and Phone
-					response = newAskResponse(pc.getName() + "s email is " + pc.getEmail() +  " their phone is " + pc.getPhone() + ", would you like me to repeat that?", false, "I did not catch that, did you want me to repeat " + pc.getName() + "'s contact info?", false);
+					String name = pc.getName();
+					String email = pc.getEmail();
+					String phone = pc.getPhone();
+					response = newAskResponse("<speak>" + name + "s email is " + " <say-as interpret-as=\"spell-out">" + email +  " their phone is " + " <say-as interpret-as=\"telephone">" + phone + ", would you like me to repeat that? </speak>", true, "<speak> I did not catch that, did you want me to repeat " + name + "'s contact info? </speak>", true);
 				}
 			}	
 		}
