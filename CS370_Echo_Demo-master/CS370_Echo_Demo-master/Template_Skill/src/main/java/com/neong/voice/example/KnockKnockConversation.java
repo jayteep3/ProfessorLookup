@@ -176,7 +176,7 @@ public class KnockKnockConversation extends Conversation {
 			else{
 			String email = pc.getEmail();
 			String name = pc.getName();
-			response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out">" + email + ", would you like me to repeat that? </speak>", true, " <speak> would you like me to repeat their email address? </speak>", true);
+			response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + ", would you like me to repeat that? </speak>", true, " <speak> would you like me to repeat their email address? </speak>", true);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 			}
 		}
