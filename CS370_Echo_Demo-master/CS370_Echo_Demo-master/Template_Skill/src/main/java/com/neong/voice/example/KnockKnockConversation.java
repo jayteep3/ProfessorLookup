@@ -47,6 +47,7 @@ public class KnockKnockConversation extends Conversation {
 	//Intent names
 	private ArrayList<ProfContact> cachedList = new ArrayList <ProfContact>();
 	private ProfContact cachedProf;
+	private Boolean duplicates;
 	private final static String INTENT_START = "StartKnockIntent";
 	private final static String INTENT_WHO_DER = "WhoDerIntent";
 	private final static String INTENT_DR_WHO = "DrWhoIntent";
@@ -270,7 +271,21 @@ public class KnockKnockConversation extends Conversation {
 			} 
 			if(cachedList.size() > 1)
 			{
-				//TODO
+				Set<String> distinct = new HashSet<String>();
+				for(int i = 0; i < cachedList.size(); i++)
+					distinct.add(cachedList.get(i).getName());
+				if(cachedList.size() > distinct.size())
+					duplicates = true;
+				String list ="";
+				int i = 0;
+				for(String s: in distinct){
+					if(i == distinct.size()-1)
+						list = list + " or " + s;
+					else
+						list = list + " " + s;
+					i++;
+				}
+				return newAskResponse("Did you mean, " + list + ", say first and last name please", false, "Did you mean, " + list, false);
 			}
 			else{
 			if(pc.getEmail() == null || pc.getEmail().isEmpty())
@@ -350,7 +365,20 @@ private SpeechletResponse handlePhoneNumberIntent(IntentRequest intentReq, Sessi
 			pc.setPhone(e.toString());
 		}
 		if(cachedList.size() > 1){
-		//TODO	
+			Set<String> distinct = new HashSet<String>();
+				for(int i = 0; i < cachedList.size(); i++)
+					distinct.add(cachedList.get(i).getName());
+				if(cachedList.size() > distinct.size())
+					duplicates = true;
+				String list ="";
+				int i = 0;
+				for(String s: in distinct){
+					if(i == distinct.size()-1)
+						list = list + " or " + s;
+					else
+						list = list + " " + s;
+				}
+				return newAskResponse("Did you mean, " + list + ", say first and last name please", false, "Did you mean, " + list, false);
 		}
 		else
 		{
@@ -404,7 +432,20 @@ private SpeechletResponse handleEmailAddressIntent(IntentRequest intentReq, Sess
 				pc.setPhone(e.toString());
 			}
 			if(cachedList.size() > 1){
-
+				Set<String> distinct = new HashSet<String>();
+				for(int i = 0; i < cachedList.size(); i++)
+					distinct.add(cachedList.get(i).getName());
+				if(cachedList.size() > distinct.size())
+					duplicates = true;
+				String list ="";
+				int i = 0;
+				for(String s: in distinct){
+					if(i == distinct.size()-1)
+						list = list + " or " + s;
+					else
+						list = list + " " + s;
+				}
+				return newAskResponse("Did you mean, " + list + ", say first and last name please", false, "Did you mean, " + list, false);
 			}
 			else
 			{
