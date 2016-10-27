@@ -574,7 +574,7 @@ public void GetEmailPhone(String name2) throws ClassNotFoundException, SQLExcept
 			pc.setEmail(json.getString("email"));
 			pc.setPhone(json.getString("phone"));
 			pc.setName(json.getString("name"));
-			array.add(pc);
+			array.add(pc.copy());
 		}
 
 	}

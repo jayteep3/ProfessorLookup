@@ -28,5 +28,11 @@ public class ProfContact {
 	public void setPhone(String p) { phone = p;}
 	public String getEmail(){ return email;}
 	public void setEmail(String e) {email = e;}
-	
+	public ProfContact copy(){
+		ProfContact pc = new ProfContact();
+		pc.setName(name);
+		pc.setPhone(phone);
+		pc.setEmail(email);
+		return pc;
+	}
 }
