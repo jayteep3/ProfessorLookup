@@ -409,7 +409,8 @@ private SpeechletResponse handlePhoneNumberIntent(IntentRequest intentReq, Sessi
 			if(phone_number != null && !phone_number.isEmpty())
 			{		
 					// phone number exists
-				response = newAskResponse("Here is " + professor_name + "'s phone number: " + phone_number + ", would you like me to repeat that or give you more info on " + professor_name + "?", false, "I didn't catch that, would you like me to repeat their phone number or give you more info?", false);
+		
+				response = newAskResponse("<speak> Here is " + professor_name + "'s phone number: " + " <say-as interpret-as=\"telephone">" + phone_number + ", would you like me to repeat that or give you more info on " + professor_name + "? </speak>", true, "<speak> I didn't catch that, would you like me to repeat their phone number or give you more info? </speak>", true);
 			}
 			else if(pc.getEmail() != null && !pc.getEmail().isEmpty())
 			{
@@ -474,7 +475,8 @@ private SpeechletResponse handleEmailAddressIntent(IntentRequest intentReq, Sess
 				if(pc.getEmail() != null && !pc.getEmail().isEmpty())
 				{
 				//We have email
-					response = newAskResponse("Here is " + professor_name + "'s email address: " + pc.getEmail()+ ", would you like me to repeat that or give you more info on " + professor_name + "?", false, "I didn't catch that, would you like me to repeat their email or give you more info?", false);
+					String email = pc.getEmail();
+					response = newAskResponse("<speak> Here is " + professor_name + "'s email address: " + " <say-as interpret-as=\"spell-out">" + email + ", would you like me to repeat that or give you more info on " + professor_name + "? </speak>", true, "<speak> I didn't catch that, would you like me to repeat their email or give you more info? </speak>", true);
 					session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 					cachedProf = pc;
 				}
