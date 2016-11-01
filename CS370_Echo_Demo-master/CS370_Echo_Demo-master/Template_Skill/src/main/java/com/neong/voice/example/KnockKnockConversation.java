@@ -62,6 +62,7 @@ public class KnockKnockConversation extends Conversation {
 	private final static String INTENT_NO = "AMAZON.NoIntent";
 	private final static String INTENT_REPEAT = "RepeatIntent";
 	private final static String INTENT_MORE_INFO = "MoreInfoIntent";
+	private final static String INTENT_HELP = "HelpIntent";
 	//Slots
 	//private final static String SLOT_RELATIVE_TIME = "timeOfDay";
 
@@ -95,6 +96,7 @@ public class KnockKnockConversation extends Conversation {
 		supportedIntentNames.add(INTENT_NO);
 		supportedIntentNames.add(INTENT_MORE_INFO);
 		supportedIntentNames.add(INTENT_REPEAT);
+		supportedIntentNames.add(INTENT_HELP);
 
 	}
 
@@ -131,6 +133,9 @@ public class KnockKnockConversation extends Conversation {
 		}
 		else if (INTENT_REPEAT.equals(intentName)){
 			response = handleRepeatIntent(intentReq, session);
+		}
+		else if (INTENT_HELP.equals(intentName)){
+			response = handleHelpIntent(intentReq, session);
 		}
 		else if (INTENT_MORE_INFO.equals(intentName)){
 			response = handleMoreInfoIntent(intentReq, session);
@@ -184,7 +189,25 @@ public class KnockKnockConversation extends Conversation {
 			response = newTellResponse("<speak> Watchu talkin about free willie? </speak>", true);
 		return response;
 	}
-
+	private SpeechletResponse handleHelpIntent(IntentRequest intentReq, Session session)
+	{
+		SpeechletResponse response = null;
+		
+		
+		String office_hours_intent = "Here are some things you can say to get your professor's office hours. " +
+		"where can I find ProfessorName office, or " +
+		"where is ProfessorName, or " +
+		"Locate ProfessorName, or " +
+		"pinpoint ProfessorName. ";
+		
+		String contact_information_combo_intent = "Here are some things you can say to get your professor's contact information. " +
+			"what is ProfessorName contact info, or " +
+			"get me contact info for ProfessorName.";
+		
+		response = newTellResponse("<speak>" + office_hours_intent + contact_information_combo_intent + "</speak>", true);
+		
+		return response;
+	}
 	private SpeechletResponse handleRepeatIntent(IntentRequest intentReq, Session session){
 		SpeechletResponse response = null;
 		ProfContact pc = new ProfContact();
@@ -193,22 +216,23 @@ public class KnockKnockConversation extends Conversation {
 			String name = pc.getName();
 			String email = pc.getEmail();
 			String phone = pc.getPhone();
-			response = newTellResponse("<speak>" + name + "s email is " + " <say-as interpret-as=\"spell-out">" + email + " their phone number is " + " <say-as interpret-as=\"telephone">" + phone ". </speak>", true);
+			response = newTellResponse("<speak>" + name + "s email is " + " <say-as interpret-as=\"spell-out\">" + email + " their phone number is " + " <say-as interpret-as=\"telephone\">" + phone + ". </speak>", true);
 		}
 		else if (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			String name = pc.getName();
 			String email = pc.getEmail();
-			response = newTellResponse("<speak>" + name + "s email address is " + " <say-as interpret-as=\"spell-out">" + email + ". </speak>", true);
+			response = newTellResponse("<speak>" + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + ". </speak>", true);
 		}
 		else if (STATE_GET_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			String name = pc.getName();
 			String phone = pc.getPhone();
-			response = newTellResponse("<speak>" + name + "s phone number is " + " <say-as interpret-as=\"telephone">" + phone + ". </speak>", true);
+			response = newTellResponse("<speak>" + name + "s phone number is " + " <say-as interpret-as=\"telephone\">" + phone + ". </speak>", true);
 		}
 		else
 			response = newTellResponse("<speak> Watchu talkin about willis? </speak>", true);
 		return response;
 	}
+	
 	private SpeechletResponse handleYesIntent(IntentRequest intentReq, Session session){
 		if(STATE_GET_EMAIL_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0)
 		{
@@ -223,7 +247,7 @@ public class KnockKnockConversation extends Conversation {
 		if((STATE_GET_EMAIL_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0) || (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0) || 
 			(STATE_GET_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0))
 			return newTellResponse("<speak> No thank you? sheesh, last time i help you.</speak>", true);
-		return newTellResponse("<speak> Please ask for professor information first.</speak">, true);
+		return newTellResponse("<speak> Please ask for professor information first.</speak\">", true);
 	}
 	private SpeechletResponse handleOfficeHoursIntent(IntentRequest intentReq, Session session) {
 
@@ -244,9 +268,9 @@ public class KnockKnockConversation extends Conversation {
 		Slot professorNameSlot = slots.get("ProfessorName");
 		SpeechletResponse response = null;
 		String professor = professorNameSlot.getValue();
-		String cs = CS;
+		String cs = "CS";
  		//check state
-		response = newTellResponse("<speak>" + professor + " is teaching " + "<say-as interpret-as=\"characters\">" + cs + "315 and " + "<say-as interpret-as=\"characters\">" + cs + "115 this semester" ". </speak>", true);
+		response = newTellResponse("<speak>" + professor + " is teaching " + "<say-as interpret-as=\"characters\">" + cs + "315 and " + "<say-as interpret-as=\"characters\">" + cs + "115 this semester" + ". </speak>", true);
 
 		
 		return response;
@@ -292,7 +316,10 @@ public class KnockKnockConversation extends Conversation {
 					duplicates = true;
 				String list ="";
 				int i = 0;
-				for(String s: in distinct){
+				Iterator iter = distinct.iterator();
+				while(iter.hasNext())
+				{//for(int i = 0; i < distinct.size(); i++/*String s: in distinct*/){
+					String s = iter.next().toString();
 					if(i == distinct.size()-1)
 						list = list + " or " + s;
 					else
@@ -301,56 +328,57 @@ public class KnockKnockConversation extends Conversation {
 				}
 				return newAskResponse("Did you mean, " + list + ", say first and last name please", false, "Did you mean, " + list, false);
 			}
-			else{
-			if(pc.getEmail() == null || pc.getEmail().isEmpty())
-			{
-				if(pc.getPhone() == null || pc.getPhone().isEmpty())
-				{
-					//No Phone or Email
-					String name = pc.getName();
-					response = newTellResponse("<speak>" + name + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable. </speak>", true);
-					cachedProf = pc;
-				}
-				else
-				{
-					//Phone, but no Email
-					String name = pc.getName();
-					String phone = pc.getPhone();
-					response = newAskResponse("<speak>" + name + " has no email listed, but their phone is " + " <say-as interpret-as=\"telephone">" + phone + " would you like me to repeat that. </speak>", true, "<speak> I did not catch that, did you want me to repeat the phone number </speak>", true);
-					session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
-					cachedProf = pc;
-				}
-			}
 			else
 			{
-				if(pc.getPhone() == null || pc.getPhone().isEmpty())
+				if(pc.getEmail() == null || pc.getEmail().isEmpty())
 				{
-					//Email, but no Phone
-					String name = pc.getName();
-					String email = pc.getEmail();
-					response = newAskResponse("<speak>" + name + " has no phone listed, but their email is " + " <say-as interpret-as=\"spell-out">" + email + " would you like me to repeat that. </speak>", true, "<speak> I did not catch that, did you want me to repeat the email address. </speak>", true);
-					session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
-					cachedProf = pc;
+					if(pc.getPhone() == null || pc.getPhone().isEmpty())
+					{
+						//No Phone or Email
+						String name = pc.getName();
+						response = newTellResponse("<speak>" + name + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable. </speak>", true);
+						cachedProf = pc;
+					}
+					else
+					{
+						//Phone, but no Email
+						String name = pc.getName();
+						String phone = pc.getPhone();
+						response = newAskResponse("<speak>" + name + " has no email listed, but their phone is " + " <say-as interpret-as=\"telephone\">" + phone + " would you like me to repeat that. </speak>", true, "<speak> I did not catch that, did you want me to repeat the phone number </speak>", true);
+						session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
+						cachedProf = pc;
+					}
 				}
 				else
 				{
-					//Email and Phone
-					String name = pc.getName();
-					String email = pc.getEmail();
-					String phone = pc.getPhone();
-					response = newAskResponse("<speak>" + name + "s email is " + " <say-as interpret-as=\"spell-out">" + email +  " their phone is " + " <say-as interpret-as=\"telephone">" + phone + ", would you like me to repeat that? </speak>", true, "<speak> I did not catch that, did you want me to repeat " + name + "'s contact info? </speak>", true);
-				}
-			}	
+					if(pc.getPhone() == null || pc.getPhone().isEmpty())
+					{
+						//Email, but no Phone
+						String name = pc.getName();
+						String email = pc.getEmail();
+						response = newAskResponse("<speak>" + name + " has no phone listed, but their email is " + " <say-as interpret-as=\"spell-out\">" + email + " would you like me to repeat that. </speak>", true, "<speak> I did not catch that, did you want me to repeat the email address. </speak>", true);
+						session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
+						cachedProf = pc;
+					}
+					else
+					{
+						//Email and Phone
+						String name = pc.getName();
+						String email = pc.getEmail();
+						String phone = pc.getPhone();
+						response = newAskResponse("<speak>" + name + "s email is " + " <say-as interpret-as=\"spell-out\">" + email +  " their phone is " + " <say-as interpret-as=\"telephone\">" + phone + ", would you like me to repeat that? </speak>", true, "<speak> I did not catch that, did you want me to repeat " + name + "'s contact info? </speak>", true);
+					}
+				}	
+			}
 		}
-	}
 
-	else
-	{
-		response = newAskResponse("I did not hear a professor name, can you try again", false, "I didn't catch that,  Can I have a professor name ", false);
-		session.setAttribute(SESSION_PROF_STATE, STATE_GET_PROFESSOR);
+		else
+		{
+			response = newAskResponse("I did not hear a professor name, can you try again", false, "I didn't catch that,  Can I have a professor name ", false);
+			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PROFESSOR);
+		}
+		return response;
 	}
-	return response;
-}
 
 private SpeechletResponse handleProfessorNameIntent (IntentRequest intentReq, Session session){
 	SpeechletResponse response = null;
@@ -394,7 +422,12 @@ private SpeechletResponse handlePhoneNumberIntent(IntentRequest intentReq, Sessi
 					duplicates = true;
 				String list ="";
 				int i = 0;
-				for(String s: in distinct){
+				Iterator iter = distinct.iterator();
+				while(iter.hasNext())
+				{
+					String s = iter.next().toString();
+
+				//for(String s: in distinct){
 					if(i == distinct.size()-1)
 						list = list + " or " + s;
 					else
@@ -410,7 +443,7 @@ private SpeechletResponse handlePhoneNumberIntent(IntentRequest intentReq, Sessi
 			{		
 					// phone number exists
 		
-				response = newAskResponse("<speak> Here is " + professor_name + "'s phone number: " + " <say-as interpret-as=\"telephone">" + phone_number + ", would you like me to repeat that or give you more info on " + professor_name + "? </speak>", true, "<speak> I didn't catch that, would you like me to repeat their phone number or give you more info? </speak>", true);
+				response = newAskResponse("<speak> Here is " + professor_name + "'s phone number: " + " <say-as interpret-as=\"telephone\">" + phone_number + ", would you like me to repeat that or give you more info on " + professor_name + "? </speak>", true, "<speak> I didn't catch that, would you like me to repeat their phone number or give you more info? </speak>", true);
 			}
 			else if(pc.getEmail() != null && !pc.getEmail().isEmpty())
 			{
@@ -462,7 +495,11 @@ private SpeechletResponse handleEmailAddressIntent(IntentRequest intentReq, Sess
 					duplicates = true;
 				String list ="";
 				int i = 0;
-				for(String s: in distinct){
+				Iterator iter = distinct.iterator();
+				while(iter.hasNext())
+				{
+					String s = iter.next().toString();
+
 					if(i == distinct.size()-1)
 						list = list + " or " + s;
 					else
@@ -476,7 +513,7 @@ private SpeechletResponse handleEmailAddressIntent(IntentRequest intentReq, Sess
 				{
 				//We have email
 					String email = pc.getEmail();
-					response = newAskResponse("<speak> Here is " + professor_name + "'s email address: " + " <say-as interpret-as=\"spell-out">" + email + ", would you like me to repeat that or give you more info on " + professor_name + "? </speak>", true, "<speak> I didn't catch that, would you like me to repeat their email or give you more info? </speak>", true);
+					response = newAskResponse("<speak> Here is " + professor_name + "'s email address: " + " <say-as interpret-as=\"spell-out\">" + email + ", would you like me to repeat that or give you more info on " + professor_name + "? </speak>", true, "<speak> I didn't catch that, would you like me to repeat their email or give you more info? </speak>", true);
 					session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 					cachedProf = pc;
 				}
