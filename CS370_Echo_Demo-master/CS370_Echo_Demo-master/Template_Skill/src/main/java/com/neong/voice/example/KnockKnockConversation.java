@@ -45,7 +45,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class KnockKnockConversation extends Conversation {
 	//Intent names
-	private ArrayList<ProfContact> cachedList = new ArrayList <ProfContact>();
+	private static List<ProfContact> cachedList = new ArrayList <ProfContact>();
 	private ProfContact cachedProf;
 	private Boolean duplicates;
 	private final static String INTENT_START = "StartKnockIntent";
@@ -579,7 +579,7 @@ else {
 }
 return response;	
 }
-public void GetEmailPhone(String name2) throws ClassNotFoundException, SQLException
+public static void GetEmailPhone(String name2) throws ClassNotFoundException, SQLException
 {
 
 	String full_url = "https://moonlight.cs.sonoma.edu/api/v1/directory/person/?format=json&search=" + name2;
@@ -605,14 +605,24 @@ public void GetEmailPhone(String name2) throws ClassNotFoundException, SQLExcept
 		JSONArray arr = new JSONArray(json_text);
 
 
-		for(int i = 0; i < arr.length(); i++){
+		for(int i = 0; i < arr.length(); i=i+1){
 			JSONObject json = arr.getJSONObject(i);
 			ProfContact pc = new ProfContact();
-			pc.setEmail(json.getString("email"));
-			pc.setPhone(json.getString("phone"));
-			pc.setName(json.getString("name"));
+			if(!json.isNull("email")){
+				pc.setEmail(json.getString("email"));
+			}
+			if(!json.isNull("phone")){
+				pc.setPhone(json.getString("phone"));
+			}
+			if(!json.isNull("name")){
+				pc.setName(json.getString("name"));
+			}
 			array.add(pc.copy());
+			pc= null;
+			json = null;
 		}
+		cachedList = array;
+		return;
 
 	}
 	catch (JSONException e)
@@ -626,7 +636,5 @@ public void GetEmailPhone(String name2) throws ClassNotFoundException, SQLExcept
 		ProfContact pc = new ProfContact();			
 		pc.setPhone(e.toString());
 	}
-
-	cachedList = array;
 }
 }
