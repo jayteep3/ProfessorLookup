@@ -18,9 +18,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class ProfContact {
-	private static String name;
-	private static String phone;
-	private static String email;
+	private String name;
+	private String phone;
+	private String email;
 	
 	public String getName(){ return name;}
 	public void setName(String n) { name = n;}
