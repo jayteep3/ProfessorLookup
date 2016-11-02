@@ -1,3 +1,117 @@
+RepeatIntent repeat
+RepeatIntent please repeat
+RepeatIntent please repeat the email
+RepeatIntent please repeat the phone number
+
+MoreInfoIntent more info
+MoreInfoIntent more info please
+MoreInfoIntent I'd like more info
+MoreInfoIntent I'd like another way to contact them please
+
+HelpIntent help
+HelpIntent tell me how to use professor lookup
+HelpIntent I need help
+HelpIntent help me please
+
+officehoursIntent where can I find {ProfessorName}
+officehoursIntent where can I find {ProfessorName} office
+officehoursIntent where can I find Mr {ProfessorName}
+officehoursIntent where can I find Mrs {ProfessorName}
+officehoursIntent where can I find Ms {ProfessorName}
+officehoursIntent where can I find Professor {ProfessorName}
+officehoursIntent where can i find Dr {ProfessorName}
+officehoursIntent where is {ProfessorName}
+officehoursIntent where is Professor {ProfessorName}
+officehoursIntent where is Mr  {ProfessorName}
+officehoursIntent where is Mrs  {ProfessorName}
+officehoursIntent where is Ms  {ProfessorName}
+officehoursIntent help me find {ProfessorName}
+officehoursIntent help me find Mr  {ProfessorName}
+officehoursIntent help me find Mrs  {ProfessorName}
+officehoursIntent help me find Ms  {ProfessorName}
+officehoursIntent help me find Professor {ProfessorName}
+officehoursIntent help me find Dr  {ProfessorName}
+officehoursIntent I cant find {ProfessorName}
+officehoursIntent I cant find Mr  {ProfessorName}
+officehoursIntent I cant find Mrs  {ProfessorName}
+officehoursIntent I cant find Ms  {ProfessorName}
+officehoursIntent I cant find Professor {ProfessorName}
+officehoursIntent I cant find Dr  {ProfessorName}
+officehoursIntent I need help from {ProfessorName}
+officehoursIntent I need help from Mr  {ProfessorName}
+officehoursIntent I need help from Mrs  {ProfessorName}
+officehoursIntent I need help from Ms  {ProfessorName}
+officehoursIntent I need help from Professor {ProfessorName}
+officehoursIntent I need help Dr  {ProfessorName}
+officehoursIntent I need tutoring from {ProfessorName}
+officehoursIntent I need tutoring from Mr  {ProfessorName}
+officehoursIntent I need tutoring from Mrs  {ProfessorName}
+officehoursIntent I need tutoring from Ms  {ProfessorName}
+officehoursIntent I need tutoring from Dr  {ProfessorName}
+officehoursIntent I need tutoring from Professor {ProfessorName}
+officehoursIntent I need advice from {ProfessorName}
+officehoursIntent I need advice from Mr  {ProfessorName}
+officehoursIntent I need advice from Mrs  {ProfessorName}
+officehoursIntent I need advice from Ms  {ProfessorName}
+officehoursIntent I need advice from Dr  {ProfessorName}
+officehoursIntent I need advice from Professor {ProfessorName}
+officehoursIntent I need support from {ProfessorName}
+officehoursIntent I need support from Mr  {ProfessorName}
+officehoursIntent I need support from Mrs  {ProfessorName}
+officehoursIntent I need support from Ms  {ProfessorName}
+officehoursIntent I need support from Dr  {ProfessorName}
+officehoursIntent I need support from Professor {ProfessorName}
+officehoursIntent I need a hand with my homework {ProfessorName}
+officehoursIntent Locate {ProfessorName}
+officehoursIntent Locate Mr  {ProfessorName}
+officehoursIntent Locate Mrs  {ProfessorName}
+officehoursIntent Locate Ms  {ProfessorName}
+officehoursIntent Locate Dr  {ProfessorName}
+officehoursIntent Locate Professor {ProfessorName}
+officehoursIntent get me to {ProfessorName}
+officehoursIntent pinpoint {ProfessorName}
+officehoursIntent do you know where {ProfessorName}
+officehoursIntent tell me where to find {ProfessorName}
+officehoursIntent tell me where to find Mr  {ProfessorName}
+officehoursIntent tell me where to find Mrs  {ProfessorName}
+officehoursIntent tell me where to find Ms  {ProfessorName}
+officehoursIntent tell me where to find Dr  {ProfessorName}
+officehoursIntent tell me where to find Professor {ProfessorName}
+officehoursIntent tell me where to find Professor {ProfessorName}
+
+ClassesTaughtIntent what classes does {ProfessorName} teach
+ClassesTaughtIntent what is {ProfessorName} teaching this semester
+
+
+ContactInformationPhoneIntent what is my professors phone
+ContactInformationPhoneIntent get me my professors phone
+ContactInformationPhoneIntent get me phone for my professor
+ContactInformationPhoneIntent what is my professors phone number
+ContactInformationPhoneIntent get me my professors phone number
+ContactInformationPhoneIntent get me phone number for my professor
+
+ContactInformationPhoneIntent what is {ProfessorName} phone
+ContactInformationPhoneIntent get me {ProfessorName} phone
+ContactInformationPhoneIntent get me phone for {ProfessorName}
+ContactInformationPhoneIntent what is {ProfessorName} phone number
+ContactInformationPhoneIntent get me {ProfessorName} phone number
+ContactInformationPhoneIntent get me phone number for {ProfessorName}
+
+ContactInformationEmailIntent what is {ProfessorName} email
+ContactInformationEmailIntent get me {ProfessorName} email
+ContactInformationEmailIntent get me email for {ProfessorName}
+ContactInformationEmailIntent what is {ProfessorName} email address
+ContactInformationEmailIntent get me {ProfessorName} email address
+ContactInformationEmailIntent get me email address for {ProfessorName}
+
+ContactInformationComboIntent how can i contact {ProfessorName}
+ContactInformationComboIntent what is {ProfessorName} contact info
+ContactInformationComboIntent get me {ProfessorName} contact info
+ContactInformationComboIntent get me contact info for {ProfessorName}
+ContactInformationComboIntent what is {ProfessorName} contact information
+ContactInformationComboIntent get me {ProfessorName} contact information
+ContactInformationComboIntent get me contact information for {ProfessorName}
+
 StartKnockIntent tell me a knock knock joke
 StartKnockIntent tell me a bad knock knock joke
 StartKnockIntent tell me a joke
@@ -11,7 +125,7 @@ WhoDerIntent who there
 DrWhoIntent doctor who
 DrWhoIntent doctor hoo
 
-//Common Intents
+AMAZON.NoIntent no thanks
 AMAZON.NoIntent nope
 AMAZON.NoIntent no way
 AMAZON.NoIntent hell no
@@ -24,3 +138,7 @@ AMAZON.YesIntent yes let's
 AMAZON.YesIntent sure
 AMAZON.YesIntent of course
 AMAZON.YesIntent go ahead
+AMAZON.YesIntent yes email
+AMAZON.YesIntent yes phone
+
+ProfessorNameIntent {ProfessorName}

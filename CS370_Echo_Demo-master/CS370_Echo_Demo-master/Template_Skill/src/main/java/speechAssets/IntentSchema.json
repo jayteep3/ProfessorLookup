@@ -1,28 +1,145 @@
 {
-  "intents": [
-    {
-      "intent": "StartKnockIntent"
-    },
+    "intents": [
 	{
-      "intent": "WhoDerIntent"
+	    "intent": "ContactInformationComboIntent",
+		"slots":[
+	{
+	    "name":"ProfessorName",
+	    "type":"LIST_OF_PROFESSORS"
+	},
+	{
+	    "name":"Time_Description",
+	    "type":"LIST_OF_TIMES"
+	},
+	{
+	    "name":"Type",
+	    "type":"LIST_OF_TITLES"
+	},
+	{
+	    "name":"Date",
+	    "type":"AMAZON.DATE"
+	}
+    ]},
+      {
+        "intent": "ContactInformationPhoneIntent",
+		"slots":[
+	{
+	    "name":"ProfessorName",
+	    "type":"LIST_OF_PROFESSORS"
+	},
+	{
+	    "name":"Time_Description",
+	    "type":"LIST_OF_TIMES"
+	},
+	{
+	    "name":"Type",
+	    "type":"LIST_OF_TITLES"
+	},
+	{
+	    "name":"Date",
+	    "type":"AMAZON.DATE"
+	}
+    ]},
+      {
+        "intent": "ContactInformationEmailIntent",
+		"slots":[
+	{
+	    "name":"ProfessorName",
+	    "type":"LIST_OF_PROFESSORS"
+	},
+	{
+	    "name":"Time_Description",
+	    "type":"LIST_OF_TIMES"
+	},
+	{
+	    "name":"Type",
+	    "type":"LIST_OF_TITLES"
+	},
+	{
+	    "name":"Date",
+	    "type":"AMAZON.DATE"
+	}
+    ]},
+	{
+	    "intent": "ClassesTaughtIntent",
+		"slots":[
+	{
+	    "name":"ProfessorName",
+	    "type":"LIST_OF_PROFESSORS"
+	},
+	{
+	    "name":"Time_Description",
+	    "type":"LIST_OF_TIMES"
+	},
+	{
+	    "name":"Type",
+	    "type":"LIST_OF_TITLES"
+	},
+	{
+	    "name":"Date",
+	    "type":"AMAZON.DATE"
+	}
+    ]},
+	{
+	    "intent":"officehoursIntent",
+		"slots":[
+	{
+	    "name":"ProfessorName",
+	    "type":"LIST_OF_PROFESSORS"
+	},
+	{
+	    "name":"Time_Description",
+	    "type":"LIST_OF_TIMES"
+	},
+	{
+	    "name":"Type",
+	    "type":"LIST_OF_TITLES"
+	},
+	{
+	    "name":"Date",
+	    "type":"AMAZON.DATE"
+	}
+    ]},
+    {
+	    "intent": "RepeatIntent"
+	},
+    {
+      	"intent" : "HelpIntent"
     },
     {
-      "intent": "DrWhoIntent"
-    },
-    {
-      "intent": "AMAZON.YesIntent"
-    },
-    {
-      "intent": "AMAZON.NoIntent"
-    },
-    {
-      "intent": "AMAZON.HelpIntent"
-    },
-    {
-      "intent": "AMAZON.StopIntent"
-    },
-    {
-      "intent": "AMAZON.CancelIntent"
-    }
-  ]
+	    "intent": "MoreInfoIntent"
+	},
+	{	  
+	  "intent": "StartKnockIntent"
+	},
+	{
+	    "intent": "WhoDerIntent"
+	},
+	{
+	    "intent": "DrWhoIntent"
+	},
+	{
+	    "intent": "AMAZON.YesIntent"
+	},
+	{
+	    "intent": "AMAZON.NoIntent"
+	},
+	{
+	    "intent": "AMAZON.HelpIntent"
+	},
+	{
+	    "intent": "AMAZON.StopIntent"
+	},
+	{
+	  "intent": "AMAZON.CancelIntent"
+	},
+      {
+        "intent":"ProfessorNameIntent",
+        "slots":[
+          {
+            "name":"ProfessorName",
+	    	"type":"LIST_OF_PROFESSORS"
+          }]
+      }
+    ]
 }

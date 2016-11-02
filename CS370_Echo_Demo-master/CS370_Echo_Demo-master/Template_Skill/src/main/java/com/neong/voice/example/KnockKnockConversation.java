@@ -14,12 +14,6 @@ import java.sql.SQLException;
 import java.util.*;
 import java.net.*;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import javax.net.ssl.HttpsURLConnection;
 //import org.apache.http.impl.client.DefaultHttpClient;
 //import org.json.*;
 //import org.apache.commons.io.IOUtils;
@@ -102,7 +96,12 @@ public class KnockKnockConversation extends Conversation {
 	}
 
 	//TODO: Set cachedList to null wherever the conversation ends.
-
+	//TODO: Handler to user response for professor clarification.
+	//TODO: put if(cachedList.size() > 1) block into function
+			// -> set global duplicates to true if set.size() < cachedList.size()
+	//TODO: Remove unnecessary Intents, session, states, and function
+	
+	
 	@Override
 	public SpeechletResponse respondToIntentRequest(IntentRequest intentReq, Session session) {
 
