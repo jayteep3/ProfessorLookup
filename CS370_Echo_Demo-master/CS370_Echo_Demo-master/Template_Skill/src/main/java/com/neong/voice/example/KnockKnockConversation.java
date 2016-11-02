@@ -101,6 +101,7 @@ public class KnockKnockConversation extends Conversation {
 
 	}
 
+	//TODO: Set cachedList to null wherever the conversation ends.
 
 	@Override
 	public SpeechletResponse respondToIntentRequest(IntentRequest intentReq, Session session) {
@@ -550,7 +551,7 @@ public class KnockKnockConversation extends Conversation {
 				if(pc.getEmail() != null && !pc.getEmail().isEmpty())
 				{
 					//We have email
-					response = newAskResponse("<speak> Here is " + professor_name + "'s email address: " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>, would you like me to repeat that or give you more info on " + professor_name + "? </speak>", true, "<speak>I didn't catch that, would you like me to repeat their email or give you more info?</speak>", true);
+					response = newAskResponse("<speak> Here is " + professor_name + "'s email address: " + " <say-as interpret-as=\"spell-out\">" + pc.getEmail() + "</say-as>, would you like me to repeat that or give you more info on " + professor_name + "? </speak>", true, "<speak>I didn't catch that, would you like me to repeat their email or give you more info?</speak>", true);
 					session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 					cachedProf = pc;
 				}
