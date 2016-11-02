@@ -44,10 +44,13 @@ import javax.net.ssl.HttpsURLConnection;
 // mvn assembly:assembly -DdescriptorId=jar-with-dependencies package
 
 public class KnockKnockConversation extends Conversation {
-	//Intent names
+	
+	//Cached variables in case of clarification
 	private static List<ProfContact> cachedList = new ArrayList <ProfContact>();
 	private ProfContact cachedProf;
 	private Boolean duplicates;
+	
+	//Intent names
 	private final static String INTENT_START = "StartKnockIntent";
 	private final static String INTENT_WHO_DER = "WhoDerIntent";
 	private final static String INTENT_DR_WHO = "DrWhoIntent";
@@ -63,10 +66,8 @@ public class KnockKnockConversation extends Conversation {
 	private final static String INTENT_REPEAT = "RepeatIntent";
 	private final static String INTENT_MORE_INFO = "MoreInfoIntent";
 	private final static String INTENT_HELP = "HelpIntent";
-	//Slots
-	//private final static String SLOT_RELATIVE_TIME = "timeOfDay";
-
-	//State
+	
+	//State keys 
 	private final static Integer STATE_WAITING_WHO_DER = 100000;
 	private final static Integer STATE_WAITING_DR_WHO = 100001;
 	private final static Integer STATE_GET_PROFESSOR = 2;
@@ -107,18 +108,27 @@ public class KnockKnockConversation extends Conversation {
 		Intent intent = intentReq.getIntent();
 		String intentName = (intent != null) ? intent.getName() : null;
 		SpeechletResponse response = null;
+		//CASE I:
+		//User asks for professors office hours
 		if(INTENT_OFFICE_HOURS.equals(intentName)){
 			response = handleOfficeHoursIntent(intentReq, session);
 		}
+		//CASE II:
+		//User does not clarify whether they want email or phone
 		else if (INTENT_COMBO.equals(intentName)){
 			response = handleContactInformationIntent(intentReq, session);
 		}
+		//CASE III:
+		//User specifically asks for phone
 		else if (INTENT_PHONE_NUMBER.equals(intentName)){
 			response = handlePhoneNumberIntent(intentReq, session);
 		}
+		//CASE IV:
+		//User specifically asks for email
 		else if (INTENT_EMAIL_ADDRESS.equals(intentName)){
 			response = handleEmailAddressIntent(intentReq, session);
 		}
+		/***********************************Boiler Plate (JEFF CODE)**************************************/
 		else if (INTENT_START.equals(intentName)) {
 			response = handleStartJokeIntent(intentReq, session);
 		}
@@ -128,24 +138,39 @@ public class KnockKnockConversation extends Conversation {
 		else if (INTENT_DR_WHO.equals(intentName)) {
 			response = handleDrWhoIntent(intentReq, session);
 		}
+		/*************************************************************************************************/
+		//CASE VI:
+		//User has not given professor name
 		else if (INTENT_CLARIFY_PROF.equals(intentName)) {
 			response = handleProfessorNameIntent(intentReq, session);
 		}
+		//CASE VII:
+		//User asks for information to be repeated.
 		else if (INTENT_REPEAT.equals(intentName)){
 			response = handleRepeatIntent(intentReq, session);
 		}
-		else if (INTENT_HELP.equals(intentName)){
-			response = handleHelpIntent(intentReq, session);
-		}
+		//CASE VIII:
+		//User asks for more information
 		else if (INTENT_MORE_INFO.equals(intentName)){
 			response = handleMoreInfoIntent(intentReq, session);
 		}
+		//CASE IX:
+		//User asks for help
+		else if (INTENT_HELP.equals(intentName)){
+			response = handleHelpIntent(intentReq, session);
+		}
+		//CASE X:
+		//User says yeas somewhere.
 		else if (INTENT_YES.equals(intentName)){
 			response = handleYesIntent(intentReq, session);
 		}
+		//CASE XI:
+		//User says no somewhere
 		else if(INTENT_NO.equals(intentName)){
 			response = handleNoIntent(intentReq, session);
 		}
+		//CASE XII:
+		//Unmapped intent
 		else {
 			response = newTellResponse("<speak> Whatchu talkin' bout! </speak>", true);
 		}
@@ -153,7 +178,7 @@ public class KnockKnockConversation extends Conversation {
 		
 		return response;
 	}
-
+	
 	private SpeechletResponse handleMoreInfoIntent(IntentRequest intentReq, Session session){
 		//If they have already gotten email/phone, give them the other.
 		SpeechletResponse response = null;
@@ -189,6 +214,7 @@ public class KnockKnockConversation extends Conversation {
 			response = newTellResponse("<speak> Watchu talkin about free willie? </speak>", true);
 		return response;
 	}
+	
 	private SpeechletResponse handleHelpIntent(IntentRequest intentReq, Session session)
 	{
 		SpeechletResponse response = null;
@@ -216,7 +242,7 @@ public class KnockKnockConversation extends Conversation {
 			String name = pc.getName();
 			String email = pc.getEmail();
 			String phone = pc.getPhone();
-			response = newTellResponse("<speak>" + name + "s email is " + " <say-as interpret-as=\"spell-out\">" + email + " their phone number is " + " <say-as interpret-as=\"telephone\">" + phone + ". </speak>", true);
+			response = newTellResponse("<speak>" + name + "s email is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as> their phone number is <say-as interpret-as=\"telephone\">" + phone + "</say-as>	. </speak>", true);
 		}
 		else if (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			String name = pc.getName();
