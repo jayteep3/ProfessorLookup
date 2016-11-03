@@ -68,6 +68,7 @@ public class KnockKnockConversation extends Conversation {
 	private final static Integer STATE_GET_EMAIL = 3;
 	private final static Integer STATE_GET_PHONE = 4;
 	private final static Integer STATE_GET_EMAIL_PHONE = 5;
+	private final static Integer STATE_AMBIGUOUS_PROF = 6;
 
 
 	//Session state storage key
@@ -204,17 +205,10 @@ public class KnockKnockConversation extends Conversation {
 				response = newTellResponse("<speak>I'm sorry, I don't have any more contact info for " + name + ". </speak>", true);
 			}
 			else{
-//<<<<<<< Updated upstream
-	//			String email = pc.getEmail();
-		//		String name = pc.getName();
-			//	response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + " </say-as>, would you like me to repeat that? </speak>", true, " <speak> would you like me to repeat their email address? </speak>", true);
-				////session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
-//=======
 			String email = pc.getEmail();
 			String name = pc.getName();
 			response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>, would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, " <speak> would you like me to repeat their email address? </speak>", true);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
-//>>>>>>> Stashed changes
 			}
 		}
 		else
@@ -355,6 +349,7 @@ public class KnockKnockConversation extends Conversation {
 			} 
 			if(cachedList.size() > 1)
 			{
+				session.setAttribute(SESSION_PROF_STATE, STATE_AMBIGUOUS_PROF);
 				Set<String> distinct = new HashSet<String>();
 				for(int i = 0; i < cachedList.size(); i++)
 					distinct.add(cachedList.get(i).getName());
@@ -390,11 +385,7 @@ public class KnockKnockConversation extends Conversation {
 						//Phone, but no Email
 						String name = pc.getName();
 						String phone = pc.getPhone();
-//<<<<<<< Updated upstream
-	//					response = newAskResponse("<speak>" + name + "has no email listed, but their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as> would you like me to repeat that. </speak>", true, "<speak> I did not catch that, did you want me to repeat the phone number </speak>", true);
-//=======
 						response = newAskResponse("<speak>" + name + " has no email listed, but their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as> would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat the phone number </speak>", true);
-//>>>>>>> Stashed changes
 						session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
 						cachedProf = pc;
 					}
@@ -406,11 +397,7 @@ public class KnockKnockConversation extends Conversation {
 						//Email, but no Phone
 						String name = pc.getName();
 						String email = pc.getEmail();
-//<<<<<<< Updated upstream
-//						response = newAskResponse("<speak>" + name + "has no phone listed, but their email is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as> would you like me to repeat that. </speak>", true, "<speak> I did not catch that, did you want me to repeat the email address. </speak>", true);
-//=======
 						response = newAskResponse("<speak>" + name + " has no phone listed, but their email is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as> would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat the email address. </speak>", true);
-//>>>>>>> Stashed changes
 						session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 						cachedProf = pc;
 					}
@@ -420,11 +407,7 @@ public class KnockKnockConversation extends Conversation {
 						String name = pc.getName();
 						String email = pc.getEmail();
 						String phone = pc.getPhone();
-//<<<<<<< Updated upstream
-//						response = newAskResponse("<speak>" + name + "s email is " + " <say-as interpret-as=\"spell-out\">" + email +  "</say-as> their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as>, would you like me to repeat that? </speak>", true, "<speak> I did not catch that, did you want me to repeat " + name + "'s contact info? </speak>", true);
-//=======
 						response = newAskResponse("<speak>" + name + "s email is " + " <say-as interpret-as=\"spell-out\">" + email +  " their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as>, would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat " + name + "'s contact info? </speak>", true);
-//>>>>>>> Stashed changes
 					}
 				}	
 			}
@@ -439,9 +422,40 @@ public class KnockKnockConversation extends Conversation {
 	}
 
 	private SpeechletResponse handleProfessorNameIntent (IntentRequest intentReq, Session session){
+		if(STATE_GET_PROFESSOR.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0)
+		{
 		SpeechletResponse response = null;
 		response = handleContactInformationIntent(intentReq, session);
 		return response;
+		}
+		else if(STATE_AMBIGUOUS_PROF.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0)
+		{
+			Intent intent = intentReq.getIntent();
+			Map<String, Slot> slots = intent.getSlots();
+			// may give error if slot is empty
+			String professor_name_string = slots.get("ProfessorName").getValue();
+			for(int i = 0; i < cachedList.size(); i++)
+			{
+				if (professor_name_string == cachedList.get(i).getName())
+				{
+					//Do stuff to ensure we are down to one prof name when we get to HCII
+					ProfContact profcont = cachedList.get(i);
+					cachedList.clear() //might be a bit of a memory leak, but we got garbage collectors, eh?
+					cachedList.add(profcont)
+					SpeechletResponse response = null;
+					response = handleContactInformationIntent(intentReq, session);
+					return response;
+				}
+			}
+			//something for if there is no match
+			return newAskResponse("I did not hear one of the professors I spoke of, can you repeat, and say their full name?", false, "I didn't catch that, can you repeat your professor's full name?", false);
+			//also need stuff for handlePhone and handleEmail
+			//may need to revise state tree
+		}
+		else
+		{
+			//something for if they just say a professor's name out of the blue. maybe ask if they want email or phone?
+		}
 	}
 	// don't do any state checking
 	// if someone says phone
