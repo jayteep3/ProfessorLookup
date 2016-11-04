@@ -14,12 +14,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.net.*;
 
-//import org.apache.http.impl.client.DefaultHttpClient;
-//import org.json.*;
-//import org.apache.commons.io.IOUtils;
 
-//import java.sql.*;
-//import com.mysql.jdbc.Driver;
 /**
  * This is an example implementation of a Conversation subclass. It is
  * important to register your intents by adding them to the supportedIntentNames
@@ -45,9 +40,6 @@ public class KnockKnockConversation extends Conversation {
 	private Boolean duplicates;
 
 	//Intent names
-	private final static String INTENT_START = "StartKnockIntent";
-	private final static String INTENT_WHO_DER = "WhoDerIntent";
-	private final static String INTENT_DR_WHO = "DrWhoIntent";
 	private final static String INTENT_OFFICE_HOURS = "officehoursIntent";
 	private final static String INTENT_CONTACTINFO = "ContactInformationIntent";
 	private final static String INTENT_PHONE_NUMBER = "ContactInformationPhoneIntent";
@@ -62,8 +54,6 @@ public class KnockKnockConversation extends Conversation {
 	private final static String INTENT_HELP = "HelpIntent";
 
 	//State keys 
-	private final static Integer STATE_WAITING_WHO_DER = 100000;
-	private final static Integer STATE_WAITING_DR_WHO = 100001;
 	private final static Integer STATE_GET_PROFESSOR = 2;
 	private final static Integer STATE_GET_EMAIL = 3;
 	private final static Integer STATE_GET_PHONE = 4;
@@ -78,9 +68,6 @@ public class KnockKnockConversation extends Conversation {
 		super();
 
 		//Add custom intent names for dispatcher use
-		supportedIntentNames.add(INTENT_START);
-		supportedIntentNames.add(INTENT_WHO_DER);
-		supportedIntentNames.add(INTENT_DR_WHO);
 		supportedIntentNames.add(INTENT_OFFICE_HOURS);
 		supportedIntentNames.add(INTENT_CONTACTINFO);
 		supportedIntentNames.add(INTENT_PHONE_NUMBER);
@@ -129,17 +116,6 @@ public class KnockKnockConversation extends Conversation {
 		else if (INTENT_EMAIL_ADDRESS.equals(intentName)){
 			response = handleEmailAddressIntent(intentReq, session);
 		}
-		/***********************************Boiler Plate (JEFF CODE)**************************************/
-		else if (INTENT_START.equals(intentName)) {
-			response = handleStartJokeIntent(intentReq, session);
-		}
-		else if (INTENT_WHO_DER.equals(intentName)) {
-			response = handleWhoThereIntent(intentReq, session);
-		}
-		else if (INTENT_DR_WHO.equals(intentName)) {
-			response = handleDrWhoIntent(intentReq, session);
-		}
-		/*************************************************************************************************/
 		//CASE VI:
 		//User has not given professor name
 		else if (INTENT_CLARIFY_PROF.equals(intentName)) {
@@ -422,9 +398,10 @@ public class KnockKnockConversation extends Conversation {
 	}
 
 	private SpeechletResponse handleProfessorNameIntent (IntentRequest intentReq, Session session){
+		SpeechletResponse response = null;
+
 		if(STATE_GET_PROFESSOR.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0)
 		{
-		SpeechletResponse response = null;
 		response = handleContactInformationIntent(intentReq, session);
 		return response;
 		}
@@ -440,9 +417,9 @@ public class KnockKnockConversation extends Conversation {
 				{
 					//Do stuff to ensure we are down to one prof name when we get to HCII
 					ProfContact profcont = cachedList.get(i);
-					cachedList.clear() //might be a bit of a memory leak, but we got garbage collectors, eh?
-					cachedList.add(profcont)
-					SpeechletResponse response = null;
+					cachedList.clear(); //might be a bit of a memory leak, but we got garbage collectors, eh?
+					cachedList.add(profcont);
+					response = null;
 					response = handleContactInformationIntent(intentReq, session);
 					return response;
 				}
@@ -455,13 +432,12 @@ public class KnockKnockConversation extends Conversation {
 		else
 		{
 			//something for if they just say a professor's name out of the blue. maybe ask if they want email or phone?
+			// has to return something 
+			return response;
 		}
+		
 	}
-	// don't do any state checking
-	// if someone says phone
-	// get the phone (dummy phone number)
-	// assignment: code up dummy intents for phoneIntent and emailIntent
-	// phoneIntent
+	
 	private SpeechletResponse handlePhoneNumberIntent(IntentRequest intentReq, Session session)
 	{
 		// get professor_name from intentReq as was done in handleContactInformationIntent
@@ -610,47 +586,6 @@ public class KnockKnockConversation extends Conversation {
 		return response;
 	}
 
-	private SpeechletResponse handleStartJokeIntent(IntentRequest intentReq, Session session)
-	{
-		SpeechletResponse response = newAskResponse("Knock knock.", false, "I said, Knock knock!", false);
-		session.setAttribute(SESSION_KNOCK_STATE, STATE_WAITING_WHO_DER);
-		return response;	
-	}
-
-	private SpeechletResponse handleWhoThereIntent(IntentRequest intentReq, Session session)
-	{
-		SpeechletResponse response = null;
-
-		//check state
-		if(session.getAttribute(SESSION_KNOCK_STATE) != null 
-				&& STATE_WAITING_WHO_DER.compareTo((Integer)session.getAttribute(SESSION_KNOCK_STATE)) == 0) {
-			response = newAskResponse("Doctor.", false," Doctor is here.",false);
-			//Update state
-			session.setAttribute(SESSION_KNOCK_STATE, STATE_WAITING_DR_WHO);
-		}
-		else {
-			response = newTellResponse("You have to say knock knock first.", false);
-		}
-
-		return response;	
-	}
-
-	private SpeechletResponse handleDrWhoIntent(IntentRequest intentReq, Session session)
-	{
-		SpeechletResponse response = null;
-		//check state
-
-		if(session.getAttribute(SESSION_KNOCK_STATE) != null 
-				&& STATE_WAITING_DR_WHO.compareTo((Integer)session.getAttribute(SESSION_KNOCK_STATE)) == 0) {			
-			response = newTellResponse(" Exactly. How did you know?", false);
-			//Clear final state
-			session.removeAttribute(SESSION_KNOCK_STATE);
-		}
-		else {
-			response = newTellResponse("You have to say knock knock first.", false);
-		}
-		return response;	
-	}
 	public static void GetEmailPhone(String name2) throws ClassNotFoundException, SQLException
 	{
 		//Template url added with professor name asked for
