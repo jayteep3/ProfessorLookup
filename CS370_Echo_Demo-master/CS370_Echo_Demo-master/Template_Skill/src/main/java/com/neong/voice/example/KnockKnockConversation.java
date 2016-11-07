@@ -1,3 +1,4 @@
+
 package com.neong.voice.example;
 import com.neong.voice.Classes.*;
 import com.amazon.speech.slu.Intent;
@@ -86,7 +87,7 @@ public class KnockKnockConversation extends Conversation {
 	//TODO: Handler to user response for professor clarification.
 	//TODO: (done) put if(cachedList.size() > 1) block into function
 			// -> set global duplicates to true if set.size() < cachedList.size()
-	//TODO:(done) Remove unnecessary Intents, session, states, and function
+	//TODO:(only took out Jeff's functions and global variables) Remove unnecessary Intents, session, states, and function
 	
 	
 	@Override
@@ -460,12 +461,12 @@ public class KnockKnockConversation extends Conversation {
 			// may give error if slot is empty
 			String professor_name_string = slots.get("ProfessorName").getValue();
 
-			int lowestLD = levenshteinDistance(professor_name_string, cachedList.get(0).getName(); //ultimately might want to cap in levenshtein function, to improve efficiency
+			int lowestLD = levenshteinDistance(professor_name_string, cachedList.get(0).getName()); //ultimately might want to cap in levenshtein function, to improve efficiency
 			int lowesti = 0;
 			for(int i = 1; i < cachedList.size(); i++)
 			{
 				int ld = levenshteinDistance(professor_name_string, cachedList.get(i).getName());
-				if (ld < lowestLD))
+				if (ld < lowestLD)
 				{
 					lowestLD = ld;
 					lowesti = i;
@@ -639,22 +640,25 @@ public class KnockKnockConversation extends Conversation {
 			rd.close();
 			conn.disconnect();
 
-
 			String json_text = result.toString();
 			//Interpret json_text string as a json array
 			JSONArray arr = new JSONArray(json_text);
 
 			//iterate through the json array, which consists of professor information
-			for(int i = 0; i < arr.length(); i=i+1){
+			for(int i = 0; i < arr.length(); i=i+1)
+			{
 				JSONObject json = arr.getJSONObject(i);
 				ProfContact pc = new ProfContact();
-				if(!json.isNull("email")){//if the value for email is not null, set the email
+				if(!json.isNull("email"))//if the value for email is not null, set the email
+				{
 					pc.setEmail(json.getString("email"));
 				}
-				if(!json.isNull("phone")){//if the value for phone is not null, set the phone
+				if(!json.isNull("phone"))//if the value for phone is not null, set the phone
+				{
 					pc.setPhone(json.getString("phone"));
 				}
-				if(!json.isNull("name")){//if the value for name is not null, set the name
+				if(!json.isNull("name"))//if the value for name is not null, set the name
+				{
 					pc.setName(json.getString("name").toLowerCase());
 				}
 				array.add(pc.copy());
