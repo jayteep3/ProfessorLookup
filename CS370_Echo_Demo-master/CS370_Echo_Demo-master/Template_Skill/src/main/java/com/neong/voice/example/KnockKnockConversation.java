@@ -409,7 +409,7 @@ public class KnockKnockConversation extends Conversation {
 						//Phone, but no Email
 						String name = pc.getName();
 						String phone = pc.getPhone();
-						response = newAskResponse("<speak>" + name + " has no email listed, but their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as> would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat the phone number </speak>", true);
+						response = newAskResponse("<speak>" + name + " has no email listed, but their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as> . Would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat the phone number </speak>", true);
 						session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
 						cachedProf = pc;
 					}
@@ -421,7 +421,7 @@ public class KnockKnockConversation extends Conversation {
 						//Email, but no Phone
 						String name = pc.getName();
 						String email = pc.getEmail();
-						response = newAskResponse("<speak>" + name + " has no phone listed, but their email is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as> would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat the email address. </speak>", true);
+						response = newAskResponse("<speak>" + name + " has no phone listed, but their email is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as> . Would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat the email address. </speak>", true);
 						session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 						cachedProf = pc;
 					}
@@ -431,7 +431,7 @@ public class KnockKnockConversation extends Conversation {
 						String name = pc.getName();
 						String email = pc.getEmail();
 						String phone = pc.getPhone();
-						response = newAskResponse("<speak>" + name + "s email is " + " <say-as interpret-as=\"spell-out\">" + email +  " their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as>, would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat " + name + "'s contact info? </speak>", true);
+						response = newAskResponse("<speak>" + name + "s email is " + " <say-as interpret-as=\"spell-out\">" + email +  " , their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as> . Would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat " + name + "'s contact info? </speak>", true);
 					}
 				}	
 			}
@@ -528,7 +528,7 @@ public class KnockKnockConversation extends Conversation {
 				if(phone_number != null && !phone_number.isEmpty())
 				{		
 					// phone number exists
-					response = newAskResponse("<speak> Here is " + professor_name + "'s phone number: " + " <say-as interpret-as=\"telephone\">" + phone_number + "</say-as>, would you like me to repeat that or give you more info on " + professor_name + "?</speak>", true, "<speak> I didn't catch that, would you like me to repeat their phone number or give you more info? </speak>", true);
+					response = newAskResponse("<speak> Here is " + professor_name + "'s phone number: " + " <say-as interpret-as=\"telephone\">" + phone_number + "</say-as> . Would you like me to repeat that or give you more info on " + professor_name + "?</speak>", true, "<speak> I didn't catch that, would you like me to repeat their phone number or give you more info? </speak>", true);
 				}
 				else if(pc.getEmail() != null && !pc.getEmail().isEmpty())
 				{
@@ -584,7 +584,7 @@ public class KnockKnockConversation extends Conversation {
 				if(pc.getEmail() != null && !pc.getEmail().isEmpty())
 				{
 					//We have email
-					response = newAskResponse("<speak> Here is " + professor_name + "'s email address: " + " <say-as interpret-as=\"spell-out\">" + pc.getEmail() + "</say-as>, would you like me to repeat that or give you more info on " + professor_name + "? </speak>", true, "<speak>I didn't catch that, would you like me to repeat their email or give you more info?</speak>", true);
+					response = newAskResponse("<speak> Here is " + professor_name + "'s email address: " + " <say-as interpret-as=\"spell-out\">" + pc.getEmail() + "</say-as> . Would you like me to repeat that or give you more info on " + professor_name + "? </speak>", true, "<speak>I didn't catch that, would you like me to repeat their email or give you more info?</speak>", true);
 					session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 					cachedProf = pc;
 				}
