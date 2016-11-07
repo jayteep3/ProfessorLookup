@@ -459,28 +459,33 @@ public class KnockKnockConversation extends Conversation {
 			Map<String, Slot> slots = intent.getSlots();
 			// may give error if slot is empty
 			String professor_name_string = slots.get("ProfessorName").getValue();
-			for(int i = 0; i < cachedList.size(); i++)
+
+			int lowestLD = levenshteinDistance(professor_name_string, cachedList.get(0).getName(); //ultimately might want to cap in levenshtein function, to improve efficiency
+			int lowesti = 0;
+			for(int i = 1; i < cachedList.size(); i++)
 			{
-				if (professor_name_string == cachedList.get(i).getName())
+				int ld = levenshteinDistance(professor_name_string, cachedList.get(i).getName());
+				if (ld < lowestLD))
 				{
-					//Do stuff to ensure we are down to one prof name when we get to HCII
-					ProfContact profcont = cachedList.get(i);
-					cachedList.clear(); //might be a bit of a memory leak, but we got garbage collectors, eh?
-					cachedList.add(profcont);
-					response = null;
-					response = handleContactInformationIntent(intentReq, session);
-					return response;
+					lowestLD = ld;
+					lowesti = i;
 				}
 			}
-			//something for if there is no match
-			return newAskResponse("I did not hear one of the professors I spoke of, can you repeat, and say their full name?", false, "I didn't catch that, can you repeat your professor's full name?", false);
-			//also need stuff for handlePhone and handleEmail
-			//may need to revise state tree
+			ProfContact profcont = cachedList.get(lowesti);
+			cachedList.clear(); //might be a bit of a memory leak, but we got garbage collectors, eh?
+			cachedList.add(profcont);
+			response = null;
+			response = handleContactInformationIntent(intentReq, session);//wrongish if came from email and phone intent
+			return response;
+			
+			//something for if there is too far a match match
+			//return newAskResponse("I did not hear one of the professors I spoke of, can you repeat, and say their full name?", false, "I didn't catch that, can you repeat your professor's full name?", false);
 		}
 		else
 		{
 			//something for if they just say a professor's name out of the blue. maybe ask if they want email or phone?
 			// has to return something 
+			response = handleContactInformationIntent(intentReq, session); //this works for now... I think.
 			return response;
 		}
 		
@@ -673,5 +678,44 @@ public class KnockKnockConversation extends Conversation {
 			ProfContact pc = new ProfContact();			
 			pc.setPhone(e.toString());
 		}
+	}
+	public int levenshteinDistance (CharSequence lhs, CharSequence rhs) {                          
+    int len0 = lhs.length() + 1;                                                     
+    int len1 = rhs.length() + 1;                                                     
+                                                                                    
+    // the array of distances                                                       
+    int[] cost = new int[len0];                                                     
+    int[] newcost = new int[len0];                                                  
+                                                                                    
+    // initial cost of skipping prefix in String s0                                 
+    for (int i = 0; i < len0; i++) cost[i] = i;                                     
+                                                                                    
+    // dynamically computing the array of distances                                  
+                                                                                    
+    // transformation cost for each letter in s1                                    
+    for (int j = 1; j < len1; j++) {                                                
+        // initial cost of skipping prefix in String s1                             
+        newcost[0] = j;                                                             
+                                                                                    
+        // transformation cost for each letter in s0                                
+        for(int i = 1; i < len0; i++) {                                             
+            // matching current letters in both strings                             
+            int match = (lhs.charAt(i - 1) == rhs.charAt(j - 1)) ? 0 : 1;             
+                                                                                    
+            // computing cost for each transformation                               
+            int cost_replace = cost[i - 1] + match;                                 
+            int cost_insert  = cost[i] + 1;                                         
+            int cost_delete  = newcost[i - 1] + 1;                                  
+                                                                                    
+            // keep minimum cost                                                    
+            newcost[i] = Math.min(Math.min(cost_insert, cost_delete), cost_replace);
+        }                                                                           
+                                                                                    
+        // swap cost/newcost arrays                                                 
+        int[] swap = cost; cost = newcost; newcost = swap;                          
+    }                                                                               
+                                                                                    
+    // the distance is the cost for transforming all letters in both strings        
+    return cost[len0 - 1];                                                          
 	}
 }
