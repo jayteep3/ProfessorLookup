@@ -391,6 +391,7 @@ public class KnockKnockConversation extends Conversation {
 			}
 			else
 			{
+				pc = cachedList.get(0);
 				if(pc.getEmail() == null || pc.getEmail().isEmpty())
 				{
 					if(pc.getPhone() == null || pc.getPhone().isEmpty())
@@ -499,8 +500,6 @@ public class KnockKnockConversation extends Conversation {
 		if(professor_name != null && !professor_name.isEmpty())
 			//We have prof name
 		{
-			pc.setName(professor_name);
-
 			try
 			{
 				GetEmailPhone(professor_name);
@@ -517,6 +516,7 @@ public class KnockKnockConversation extends Conversation {
 			}
 			else
 			{
+				pc = cachedList.get(0);
 				String phone_number = pc.getPhone();
 
 				if(phone_number != null && !phone_number.isEmpty())
@@ -559,7 +559,6 @@ public class KnockKnockConversation extends Conversation {
 		if(professor_name != null && !professor_name.isEmpty())
 			//we have prof name
 		{
-			pc.setName(professor_name);
 			try
 			{
 				GetEmailPhone(professor_name);
@@ -575,6 +574,7 @@ public class KnockKnockConversation extends Conversation {
 			}
 			else
 			{
+				pc = cachedList.get(0);
 				if(pc.getEmail() != null && !pc.getEmail().isEmpty())
 				{
 					//We have email
@@ -650,7 +650,7 @@ public class KnockKnockConversation extends Conversation {
 					pc.setPhone(json.getString("phone"));
 				}
 				if(!json.isNull("name")){//if the value for name is not null, set the name
-					pc.setName(json.getString("name"));
+					pc.setName(json.getString("name").toLower());
 				}
 				array.add(pc.copy());
 				pc= null;
