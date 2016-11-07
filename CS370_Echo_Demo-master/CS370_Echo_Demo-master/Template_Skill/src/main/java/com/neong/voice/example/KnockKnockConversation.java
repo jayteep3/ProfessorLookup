@@ -5,6 +5,7 @@ import com.amazon.speech.slu.Intent;
 import com.amazon.speech.slu.Slot;	
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.Session;
+import com.amazon.speech.speechlet.SessionEndedRequest;
 import com.amazon.speech.speechlet.SpeechletResponse;
 import com.amazonaws.util.json.JSONArray;
 import com.amazonaws.util.json.JSONException;
@@ -50,6 +51,7 @@ public class KnockKnockConversation extends Conversation {
 	private final static String INTENT_CLARIFY_PROF = "ProfessorNameIntent";
 	private final static String INTENT_YES = "AMAZON.YesIntent";
 	private final static String INTENT_NO = "AMAZON.NoIntent";
+	private final static String INTENT_STOP = "AMAZON.StopIntent";
 	private final static String INTENT_REPEAT = "RepeatIntent";
 	private final static String INTENT_MORE_INFO = "MoreInfoIntent";
 	private final static String INTENT_HELP = "HelpIntent";
@@ -77,6 +79,7 @@ public class KnockKnockConversation extends Conversation {
 		supportedIntentNames.add(INTENT_CLARIFY_PROF);
 		supportedIntentNames.add(INTENT_YES);
 		supportedIntentNames.add(INTENT_NO);
+		supportedIntentNames.add(INTENT_STOP);
 		supportedIntentNames.add(INTENT_MORE_INFO);
 		supportedIntentNames.add(INTENT_REPEAT);
 		supportedIntentNames.add(INTENT_HELP);
@@ -187,6 +190,16 @@ public class KnockKnockConversation extends Conversation {
 				i++;
 			}
 			return newAskResponse("Did you mean, " + list + ", say first and last name please", false, "Did you mean, " + list, false);
+	}
+	
+
+	private SpeechletResponse respondToSessionEndRequest(SessionEndedRequest sessionEndedReq, Session session)
+	{
+		SpeechletResponse response = null;
+
+		response.setShouldEndSession(true);
+		return response;
+		
 	}
 	private SpeechletResponse handleMoreInfoIntent(IntentRequest intentReq, Session session){
 		//If they have already gotten email/phone, give them the other.
