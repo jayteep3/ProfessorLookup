@@ -650,7 +650,7 @@ public class KnockKnockConversation extends Conversation {
 					pc.setPhone(json.getString("phone"));
 				}
 				if(!json.isNull("name")){//if the value for name is not null, set the name
-					pc.setName(json.getString("name").toLower());
+					pc.setName(json.getString("name").toLowerCase());
 				}
 				array.add(pc.copy());
 				pc= null;
