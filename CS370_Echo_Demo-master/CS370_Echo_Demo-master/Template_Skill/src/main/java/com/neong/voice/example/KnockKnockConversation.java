@@ -430,7 +430,7 @@ public class KnockKnockConversation extends Conversation {
 						String name = pc.getName();
 						String email = pc.getEmail();
 						String phone = pc.getPhone();
-						response = newAskResponse("<speak>" + name + "s email is " + " <say-as interpret-as=\"spell-out\">" + email +  " their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as>, would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat " + name + "'s contact info? </speak>", true);
+						response = newAskResponse("<speak>" + name + "s email is " + " <say-as interpret-as=\"spell-out\">" + email +  "</say-as>  their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as>, would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat " + name + "'s contact info? </speak>", true);
 					}
 				}	
 			}
@@ -610,6 +610,7 @@ public class KnockKnockConversation extends Conversation {
 	public static void GetEmailPhone(String name2) throws ClassNotFoundException, SQLException
 	{
 		//Template url added with professor name asked for
+		name2 = name2.replace(" ", "%20");
 		String full_url = "https://moonlight.cs.sonoma.edu/api/v1/directory/person/?format=json&search=" + name2;
 
 		ArrayList<ProfContact> array = new ArrayList<ProfContact>();
@@ -618,6 +619,7 @@ public class KnockKnockConversation extends Conversation {
 
 			StringBuilder result = new StringBuilder();
 			//Create url to correctly encode url (i.e. spaces become %20)
+			
 			URL url2 = new URL(full_url);
 			//Make Http Connection
 			HttpURLConnection conn = (HttpURLConnection) url2.openConnection();
