@@ -82,7 +82,7 @@ public class KnockKnockConversation extends Conversation {
 
 	}
 
-	//TODO: Set cachedList to null wherever the conversation ends.
+	//TODO: (done)Set cachedList to null wherever the conversation ends.
 	//TODO: Handler to user response for professor clarification.
 	//TODO: (done) put if(cachedList.size() > 1) block into function
 			// -> set global duplicates to true if set.size() < cachedList.size()
@@ -149,6 +149,8 @@ public class KnockKnockConversation extends Conversation {
 		//Unmapped intent
 		else {
 			response = newTellResponse("<speak> Whatchu talkin' bout! </speak>", true);
+			cachedList = null;
+
 		}
 
 
@@ -195,6 +197,7 @@ public class KnockKnockConversation extends Conversation {
 			if(pc.getPhone() == null || pc.getPhone().isEmpty()){ // checking if we have phone
 				String name = pc.getName();
 				response = newTellResponse("<speak>I'm sorry, I don't have any more contact info for " + name + ". </speak>", true);
+				cachedList = null;
 			}
 			else{
 				String name = pc.getName();
@@ -208,6 +211,8 @@ public class KnockKnockConversation extends Conversation {
 			if(pc.getEmail() == null || pc.getEmail().isEmpty()){ // checking if we have email
 				String name = pc.getName();
 				response = newTellResponse("<speak>I'm sorry, I don't have any more contact info for " + name + ". </speak>", true);
+				cachedList = null;
+
 			}
 			else{
 			String email = pc.getEmail();
@@ -218,6 +223,8 @@ public class KnockKnockConversation extends Conversation {
 		}
 		else
 			response = newTellResponse("<speak> Watchu talkin about free willie? </speak>", true);
+			cachedList = null;
+
 		return response;
 	}
 
@@ -237,6 +244,7 @@ public class KnockKnockConversation extends Conversation {
 				"get me contact info for ProfessorName.";
 
 		response = newTellResponse("<speak>" + office_hours_intent + contact_information_combo_intent + "</speak>", true);
+		cachedList = null;
 
 		return response;
 	}
@@ -256,58 +264,81 @@ public class KnockKnockConversation extends Conversation {
 			String email = pc.getEmail();
 			String phone = pc.getPhone();
 			response = newTellResponse("<speak>" + name + " s email is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as> their phone number is <say-as interpret-as=\"telephone\">" + phone + "</say-as>. </speak>", true);
+			cachedList = null;
+
 		}
 		else if (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			String name = pc.getName();
 			String email = pc.getEmail();
 			response = newTellResponse("<speak>" + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + " </say-as> . </speak>", true);
+			cachedList = null;
+
 		}
 		else if (STATE_GET_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			String name = pc.getName();
 			String phone = pc.getPhone();
 			response = newTellResponse("<speak>" + name + "s phone number is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as> . </speak>", true);
+			cachedList = null;
+
 		}
 		else
 			response = newTellResponse("<speak> Watchu talkin about willis? </speak>", true);
+			cachedList = null;
+
 		return response;
 	}
 	/*
 	 * User says something in yes intent.
 	 */
-	private SpeechletResponse handleYesIntent(IntentRequest intentReq, Session session){
+	private SpeechletResponse handleYesIntent(IntentRequest intentReq, Session session)
+	{
 		if(STATE_GET_EMAIL_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0)
 		{//Case where user was given both email and phone and wants it repeated.
 			return handleRepeatIntent(intentReq, session);
 		}	
 		else
 		{//Case where user was asked if they wanted info repeated or more information, and user responded with yes intent.
+			
+			cachedList = null;
 			return newTellResponse("<speak> That wasn't a yes or no question, dumb dumb.</speak>", true);
+
+
 		}
 	}
 	/*
 	 * User said no.
 	 */
-	private SpeechletResponse handleNoIntent(IntentRequest intentReq, Session session){
+	private SpeechletResponse handleNoIntent(IntentRequest intentReq, Session session)
+	{
 		if((STATE_GET_EMAIL_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0) || (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0) || 
 				(STATE_GET_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0))
+		{
+			cachedList = null;
+
 			return newTellResponse("<speak> No thank you? sheesh, last time i help you.</speak>", true);
+		}
+		cachedList = null;
+
 		return newTellResponse("<speak> Please ask for professor information first.</speak>", true);
 	}
 
-	private SpeechletResponse handleOfficeHoursIntent(IntentRequest intentReq, Session session) {
+	private SpeechletResponse handleOfficeHoursIntent(IntentRequest intentReq, Session session)
+	{
 
 		Intent intent = intentReq.getIntent();
 		Map<String, Slot> slots = intent.getSlots();
 		Slot professorNameSlot = slots.get("ProfessorName");
 		SpeechletResponse response = null;
 		String professor = professorNameSlot.getValue();
+		cachedList = null;
 
 		return newTellResponse("<speak>" + professor + "has office hours Wednesdays at 8 AM. </speak>", true);
 		// return a tell response object within SpeechletResponse
 		// what is the difference between ask and tell (does alexa use both)
 	}
 
-	private SpeechletResponse classesTaughtIntent(IntentRequest intentReq, Session session) {
+	private SpeechletResponse classesTaughtIntent(IntentRequest intentReq, Session session)
+	{
 		Intent intent = intentReq.getIntent();
 		Map<String, Slot> slots = intent.getSlots();
 		Slot professorNameSlot = slots.get("ProfessorName");
@@ -316,6 +347,7 @@ public class KnockKnockConversation extends Conversation {
 		String cs = "CS";
 		//check state
 		response = newTellResponse("<speak>" + professor + "is teaching " + "<say-as interpret-as=\"characters\">" + cs + "</say-as> 315 and " + "<say-as interpret-as=\"characters\">" + cs + "</say-as> 115 this semester" + ". </speak>", true);
+		cachedList = null;
 
 
 		return response;
@@ -367,6 +399,8 @@ public class KnockKnockConversation extends Conversation {
 						String name = pc.getName();
 						response = newTellResponse("<speak>" + name + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable. </speak>", true);
 						cachedProf = pc;
+						cachedList = null;
+
 					}
 					else
 					{
@@ -409,7 +443,8 @@ public class KnockKnockConversation extends Conversation {
 		return response;
 	}
 
-	private SpeechletResponse handleProfessorNameIntent (IntentRequest intentReq, Session session){
+	private SpeechletResponse handleProfessorNameIntent (IntentRequest intentReq, Session session)
+	{
 		SpeechletResponse response = null;
 
 		if(STATE_GET_PROFESSOR.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0)
@@ -500,6 +535,8 @@ public class KnockKnockConversation extends Conversation {
 				{
 					//neither phone nor email exist
 					response = newTellResponse(pc.getName() + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable.", false);
+					cachedList = null;
+
 				}
 			}	
 		}
@@ -534,26 +571,7 @@ public class KnockKnockConversation extends Conversation {
 			if(cachedList.size() > 1)
 			{
 				return makeListOfDistinctProfessors(session);
-				/*
-				Set<String> distinct = new HashSet<String>();
-				for(int i = 0; i < cachedList.size(); i++)
-					distinct.add(cachedList.get(i).getName());
-				if(cachedList.size() > distinct.size())
-					duplicates = true;
-				String list ="";
-				int i = 0;
-				Iterator iter = distinct.iterator();
-				while(iter.hasNext())
-				{
-					String s = iter.next().toString();
 
-					if(i == distinct.size()-1)
-						list = list + " or " + s;
-					else
-						list = list + " " + s;
-				}
-				return newAskResponse("Did you mean, " + list + ", say first and last name please", false, "Did you mean, " + list, false);
-				*/
 			}
 			else
 			{
@@ -575,6 +593,8 @@ public class KnockKnockConversation extends Conversation {
 				{
 					//No email nor phone
 					response = newTellResponse(pc.getName() + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable.", false);
+					cachedList = null;
+
 				}
 			}
 		}
