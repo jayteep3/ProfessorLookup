@@ -62,7 +62,6 @@ public class KnockKnockConversation extends Conversation {
 
 
 	//Session state storage key
-	private final static String SESSION_KNOCK_STATE = "knockState";	
 	private final static String SESSION_PROF_STATE = "profState";
 	public KnockKnockConversation() {
 		super();
@@ -85,9 +84,9 @@ public class KnockKnockConversation extends Conversation {
 
 	//TODO: Set cachedList to null wherever the conversation ends.
 	//TODO: Handler to user response for professor clarification.
-	//TODO: put if(cachedList.size() > 1) block into function
+	//TODO: (done) put if(cachedList.size() > 1) block into function
 			// -> set global duplicates to true if set.size() < cachedList.size()
-	//TODO: Remove unnecessary Intents, session, states, and function
+	//TODO:(done) Remove unnecessary Intents, session, states, and function
 	
 	
 	@Override
@@ -155,7 +154,37 @@ public class KnockKnockConversation extends Conversation {
 
 		return response;
 	}
+	//TODO:(done) put if(cachedList.size() > 1) block into function
+	// -> set global duplicates to true if set.size() < cachedList.size()
+	private SpeechletResponse makeListOfDistinctProfessors(Session session)
+	{
 
+			session.setAttribute(SESSION_PROF_STATE, STATE_AMBIGUOUS_PROF);
+			
+			
+			Set<String> distinct = new HashSet<String>();
+			for(int i = 0; i < cachedList.size(); i++)
+				distinct.add(cachedList.get(i).getName());
+		
+			
+			if(distinct.size() < cachedList.size())
+				duplicates = true;
+			
+			
+			String list ="";
+			int i = 0;
+			Iterator iter = distinct.iterator();
+			while(iter.hasNext())
+			{
+				String s = iter.next().toString();
+				if(i == distinct.size()-1)
+					list = list + " or " + s;
+				else
+					list = list + " " + s;
+				i++;
+			}
+			return newAskResponse("Did you mean, " + list + ", say first and last name please", false, "Did you mean, " + list, false);
+	}
 	private SpeechletResponse handleMoreInfoIntent(IntentRequest intentReq, Session session){
 		//If they have already gotten email/phone, give them the other.
 		SpeechletResponse response = null;
@@ -325,25 +354,8 @@ public class KnockKnockConversation extends Conversation {
 			} 
 			if(cachedList.size() > 1)
 			{
-				session.setAttribute(SESSION_PROF_STATE, STATE_AMBIGUOUS_PROF);
-				Set<String> distinct = new HashSet<String>();
-				for(int i = 0; i < cachedList.size(); i++)
-					distinct.add(cachedList.get(i).getName());
-				if(cachedList.size() > distinct.size())
-					duplicates = true;
-				String list ="";
-				int i = 0;
-				Iterator iter = distinct.iterator();
-				while(iter.hasNext())
-				{//for(int i = 0; i < distinct.size(); i++/*String s: in distinct*/){
-					String s = iter.next().toString();
-					if(i == distinct.size()-1)
-						list = list + " or " + s;
-					else
-						list = list + " " + s;
-					i++;
-				}
-				return newAskResponse("Did you mean, " + list + ", say first and last name please", false, "Did you mean, " + list, false);
+				return makeListOfDistinctProfessors(session);
+
 			}
 			else
 			{
@@ -462,26 +474,11 @@ public class KnockKnockConversation extends Conversation {
 			{	// TODO Auto-generated catch block
 				pc.setPhone(e.toString());
 			}
-			if(cachedList.size() > 1){
-				Set<String> distinct = new HashSet<String>();
-				for(int i = 0; i < cachedList.size(); i++)
-					distinct.add(cachedList.get(i).getName());
-				if(cachedList.size() > distinct.size())
-					duplicates = true;
-				String list ="";
-				int i = 0;
-				Iterator iter = distinct.iterator();
-				while(iter.hasNext())
-				{
-					String s = iter.next().toString();
-
-					//for(String s: in distinct){
-					if(i == distinct.size()-1)
-						list = list + " or " + s;
-					else
-						list = list + " " + s;
-				}
-				return newAskResponse("Did you mean, " + list + ", say first and last name please", false, "Did you mean, " + list, false);
+			if(cachedList.size() > 1)
+			{
+				return makeListOfDistinctProfessors(session);
+				
+				
 			}
 			else
 			{
@@ -534,7 +531,10 @@ public class KnockKnockConversation extends Conversation {
 			{	// TODO Auto-generated catch block
 				pc.setPhone(e.toString());
 			}
-			if(cachedList.size() > 1){
+			if(cachedList.size() > 1)
+			{
+				return makeListOfDistinctProfessors(session);
+				/*
 				Set<String> distinct = new HashSet<String>();
 				for(int i = 0; i < cachedList.size(); i++)
 					distinct.add(cachedList.get(i).getName());
@@ -553,6 +553,7 @@ public class KnockKnockConversation extends Conversation {
 						list = list + " " + s;
 				}
 				return newAskResponse("Did you mean, " + list + ", say first and last name please", false, "Did you mean, " + list, false);
+				*/
 			}
 			else
 			{
