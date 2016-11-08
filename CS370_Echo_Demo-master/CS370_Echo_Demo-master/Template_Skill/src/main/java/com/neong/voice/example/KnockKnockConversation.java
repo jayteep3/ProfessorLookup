@@ -427,7 +427,7 @@ public class KnockKnockConversation extends Conversation {
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PROFESSOR); //not ideal, presumably wont allow user to respond with just name			
 		}	
 		// alexa can respond with null or "?" so both must be covered
-		if(professor_name_string != null && !professor_name_string.isEmpty())
+		else if(professor_name_string != null && !professor_name_string.isEmpty())
 		{
 			//String professor = professorNameSlot.getValue();
 			// change state
