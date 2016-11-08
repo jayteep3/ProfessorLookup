@@ -448,7 +448,7 @@ public class KnockKnockConversation extends Conversation {
 			}
 			else
 			{
-				ContactInformationIntentResponse(intentReq, session);
+				return ContactInformationIntentResponse(intentReq, session);
 			}
 		}
 
