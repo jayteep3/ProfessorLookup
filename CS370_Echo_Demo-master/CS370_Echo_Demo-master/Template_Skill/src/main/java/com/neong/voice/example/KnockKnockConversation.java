@@ -367,9 +367,52 @@ public class KnockKnockConversation extends Conversation {
 		return response;
 	}
 
+	private SpeechletResponse ContactInformationIntentResponse(IntentRequest intentReq, Session session){
+		pc = cachedList.get(0);
+		if(pc.getEmail() == null || pc.getEmail().isEmpty())
+		{
+			if(pc.getPhone() == null || pc.getPhone().isEmpty())
+			{
+				//No Phone or Email
+				String name = pc.getName();
+				response = newTellResponse("<speak>" + name + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable. </speak>", true);
+				cachedProf = pc;
+				cachedList = null;
 
+			}
+			else
+			{
+				//Phone, but no Email
+				String name = pc.getName();
+				String phone = pc.getPhone();
+				response = newAskResponse("<speak>" + name + " has no email listed, but their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as> . Would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat the phone number </speak>", true);
+				session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
+				cachedProf = pc;
+			}
+		}
+		else
+		{
+			if(pc.getPhone() == null || pc.getPhone().isEmpty())
+			{
+				//Email, but no Phone
+				String name = pc.getName();
+				String email = pc.getEmail();
+				response = newAskResponse("<speak>" + name + " has no phone listed, but their email is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as> . Would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat the email address. </speak>", true);
+				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
+				cachedProf = pc;
+			}
+			else
+			{
+				//Email and Phone
+				String name = pc.getName();
+				String email = pc.getEmail();
+				String phone = pc.getPhone();
+				response = newAskResponse("<speak>" + name + "s email is " + " <say-as interpret-as=\"spell-out\">" + email +  "</say-as>, their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as> . Would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat " + name + "'s contact info? </speak>", true);
+			}
+		}	
+		return response;
+	}
 	private SpeechletResponse handleContactInformationIntent(IntentRequest intentReq, Session session){
-
 		Intent intent = intentReq.getIntent();
 		Map<String, Slot> slots = intent.getSlots();
 		// may give error if slot is empty
@@ -381,10 +424,10 @@ public class KnockKnockConversation extends Conversation {
 		if(professor_name_string == "my professor" || professor_name_string == "my teacher" || professor_name_string == "a professor")
 		{
 			response = newAskResponse("<speak> What is this professor's name? </speak>", true, "<speak> I didn't catch that,  Can I have a professor name </speak>", true);
-			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PROFESSOR); //not ideal, presumably wont allow user to respond with just name
-		}
+			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PROFESSOR); //not ideal, presumably wont allow user to respond with just name			
+		}	
 		// alexa can respond with null or "?" so both must be covered
-		else if(professor_name_string != null && !professor_name_string.isEmpty())
+		if(professor_name_string != null && !professor_name_string.isEmpty())
 		{
 			//String professor = professorNameSlot.getValue();
 			// change state
@@ -405,48 +448,7 @@ public class KnockKnockConversation extends Conversation {
 			}
 			else
 			{
-				pc = cachedList.get(0);
-				if(pc.getEmail() == null || pc.getEmail().isEmpty())
-				{
-					if(pc.getPhone() == null || pc.getPhone().isEmpty())
-					{
-						//No Phone or Email
-						String name = pc.getName();
-						response = newTellResponse("<speak>" + name + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable. </speak>", true);
-						cachedProf = pc;
-						cachedList = null;
-
-					}
-					else
-					{
-						//Phone, but no Email
-						String name = pc.getName();
-						String phone = pc.getPhone();
-						response = newAskResponse("<speak>" + name + " has no email listed, but their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as> . Would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat the phone number </speak>", true);
-						session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
-						cachedProf = pc;
-					}
-				}
-				else
-				{
-					if(pc.getPhone() == null || pc.getPhone().isEmpty())
-					{
-						//Email, but no Phone
-						String name = pc.getName();
-						String email = pc.getEmail();
-						response = newAskResponse("<speak>" + name + " has no phone listed, but their email is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as> . Would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat the email address. </speak>", true);
-						session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
-						cachedProf = pc;
-					}
-					else
-					{
-						//Email and Phone
-						String name = pc.getName();
-						String email = pc.getEmail();
-						String phone = pc.getPhone();
-						response = newAskResponse("<speak>" + name + "s email is " + " <say-as interpret-as=\"spell-out\">" + email +  "</say-as>, their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as> . Would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat " + name + "'s contact info? </speak>", true);
-					}
-				}	
+				ContactInformationIntentResponse(intentReq, session);
 			}
 		}
 
@@ -489,7 +491,7 @@ public class KnockKnockConversation extends Conversation {
 			cachedList.clear(); //might be a bit of a memory leak, but we got garbage collectors, eh?
 			cachedList.add(profcont);
 			response = null;
-			response = handleContactInformationIntent(intentReq, session);//wrongish if came from email and phone intent
+			response = ContactInformationIntentResponse(intentReq, session);//wrongish if came from email and phone intent
 			return response;
 			
 			//something for if there is too far a match match
@@ -589,7 +591,6 @@ public class KnockKnockConversation extends Conversation {
 			if(cachedList.size() > 1)
 			{
 				return makeListOfDistinctProfessors(session);
-
 			}
 			else
 			{
