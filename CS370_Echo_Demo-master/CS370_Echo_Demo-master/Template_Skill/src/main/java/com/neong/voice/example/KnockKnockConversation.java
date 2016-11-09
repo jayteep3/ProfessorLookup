@@ -40,8 +40,10 @@ public class KnockKnockConversation extends Conversation {
 	private static List<ProfContact> cachedList = new ArrayList <ProfContact>();
 	private ProfContact cachedProf;
 	private Boolean duplicates;
-
+	private String joke;
+	
 	//Intent names
+	
 	private final static String INTENT_OFFICE_HOURS = "officehoursIntent";
 	private final static String INTENT_CONTACTINFO = "ContactInformationIntent";
 	private final static String INTENT_PHONE_NUMBER = "ContactInformationPhoneIntent";
@@ -62,7 +64,7 @@ public class KnockKnockConversation extends Conversation {
 	private final static Integer STATE_GET_PHONE = 4;
 	private final static Integer STATE_GET_EMAIL_PHONE = 5;
 	private final static Integer STATE_AMBIGUOUS_PROF = 6;
-
+	private final static Integer STATE_GET_JOKE = 7;
 
 	//Session state storage key
 	private final static String SESSION_PROF_STATE = "profState";
@@ -258,7 +260,8 @@ public class KnockKnockConversation extends Conversation {
 				"get me contact info for ProfessorName.";
 
 		response = newTellResponse("<speak>" + office_hours_intent + contact_information_combo_intent + "</speak>", true);
-		cachedList = null;
+		session.setAttribute(SESSION_PROF_STATE, STATE_GET_JOKE);
+ 		cachedList = null;
 
 		return response;
 	}
@@ -309,7 +312,11 @@ public class KnockKnockConversation extends Conversation {
 		if(STATE_GET_EMAIL_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0)
 		{//Case where user was given both email and phone and wants it repeated.
 			return handleRepeatIntent(intentReq, session);
-		}	
+		}
+		else if((STATE_GET_JOKE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0 && joke != null){
+		return newTellResponse(joke, false);
+		}
+
 		else
 		{//Case where user was asked if they wanted info repeated or more information, and user responded with yes intent.
 			
@@ -331,6 +338,7 @@ public class KnockKnockConversation extends Conversation {
 
 			return newTellResponse("<speak> No thank you? sheesh, last time i help you.</speak>", true);
 		}
+		if((STATE_GET_JOKE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0 && joke != null){}
 		cachedList = null;
 
 		return newTellResponse("<speak> Please ask for professor information first.</speak>", true);
@@ -379,7 +387,9 @@ public class KnockKnockConversation extends Conversation {
 			{
 				//No Phone or Email
 				String name = pc.getName();
-				response = newTellResponse("<speak>" + name + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable. </speak>", true);
+				response = getJoke();
+				response = newAskResponse("Sorry there is no contact information for " + pc.getName() + ". Would you like to hear a joke instead? ", false);
+				
 				cachedProf = pc;
 				cachedList = null;
 
@@ -741,5 +751,59 @@ public class KnockKnockConversation extends Conversation {
                                                                                     
     // the distance is the cost for transforming all letters in both strings        
     return cost[len0 - 1];                                                          
+	}
+	private void getJoke()
+	{
+		//get joke from api for if no info is found for a proffesor
+		String full_url = "api.yomomma.info";
+
+		try
+		{
+
+			StringBuilder result = new StringBuilder();
+			//Create url to correctly encode url (i.e. spaces become %20)
+			
+			URL url2 = new URL(full_url);
+			//Make Http Connection
+			HttpURLConnection conn = (HttpURLConnection) url2.openConnection();
+			//Request to get for information
+			conn.setRequestMethod("GET");
+			//Read the http response into a BufferReader
+			BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			String line;
+			while ((line = rd.readLine()) != null)
+			{
+				result.append(line);
+			}
+			//End connection
+			rd.close();
+			conn.disconnect();
+
+			String json_text = result.toString();
+			//Interpret json_text string as a json array
+			JSONArray arr = new JSONArray(json_text);
+
+			//iterate through the json array, which consists of professor information
+			for(int i = 0; i < arr.length(); i++)
+			{
+				JSONObject json = arr.getJSONObject(i);
+				if(!json.isNull("joke"))//if the value for email is not null, set the email
+				{
+					joke = json.getString("joke");
+				}
+				
+			}
+
+			return;
+
+		}
+		//Catches in case of errors
+		catch (Exception e)
+		{
+			ProfContact pc = new ProfContact();			
+			pc.setPhone(e.toString());
+			return; 
+		}
+		return;
 	}
 }
