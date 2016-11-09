@@ -368,7 +368,11 @@ public class KnockKnockConversation extends Conversation {
 	}
 
 	private SpeechletResponse ContactInformationIntentResponse(IntentRequest intentReq, Session session){
+		ProfContact pc = null;
 		pc = cachedList.get(0);
+		
+		SpeechletResponse response = null;
+
 		if(pc.getEmail() == null || pc.getEmail().isEmpty())
 		{
 			if(pc.getPhone() == null || pc.getPhone().isEmpty())
