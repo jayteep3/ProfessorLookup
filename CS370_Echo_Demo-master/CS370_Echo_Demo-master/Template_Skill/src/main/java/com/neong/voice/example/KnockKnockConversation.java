@@ -40,7 +40,7 @@ public class KnockKnockConversation extends Conversation {
 	private static List<ProfContact> cachedList = new ArrayList <ProfContact>();
 	private ProfContact cachedProf;
 	private Boolean duplicates;
-	private String joke;
+	private static String joke;
 	
 	//Intent names
 	
@@ -314,7 +314,7 @@ public class KnockKnockConversation extends Conversation {
 		{//Case where user was given both email and phone and wants it repeated.
 			return handleRepeatIntent(intentReq, session);
 		}
-		else if((STATE_GET_JOKE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
+		else if(STATE_GET_JOKE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 		getJoke();
 		return newTellResponse(joke, false);
 		}
@@ -389,7 +389,7 @@ public class KnockKnockConversation extends Conversation {
 				//No Phone or Email
 				String name = pc.getName();
 				
-				response = newAskResponse("Sorry there is no contact information for " + pc.getName() + ". Would you like to hear a joke instead? ", false);
+				response = newAskResponse("Sorry there is no contact information for " + pc.getName() + ". Would you like to hear a joke instead? ", false, "Would you like to hear a joke instead? ", false);
 				
 				cachedProf = pc;
 				cachedList = null;
@@ -571,8 +571,7 @@ public class KnockKnockConversation extends Conversation {
 				{
 					//neither phone nor email exist
 					getJoke();
-					response = newAskResponse("Sorry there is no contact information for " + pc.getName() + ". Would you like to hear a joke instead? ", false);
-					cachedList = null;
+					response = newAskResponse("Sorry there is no contact information for " + pc.getName() + ". Would you like to hear a joke instead? ", false, "Would you like to hear a joke instead? ", false);					cachedList = null;
 
 				}
 			}	
@@ -629,7 +628,7 @@ public class KnockKnockConversation extends Conversation {
 				{
 					//No email nor phone
 					getJoke();
-					response = newAskResponse("Sorry there is no contact information for " + pc.getName() + ". Would you like to hear a joke instead? ", false);
+					response = newAskResponse("Sorry there is no contact information for " + pc.getName() + ". Would you like to hear a joke instead? ", false, "Would you like to hear a joke instead? ", false);
 					cachedList = null;
 
 				}
@@ -755,7 +754,7 @@ public class KnockKnockConversation extends Conversation {
     // the distance is the cost for transforming all letters in both strings        
     return cost[len0 - 1];                                                          
 	}
-	private void getJoke()
+	private static void getJoke()
 	{
 		//get joke from api for if no info is found for a proffesor
 		String full_url = "api.yomomma.info";
@@ -807,6 +806,5 @@ public class KnockKnockConversation extends Conversation {
 			pc.setPhone(e.toString());
 			return; 
 		}
-		return;
 	}
 }
