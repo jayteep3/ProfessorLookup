@@ -309,11 +309,13 @@ public class KnockKnockConversation extends Conversation {
 	 */
 	private SpeechletResponse handleYesIntent(IntentRequest intentReq, Session session)
 	{
+		
 		if(STATE_GET_EMAIL_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0)
 		{//Case where user was given both email and phone and wants it repeated.
 			return handleRepeatIntent(intentReq, session);
 		}
-		else if((STATE_GET_JOKE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0 && joke != null){
+		else if((STATE_GET_JOKE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
+		getJoke();
 		return newTellResponse(joke, false);
 		}
 
@@ -338,7 +340,6 @@ public class KnockKnockConversation extends Conversation {
 
 			return newTellResponse("<speak> No thank you? sheesh, last time i help you.</speak>", true);
 		}
-		if((STATE_GET_JOKE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0 && joke != null){}
 		cachedList = null;
 
 		return newTellResponse("<speak> Please ask for professor information first.</speak>", true);
@@ -387,7 +388,7 @@ public class KnockKnockConversation extends Conversation {
 			{
 				//No Phone or Email
 				String name = pc.getName();
-				response = getJoke();
+				
 				response = newAskResponse("Sorry there is no contact information for " + pc.getName() + ". Would you like to hear a joke instead? ", false);
 				
 				cachedProf = pc;
@@ -569,7 +570,8 @@ public class KnockKnockConversation extends Conversation {
 				else
 				{
 					//neither phone nor email exist
-					response = newTellResponse(pc.getName() + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable.", false);
+					getJoke();
+					response = newAskResponse("Sorry there is no contact information for " + pc.getName() + ". Would you like to hear a joke instead? ", false);
 					cachedList = null;
 
 				}
@@ -626,7 +628,8 @@ public class KnockKnockConversation extends Conversation {
 				else
 				{
 					//No email nor phone
-					response = newTellResponse(pc.getName() + " has no email or phone listed. I am sorry to have failed you. I accept whatever horrific punishment you deem suitable.", false);
+					getJoke();
+					response = newAskResponse("Sorry there is no contact information for " + pc.getName() + ". Would you like to hear a joke instead? ", false);
 					cachedList = null;
 
 				}
