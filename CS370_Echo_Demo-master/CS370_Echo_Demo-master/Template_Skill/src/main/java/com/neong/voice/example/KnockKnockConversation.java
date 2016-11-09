@@ -207,7 +207,7 @@ public class KnockKnockConversation extends Conversation {
 		//If they have already gotten email/phone, give them the other.
 		SpeechletResponse response = null;
 		ProfContact pc = new ProfContact();
-		pc = cachedProf;
+		pc = cachedList.get(0);
 		if (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			//We last gave email, so its time to give phone
 			if(pc.getPhone() == null || pc.getPhone().isEmpty()){ // checking if we have phone
@@ -274,7 +274,7 @@ public class KnockKnockConversation extends Conversation {
 		SpeechletResponse response = null;
 		ProfContact pc = new ProfContact();
 		//Get professor stored in global variable cachedProf
-		pc = cachedProf;
+		pc = cachedList.get(0);
 
 		if(STATE_GET_EMAIL_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			String name = pc.getName();
