@@ -238,7 +238,7 @@ public class KnockKnockConversation extends Conversation {
 			}
 		}
 		else
-			response = newTellResponse("<speak> Watchu talkin about free willie? </speak>", true);
+			response = newTellResponse("<speak> Peace out cub scout! </speak>", true);
 			cachedList = null;
 
 		return response;
