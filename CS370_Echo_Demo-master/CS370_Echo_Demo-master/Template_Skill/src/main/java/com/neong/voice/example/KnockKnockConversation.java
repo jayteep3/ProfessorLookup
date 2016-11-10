@@ -68,6 +68,7 @@ public class KnockKnockConversation extends Conversation {
 
 	//Session state storage key
 	private final static String SESSION_PROF_STATE = "profState";
+	private final static String SESSION_PROF_STATE_2 = "profState2"; //need it because in ambiguous state, still need to store email, phone, email_phone state
 	public KnockKnockConversation() {
 		super();
 
@@ -167,7 +168,7 @@ public class KnockKnockConversation extends Conversation {
 	private SpeechletResponse makeListOfDistinctProfessors(Session session)
 	{
 
-			session.setAttribute(SESSION_PROF_STATE, STATE_AMBIGUOUS_PROF);
+			session.setAttribute(SESSION_PROF_STATE_2, STATE_AMBIGUOUS_PROF);
 			
 			
 			Set<String> distinct = new HashSet<String>();
@@ -458,6 +459,7 @@ public class KnockKnockConversation extends Conversation {
 			} 
 			if(cachedList.size() > 1)
 			{
+				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL_PHONE);
 				return makeListOfDistinctProfessors(session);
 
 			}
@@ -484,8 +486,9 @@ public class KnockKnockConversation extends Conversation {
 		response = handleContactInformationIntent(intentReq, session);
 		return response;
 		}
-		else if(STATE_AMBIGUOUS_PROF.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0)
+		else if(STATE_AMBIGUOUS_PROF.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE_2)) == 0)
 		{
+			session.setAttribute(SESSION_PROF_STATE_2, null); //Assume we have disambiguated, so no need to disambiguate again.
 			Intent intent = intentReq.getIntent();
 			Map<String, Slot> slots = intent.getSlots();
 			// may give error if slot is empty
@@ -506,7 +509,18 @@ public class KnockKnockConversation extends Conversation {
 			cachedList.clear(); //might be a bit of a memory leak, but we got garbage collectors, eh?
 			cachedList.add(profcont);
 			response = null;
-			response = ContactInformationIntentResponse(intentReq, session);//wrongish if came from email and phone intent
+			if(STATE_GET_EMAIL_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0)
+			{
+				response = ContactInformationIntentResponse(intentReq, session);
+			}
+			else if(STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0)
+			{
+				response = EmailAddressIntentResponse(intentReq, session);
+			}
+			else if(STATE_GET_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0)
+			{
+				response = PhoneNumberIntentResponse(intentReq, session);
+			}
 			return response;
 			
 			//something for if there is too far a match match
@@ -573,9 +587,8 @@ public class KnockKnockConversation extends Conversation {
 			}
 			if(cachedList.size() > 1)
 			{
-				return makeListOfDistinctProfessors(session);
-				
-				
+				session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
+				return makeListOfDistinctProfessors(session);	
 			}
 			else
 			{
@@ -631,6 +644,7 @@ public class KnockKnockConversation extends Conversation {
 		{
 			try
 			{
+				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 				GetEmailPhone(professor_name);
 			}
 			catch (ClassNotFoundException | SQLException e)
