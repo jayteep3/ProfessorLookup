@@ -142,6 +142,7 @@ public class KnockKnockConversation extends Conversation {
 		//User asks for help
 		else if (INTENT_HELP.equals(intentName)){
 			response = handleHelpIntent(intentReq, session);
+			//added comment
 		}
 		//CASE X:
 		//User says yeas somewhere.
