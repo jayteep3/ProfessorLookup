@@ -57,7 +57,7 @@ public class KnockKnockConversation extends Conversation {
 	private final static String INTENT_REPEAT = "RepeatIntent";
 	private final static String INTENT_MORE_INFO = "MoreInfoIntent";
 	private final static String INTENT_HELP = "HelpIntent";
-	private final static String INTENT_TELLJOKE = "TellJokeIntent";
+	private final static String INTENT_TELLJOKE = "IntentTellJoke";
 
 	//State keys 
 	private final static Integer STATE_GET_PROFESSOR = 2;
