@@ -57,6 +57,7 @@ public class KnockKnockConversation extends Conversation {
 	private final static String INTENT_REPEAT = "RepeatIntent";
 	private final static String INTENT_MORE_INFO = "MoreInfoIntent";
 	private final static String INTENT_HELP = "HelpIntent";
+	private final static String Intent_TELLJOKE = "TellJokeIntent;
 
 	//State keys 
 	private final static Integer STATE_GET_PROFESSOR = 2;
@@ -85,6 +86,7 @@ public class KnockKnockConversation extends Conversation {
 		supportedIntentNames.add(INTENT_MORE_INFO);
 		supportedIntentNames.add(INTENT_REPEAT);
 		supportedIntentNames.add(INTENT_HELP);
+		supportedIntentNames.add(INTENT_TELLJOKE);
 
 	}
 
@@ -152,7 +154,10 @@ public class KnockKnockConversation extends Conversation {
 			response = handleNoIntent(intentReq, session);
 		}
 		//CASE XII:
-		//Unmapped intent
+		//User says tell me a joke
+		else if(INTENT_TELL_JOKE.equals(intentName)){
+			response = handleJokeIntent(intentReq, session);
+		}
 		else {
 			response = newTellResponse("<speak> Whatchu talkin' bout! </speak>", true);
 			cachedList = null;
@@ -643,6 +648,12 @@ public class KnockKnockConversation extends Conversation {
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PROFESSOR);
 		}
 		return response;
+	}
+	
+	private SpeechletResponse handleJokeIntent(IntentRequest intentReq, Session session)
+	{
+		getJoke();
+		return newTellResponse(joke, false);
 	}
 
 	public static void GetEmailPhone(String name2) throws ClassNotFoundException, SQLException
