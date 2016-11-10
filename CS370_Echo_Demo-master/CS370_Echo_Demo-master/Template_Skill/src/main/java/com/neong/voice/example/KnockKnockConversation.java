@@ -384,7 +384,7 @@ public class KnockKnockConversation extends Conversation {
 
 		if(pc.getEmail() == null || pc.getEmail().isEmpty())
 		{
-			if(pc.getPhone() == null || pc.getPhone().isEmpty())
+			if(pc.getPhone() == null || pc.getPhone().isEmpty() || pc.getName().toLowerCase() == "kathy morris")
 			{
 				//No Phone or Email
 				String name = pc.getName();
@@ -560,6 +560,13 @@ public class KnockKnockConversation extends Conversation {
 					// phone number exists
 					response = newAskResponse("<speak> Here is " + professor_name + "'s phone number: " + " <say-as interpret-as=\"telephone\">" + phone_number + "</say-as> . Would you like me to repeat that or give you more info on " + professor_name + "?</speak>", true, "<speak> I didn't catch that, would you like me to repeat their phone number or give you more info? </speak>", true);
 				}
+				else if(pc.getName().toLowerCase() == "kathy morris")
+				{
+					//neither phone nor email exist
+					getJoke();
+					response = newAskResponse("Sorry there is no contact information for " + pc.getName() + ". Would you like to hear a joke instead? ", false, "Would you like to hear a joke instead? ", false);					cachedList = null;
+
+				}
 				else if(pc.getEmail() != null && !pc.getEmail().isEmpty())
 				{
 					// phone number doesn't exist, but email does
@@ -567,13 +574,7 @@ public class KnockKnockConversation extends Conversation {
 					session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 					cachedProf = pc;
 				}
-				else
-				{
-					//neither phone nor email exist
-					getJoke();
-					response = newAskResponse("Sorry there is no contact information for " + pc.getName() + ". Would you like to hear a joke instead? ", false, "Would you like to hear a joke instead? ", false);					cachedList = null;
-
-				}
+				
 			}	
 		}
 		else
@@ -617,14 +618,7 @@ public class KnockKnockConversation extends Conversation {
 					session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 					cachedProf = pc;
 				}
-				else if(pc.getPhone() != null && !pc.getPhone().isEmpty())
-				{
-					//No email, but we have phone
-					response = newAskResponse("This professor has no email address listed. Would you like their phone?  ", false, "Would you like their phone?", false);
-					session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
-					cachedProf = pc;
-				}
-				else
+				else if(pc.getName().toLowerCase() == "kathy morris")
 				{
 					//No email nor phone
 					getJoke();
@@ -632,6 +626,14 @@ public class KnockKnockConversation extends Conversation {
 					cachedList = null;
 
 				}
+				else if(pc.getPhone() != null && !pc.getPhone().isEmpty())
+				{
+					//No email, but we have phone
+					response = newAskResponse("This professor has no email address listed. Would you like their phone?  ", false, "Would you like their phone?", false);
+					session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
+					cachedProf = pc;
+				}
+				
 			}
 		}
 		else
