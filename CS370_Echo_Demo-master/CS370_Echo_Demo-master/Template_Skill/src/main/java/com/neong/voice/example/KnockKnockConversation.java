@@ -775,7 +775,7 @@ public class KnockKnockConversation extends Conversation {
 	private static void getJoke()
 	{
 		//get joke from api for if no info is found for a proffesor
-		String full_url = "api.yomomma.info";
+		String full_url = "http://api.yomomma.info/";
 
 		try
 		{
@@ -801,7 +801,7 @@ public class KnockKnockConversation extends Conversation {
 
 			String json_text = result.toString();
 			//Interpret json_text string as a json array
-			JSONArray arr = new JSONArray(json_text);
+			JSONArray arr = new JSONArray("[" + json_text + "]");
 
 			//iterate through the json array, which consists of professor information
 			for(int i = 0; i < arr.length(); i++)
