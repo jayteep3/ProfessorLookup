@@ -57,6 +57,7 @@ public class KnockKnockConversation extends Conversation {
 	private final static String INTENT_REPEAT = "RepeatIntent";
 	private final static String INTENT_MORE_INFO = "MoreInfoIntent";
 	private final static String INTENT_HELP = "HelpIntent";
+	private final static String INTENT_TELLJOKE = "IntentTellJoke";
 
 	//State keys 
 	private final static Integer STATE_GET_PROFESSOR = 2;
@@ -86,6 +87,7 @@ public class KnockKnockConversation extends Conversation {
 		supportedIntentNames.add(INTENT_MORE_INFO);
 		supportedIntentNames.add(INTENT_REPEAT);
 		supportedIntentNames.add(INTENT_HELP);
+		supportedIntentNames.add(INTENT_TELLJOKE);
 
 	}
 
@@ -141,6 +143,7 @@ public class KnockKnockConversation extends Conversation {
 		//User asks for help
 		else if (INTENT_HELP.equals(intentName)){
 			response = handleHelpIntent(intentReq, session);
+			//added comment
 		}
 		//CASE X:
 		//User says yeas somewhere.
@@ -153,7 +156,10 @@ public class KnockKnockConversation extends Conversation {
 			response = handleNoIntent(intentReq, session);
 		}
 		//CASE XII:
-		//Unmapped intent
+		//User says tell me a joke
+		else if(INTENT_TELLJOKE.equals(intentName)){
+			response = handleJokeIntent(intentReq, session);
+		}
 		else {
 			response = newTellResponse("<speak> Whatchu talkin' bout! </speak>", true);
 			cachedList = null;
@@ -261,7 +267,6 @@ public class KnockKnockConversation extends Conversation {
 				"get me contact info for ProfessorName.";
 
 		response = newTellResponse("<speak>" + office_hours_intent + contact_information_combo_intent + "</speak>", true);
-		session.setAttribute(SESSION_PROF_STATE, STATE_GET_JOKE);
  		cachedList = null;
 
 		return response;
@@ -382,7 +387,10 @@ public class KnockKnockConversation extends Conversation {
 		pc = cachedList.get(0);
 		
 		SpeechletResponse response = null;
-
+		if(pc.getName().toLowerCase() == "Kathy Morris"){
+			response = newAskResponse("Sorry there is no contact information for " + pc.getName() + ". Would you like to hear a joke instead? ", false, "Would you like to hear a joke instead? ", false);
+			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PROFESSOR);
+		}
 		if(pc.getEmail() == null || pc.getEmail().isEmpty())
 		{
 			if(pc.getPhone() == null || pc.getPhone().isEmpty() || pc.getName().toLowerCase() == "kathy morris")
@@ -391,7 +399,7 @@ public class KnockKnockConversation extends Conversation {
 				String name = pc.getName();
 				
 				response = newAskResponse("Sorry there is no contact information for " + pc.getName() + ". Would you like to hear a joke instead? ", false, "Would you like to hear a joke instead? ", false);
-				
+				session.setAttribute(SESSION_PROF_STATE, STATE_GET_PROFESSOR);
 				cachedProf = pc;
 				cachedList = null;
 
@@ -539,28 +547,29 @@ public class KnockKnockConversation extends Conversation {
 	{
 		ProfContact pc = new ProfContact();
 		SpeechletResponse response = null;
-		pc = cachedList.get(0);
-		String phone_number = pc.getPhone();
 
-		if(phone_number != null && !phone_number.isEmpty())
-		{		
-			// phone number exists
-			response = newAskResponse("<speak> Here is " + professor_name + "'s phone number: " + " <say-as interpret-as=\"telephone\">" + phone_number + "</say-as> . Would you like me to repeat that or give you more info on " + professor_name + "?</speak>", true, "<speak> I didn't catch that, would you like me to repeat their phone number or give you more info? </speak>", true);
-		}
-		else if(pc.getName().toLowerCase() == "kathy morris")
-		{
-			//neither phone nor email exist
-			getJoke();
-			response = newAskResponse("Sorry there is no contact information for " + pc.getName() + ". Would you like to hear a joke instead? ", false, "Would you like to hear a joke instead? ", false);					cachedList = null;
-
-		}
-		else if(pc.getEmail() != null && !pc.getEmail().isEmpty())
-		{
-			// phone number doesn't exist, but email does
-			response = newAskResponse("This professor has no phone number, would you like their email ", false, "Would you like their email?", false);
-			session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
-			cachedProf = pc;
-		}
+        pc = cachedList.get(0);
+        String phone_number = pc.getPhone();
+        
+        if(pc.getName().toLowerCase() == "kathy morris")
+        {
+            //neither phone nor email exist
+            response = newAskResponse("Sorry there is no contact information for " + pc.getName() + ". Would you like to hear a joke instead? ", false, "Would you like to hear a joke instead? ", false);					cachedList = null;
+            session.setAttribute(SESSION_PROF_STATE, STATE_GET_JOKE);
+        }
+        else if(phone_number != null && !phone_number.isEmpty())
+        {
+            // phone number exists
+            response = newAskResponse("<speak> Here is " + professor_name + "'s phone number: " + " <say-as interpret-as=\"telephone\">" + phone_number + "</say-as> . Would you like me to repeat that or give you more info on " + professor_name + "?</speak>", true, "<speak> I didn't catch that, would you like me to repeat their phone number or give you more info? </speak>", true);
+        }
+        
+        else if(pc.getEmail() != null && !pc.getEmail().isEmpty())
+        {
+            // phone number doesn't exist, but email does
+            response = newAskResponse("This professor has no phone number, would you like their email ", false, "Would you like their email?", false);
+            session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
+            cachedProf = pc;
+        }
 		return response;
 	}
 	private SpeechletResponse handlePhoneNumberIntent(IntentRequest intentReq, Session session)
@@ -610,28 +619,31 @@ public class KnockKnockConversation extends Conversation {
 		ProfContact pc = new ProfContact();
 		SpeechletResponse response = null;
 		pc = cachedList.get(0);
-		if(pc.getEmail() != null && !pc.getEmail().isEmpty())
-		{
-			//We have email
-			response = newAskResponse("<speak> Here is " + professor_name + "'s email address: " + " <say-as interpret-as=\"spell-out\">" + pc.getEmail() + "</say-as> . Would you like me to repeat that or give you more info on " + professor_name + "? </speak>", true, "<speak>I didn't catch that, would you like me to repeat their email or give you more info?</speak>", true);
-			session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
-			cachedProf = pc;
-		}
-		else if(pc.getName().toLowerCase() == "kathy morris")
-		{
-			//No email nor phone
-			getJoke();
-			response = newAskResponse("Sorry there is no contact information for " + pc.getName() + ". Would you like to hear a joke instead? ", false, "Would you like to hear a joke instead? ", false);
-			cachedList = null;
 
-		}
-		else if(pc.getPhone() != null && !pc.getPhone().isEmpty())
-		{
-			//No email, but we have phone
-			response = newAskResponse("This professor has no email address listed. Would you like their phone?  ", false, "Would you like their phone?", false);
-			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
-			cachedProf = pc;
-		}
+        if(pc.getName().toLowerCase() == "Kathy Morris")
+        {
+            //No email nor phone
+            response = newAskResponse("Sorry there is no contact information for " + pc.getName() + ". Would you like to hear a joke instead? ", false, "Would you like to hear a joke instead? ", false);
+            session.setAttribute(SESSION_PROF_STATE, STATE_GET_JOKE);
+            cachedList = null;
+            
+        }
+        else if(pc.getEmail() != null && !pc.getEmail().isEmpty())
+        {
+            //We have email
+            response = newAskResponse("<speak> Here is " + professor_name + "'s email address: " + " <say-as interpret-as=\"spell-out\">" + pc.getEmail() + "</say-as> . Would you like me to repeat that or give you more info on " + professor_name + "? </speak>", true, "<speak>I didn't catch that, would you like me to repeat their email or give you more info?</speak>", true);
+            session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
+            cachedProf = pc;
+        }
+        
+        else if(pc.getPhone() != null && !pc.getPhone().isEmpty())
+        {
+            //No email, but we have phone
+            response = newAskResponse("This professor has no email address listed. Would you like their phone?  ", false, "Would you like their phone?", false);
+            session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
+            cachedProf = pc;
+        }
+        return response;
 	}
 	private SpeechletResponse handleEmailAddressIntent(IntentRequest intentReq, Session session)
 	{
@@ -667,6 +679,12 @@ public class KnockKnockConversation extends Conversation {
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PROFESSOR);
 		}
 		return response;
+	}
+	
+	private SpeechletResponse handleJokeIntent(IntentRequest intentReq, Session session)
+	{
+		getJoke();
+		return newTellResponse(joke, false);
 	}
 
 	public static void GetEmailPhone(String name2) throws ClassNotFoundException, SQLException
@@ -783,7 +801,7 @@ public class KnockKnockConversation extends Conversation {
 	private static void getJoke()
 	{
 		//get joke from api for if no info is found for a proffesor
-		String full_url = "api.yomomma.info";
+		String full_url = "http://api.yomomma.info/";
 
 		try
 		{
@@ -809,7 +827,7 @@ public class KnockKnockConversation extends Conversation {
 
 			String json_text = result.toString();
 			//Interpret json_text string as a json array
-			JSONArray arr = new JSONArray(json_text);
+			JSONArray arr = new JSONArray("[" + json_text + "]");
 
 			//iterate through the json array, which consists of professor information
 			for(int i = 0; i < arr.length(); i++)
