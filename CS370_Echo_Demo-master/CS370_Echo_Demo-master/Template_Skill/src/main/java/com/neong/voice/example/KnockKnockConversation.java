@@ -744,7 +744,7 @@ public class KnockKnockConversation extends Conversation {
 		if(pc.getBuildingName() != null && !pc.getBuildingName().isEmpty())
 		{
 			//We have building name
-			response = newAskResponse("<speak> " + professor_name + "'s " + "can be found at" + " <say-as interpret-as=\"spell-out\">" + pc.getBuildingName() + "</say-as> . Would you like me to repeat that or give you more info on " + professor_name + "? </speak>", true, "<speak>I didn't catch that, would you like me to repeat their location or give you more info?</speak>", true);
+			response = newAskResponse("<speak> " + professor_name + "'s " + "can be found at" + pc.getBuildingName() + " . Would you like me to repeat that or give you more info on " + professor_name + "? </speak>", true, "<speak>I didn't catch that, would you like me to repeat their location or give you more info?</speak>", true);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_LOCATION);
 			cachedProf = pc;
 		}
@@ -752,7 +752,7 @@ public class KnockKnockConversation extends Conversation {
 		else
 		{
 			
-			response = newAskResponse("<speak> " + professor_name + " <say-as interpret-as=\"spell-out\">" + "is in the eternal ether" + "</say-as> . Would you like me to repeat that or give you more info on " + professor_name + "? </speak>", true, "<speak>I didn't catch that, would you like me to repeat their location or give you more info?</speak>", true);
+			response = newAskResponse("<speak> " + professor_name + "is in the eternal ether" + " . Would you like me to repeat that or give you more info on " + professor_name + "? </speak>", true, "<speak>I didn't catch that, would you like me to repeat their location or give you more info?</speak>", true);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_LOCATION);
 			cachedProf = pc;
 		}
