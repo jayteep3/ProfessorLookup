@@ -40,7 +40,8 @@ public class KnockKnockConversation extends Conversation {
 	private static List<ProfContact> cachedList = new ArrayList <ProfContact>();
 	private ProfContact cachedProf;
 	private Boolean duplicates;
-	private static String joke;
+	private static String joke_opener;
+	private static String joke_punchline;
 	
 	//Intent names
 	
@@ -58,6 +59,7 @@ public class KnockKnockConversation extends Conversation {
 	private final static String INTENT_MORE_INFO = "MoreInfoIntent";
 	private final static String INTENT_HELP = "HelpIntent";
 	private final static String INTENT_TELLJOKE = "IntentTellJoke";
+	private final static String INTENT_LOCATION = "locationIntent";
 
 	//State keys 
 	private final static Integer STATE_GET_PROFESSOR = 2;
@@ -66,6 +68,7 @@ public class KnockKnockConversation extends Conversation {
 	private final static Integer STATE_GET_EMAIL_PHONE = 5;
 	private final static Integer STATE_AMBIGUOUS_PROF = 6;
 	private final static Integer STATE_GET_JOKE = 7;
+	private final static Integer STATE_GET_LOCATION = 8;
 
 	//Session state storage key
 	private final static String SESSION_PROF_STATE = "profState";
@@ -88,6 +91,7 @@ public class KnockKnockConversation extends Conversation {
 		supportedIntentNames.add(INTENT_REPEAT);
 		supportedIntentNames.add(INTENT_HELP);
 		supportedIntentNames.add(INTENT_TELLJOKE);
+		supportedIntentNames.add(INTENT_LOCATION);
 
 	}
 
@@ -143,19 +147,23 @@ public class KnockKnockConversation extends Conversation {
 		//User asks for help
 		else if (INTENT_HELP.equals(intentName)){
 			response = handleHelpIntent(intentReq, session);
-			//added comment
 		}
 		//CASE X:
+		// User asks for location
+		else if (INTENT_LOCATION.equals(intentName)){
+			response = handleLocationIntent(intentReq, session);
+		}
+		//CASE XI:
 		//User says yeas somewhere.
 		else if (INTENT_YES.equals(intentName)){
 			response = handleYesIntent(intentReq, session);
 		}
-		//CASE XI:
+		//CASE XII:
 		//User says no somewhere
 		else if(INTENT_NO.equals(intentName)){
 			response = handleNoIntent(intentReq, session);
 		}
-		//CASE XII:
+		//CASE XIII:
 		//User says tell me a joke
 		else if(INTENT_TELLJOKE.equals(intentName)){
 			response = handleJokeIntent(intentReq, session);
@@ -171,7 +179,7 @@ public class KnockKnockConversation extends Conversation {
 	}
 	//TODO:(done) put if(cachedList.size() > 1) block into function
 	// -> set global duplicates to true if set.size() < cachedList.size()
-	private SpeechletResponse makeListOfDistinctProfessors(Session session)
+	private String makeListOfDistinctProfessors(Session session)
 	{
 
 			session.setAttribute(SESSION_PROF_STATE_2, STATE_AMBIGUOUS_PROF);
@@ -191,14 +199,17 @@ public class KnockKnockConversation extends Conversation {
 			Iterator iter = distinct.iterator();
 			while(iter.hasNext())
 			{
+
 				String s = iter.next().toString();
+				// if 
 				if(i == distinct.size()-1)
+
 					list = list + " or " + s;
 				else
 					list = list + " " + s;
 				i++;
 			}
-			return newAskResponse("Did you mean, " + list + ", say first and last name please", false, "Did you mean, " + list, false);
+			return list;
 	}
 	
 
@@ -465,8 +476,8 @@ public class KnockKnockConversation extends Conversation {
 			if(cachedList.size() > 1)
 			{
 				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL_PHONE);
-				return makeListOfDistinctProfessors(session);
-
+				String list = makeListOfDistinctProfessors(session);
+				return newAskResponse("Did you mean, " + list + ", say first and last name please", false, "Did you mean, " + list, false);
 			}
 			else
 			{
@@ -594,7 +605,8 @@ public class KnockKnockConversation extends Conversation {
 			if(cachedList.size() > 1)
 			{
 				session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
-				return makeListOfDistinctProfessors(session);	
+				String list = makeListOfDistinctProfessors(session);
+				return newAskResponse("Did you mean, " + list + ", say first and last name please", false, "Did you mean, " + list, false);
 			}
 			else
 			{
@@ -662,7 +674,9 @@ public class KnockKnockConversation extends Conversation {
 			}
 			if(cachedList.size() > 1)
 			{
-				return makeListOfDistinctProfessors(session);
+				String list = makeListOfDistinctProfessors(session);
+				return newAskResponse("Did you mean, " + list + ", say first and last name please", false, "Did you mean, " + list, false);
+				//return 
 			}
 			else
 			{
@@ -676,6 +690,58 @@ public class KnockKnockConversation extends Conversation {
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PROFESSOR);
 		}
 		return response;
+	}
+	
+	public SpeechletResponse handleLocationIntent(IntentRequest intentReq, Session session)
+	{
+		Intent email_intent = intentReq.getIntent();
+		String professor_name = email_intent.getSlots().get("ProfessorName").getValue();
+		ProfContact pc = new ProfContact();
+		SpeechletResponse response = null;
+
+		// get list of people
+		if(professor_name != null && !professor_name.isEmpty())
+			//we have prof name
+		{
+			try
+			{
+				GetEmailPhone(professor_name);
+			}
+			catch (ClassNotFoundException | SQLException e)
+			{	// TODO Auto-generated catch block
+				pc.setPhone(e.toString());
+			}
+		}
+		// will get a list of professors with building names
+		// narrow list down
+		if(cachedList.size() > 1)
+		{
+			String list = makeListOfDistinctProfessors(session);
+			
+			session.setAttribute(SESSION_PROF_STATE, STATE_GET_LOCATION);
+			return newAskResponse("Did you mean" + list + "say first name and last name  please", false, "Did you mean, " + list, false);
+
+		}
+		pc = cachedList.get(0);
+		// they have a location
+
+		if(pc.getBuildingName() != null && !pc.getBuildingName().isEmpty())
+		{
+			//We have building name
+			response = newAskResponse("<speak> " + professor_name + "'s " + "can be found at" + " <say-as interpret-as=\"spell-out\">" + pc.getBuildingName() + "</say-as> . Would you like me to repeat that or give you more info on " + professor_name + "? </speak>", true, "<speak>I didn't catch that, would you like me to repeat their location or give you more info?</speak>", true);
+			session.setAttribute(SESSION_PROF_STATE, STATE_GET_LOCATION);
+			cachedProf = pc;
+		}
+		// they don't have a location
+		else
+		{
+			
+			response = newAskResponse("<speak> " + professor_name + " <say-as interpret-as=\"spell-out\">" + "is in the eternal ether" + "</say-as> . Would you like me to repeat that or give you more info on " + professor_name + "? </speak>", true, "<speak>I didn't catch that, would you like me to repeat their location or give you more info?</speak>", true);
+			session.setAttribute(SESSION_PROF_STATE, STATE_GET_LOCATION);
+			cachedProf = pc;
+		}
+		return response;
+
 	}
 	
 	private SpeechletResponse handleJokeIntent(IntentRequest intentReq, Session session)
@@ -733,6 +799,10 @@ public class KnockKnockConversation extends Conversation {
 				if(!json.isNull("name"))//if the value for name is not null, set the name
 				{
 					pc.setName(json.getString("name").toLowerCase());
+				}
+				if(!json.isNull("building_name"))//if the value for building_name is not null, set building_name
+				{
+					pc.setBuildingName(json.getString("building_name"));
 				}
 				array.add(pc.copy());
 				pc= null;
@@ -797,50 +867,21 @@ public class KnockKnockConversation extends Conversation {
 	}
 	private static void getJoke()
 	{
-		//get joke from api for if no info is found for a proffesor
-		String full_url = "http://api.yomomma.info/";
-
 		try
 		{
 
-			StringBuilder result = new StringBuilder();
-			//Create url to correctly encode url (i.e. spaces become %20)
-			
-			URL url2 = new URL(full_url);
-			//Make Http Connection
-			HttpURLConnection conn = (HttpURLConnection) url2.openConnection();
-			//Request to get for information
-			conn.setRequestMethod("GET");
-			//Read the http response into a BufferReader
-			BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			String line;
-			while ((line = rd.readLine()) != null)
-			{
-				result.append(line);
-			}
-			//End connection
-			rd.close();
-			conn.disconnect();
-
-			String json_text = result.toString();
-			//Interpret json_text string as a json array
-			JSONArray arr = new JSONArray("[" + json_text + "]");
-
-			//iterate through the json array, which consists of professor information
-			for(int i = 0; i < arr.length(); i++)
-			{
-				JSONObject json = arr.getJSONObject(i);
-				if(!json.isNull("joke"))//if the value for email is not null, set the email
-				{
-					joke = json.getString("joke");
-				}
-				
-			}
-
-			return;
+		Class.forName("com.mysql.jdbc.Driver");
+		con = DriverManager.getConnection("jdbc:mysql://cwolf.cs.sonoma.edu:3306/restrella", "restrella", "");
+		Statement stmnt = con.createStatement();
+		email = "yes";
+		String sql = "SELECT jokes.opener, jokes.punchline FROM jokes WHERE joke_id = " + Math.random() * 50 + 1;
+		PreparedStatement prep = con.prepareStatement(sql);
+		ResultSet rs = prep.executeQuery();
+		rs.next();
+		joke_opener = rs.getString(0);
+		joke_punchline = rs.getString(1);
 
 		}
-		//Catches in case of errors
 		catch (Exception e)
 		{
 			ProfContact pc = new ProfContact();			
