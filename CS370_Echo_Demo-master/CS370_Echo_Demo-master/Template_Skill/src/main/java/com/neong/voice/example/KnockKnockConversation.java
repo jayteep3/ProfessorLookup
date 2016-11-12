@@ -40,7 +40,8 @@ public class KnockKnockConversation extends Conversation {
 	private static List<ProfContact> cachedList = new ArrayList <ProfContact>();
 	private ProfContact cachedProf;
 	private Boolean duplicates;
-	private static String joke;
+	private static String joke_opener;
+	private static String joke_punchline;
 	
 	//Intent names
 	
@@ -854,50 +855,21 @@ public class KnockKnockConversation extends Conversation {
 	}
 	private static void getJoke()
 	{
-		//get joke from api for if no info is found for a proffesor
-		String full_url = "http://api.yomomma.info/";
-
 		try
 		{
 
-			StringBuilder result = new StringBuilder();
-			//Create url to correctly encode url (i.e. spaces become %20)
-			
-			URL url2 = new URL(full_url);
-			//Make Http Connection
-			HttpURLConnection conn = (HttpURLConnection) url2.openConnection();
-			//Request to get for information
-			conn.setRequestMethod("GET");
-			//Read the http response into a BufferReader
-			BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			String line;
-			while ((line = rd.readLine()) != null)
-			{
-				result.append(line);
-			}
-			//End connection
-			rd.close();
-			conn.disconnect();
-
-			String json_text = result.toString();
-			//Interpret json_text string as a json array
-			JSONArray arr = new JSONArray("[" + json_text + "]");
-
-			//iterate through the json array, which consists of professor information
-			for(int i = 0; i < arr.length(); i++)
-			{
-				JSONObject json = arr.getJSONObject(i);
-				if(!json.isNull("joke"))//if the value for email is not null, set the email
-				{
-					joke = json.getString("joke");
-				}
-				
-			}
-
-			return;
+		Class.forName("com.mysql.jdbc.Driver");
+		con = DriverManager.getConnection("jdbc:mysql://cwolf.cs.sonoma.edu:3306/restrella", "restrella", "");
+		Statement stmnt = con.createStatement();
+		email = "yes";
+		String sql = "SELECT jokes.opener, jokes.punchline FROM jokes WHERE joke_id = " + Math.random() * 50 + 1;
+		PreparedStatement prep = con.prepareStatement(sql);
+		ResultSet rs = prep.executeQuery();
+		rs.next();
+		joke_opener = rs.getString(0);
+		joke_punchline = rs.getString(1);
 
 		}
-		//Catches in case of errors
 		catch (Exception e)
 		{
 			ProfContact pc = new ProfContact();			
