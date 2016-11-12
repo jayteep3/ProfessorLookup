@@ -40,7 +40,8 @@ public class KnockKnockConversation extends Conversation {
 	private static List<ProfContact> cachedList = new ArrayList <ProfContact>();
 	private ProfContact cachedProf;
 	private Boolean duplicates;
-	private static String joke;
+	private static String joke_opener;
+	private static String joke_punchline;
 	
 	//Intent names
 	
@@ -858,15 +859,15 @@ public class KnockKnockConversation extends Conversation {
 		{
 
 		Class.forName("com.mysql.jdbc.Driver");
-		con = DriverManager.getConnection("jdbc:mysql://cwolf.cs.sonoma.edu:3306/restrella", "restrella", "abc123");
+		con = DriverManager.getConnection("jdbc:mysql://cwolf.cs.sonoma.edu:3306/restrella", "restrella", "");
 		Statement stmnt = con.createStatement();
 		email = "yes";
-		String sql = "SELECT joke.opener, joke.punchline FROM jokes WHERE joke_id = " + Math.random() * 50 + 1;
+		String sql = "SELECT jokes.opener, jokes.punchline FROM jokes WHERE joke_id = " + Math.random() * 50 + 1;
 		PreparedStatement prep = con.prepareStatement(sql);
 		ResultSet rs = prep.executeQuery();
 		rs.next();
-		email = rs.getString(0);
-		phone = rs.getString(1);
+		joke_opener = rs.getString(0);
+		joke_punchline = rs.getString(1);
 
 		}
 		catch (Exception e)
