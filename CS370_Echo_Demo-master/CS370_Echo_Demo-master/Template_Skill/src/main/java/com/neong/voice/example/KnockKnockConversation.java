@@ -12,7 +12,12 @@ import com.amazonaws.util.json.JSONException;
 import com.amazonaws.util.json.JSONObject;
 import com.neong.voice.model.base.Conversation;
 import java.io.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 import java.net.*;
 
@@ -95,11 +100,11 @@ public class KnockKnockConversation extends Conversation {
 
 	}
 
-	//TODO: (done)Set cachedList to null wherever the conversation ends.
-	//TODO: Handler to user response for professor clarification.
-	//TODO: (done) put if(cachedList.size() > 1) block into function
+	//TOD: (done) Set cachedList to null wherever the conversation ends.
+	//TOD: (done) Handler to user response for professor clarification.
+	//TOD: (done) put if(cachedList.size() > 1) block into function
 			// -> set global duplicates to true if set.size() < cachedList.size()
-	//TODO:(only took out Jeff's functions and global variables) Remove unnecessary Intents, session, states, and function
+	//TOD:(only took out Jeff's functions and global variables) Remove unnecessary Intents, session, states, and function
 	
 	
 	@Override
@@ -177,7 +182,7 @@ public class KnockKnockConversation extends Conversation {
 
 		return response;
 	}
-	//TODO:(done) put if(cachedList.size() > 1) block into function
+	//TOD: (done) put if(cachedList.size() > 1) block into function
 	// -> set global duplicates to true if set.size() < cachedList.size()
 	private String makeListOfDistinctProfessors(Session session)
 	{
@@ -249,8 +254,8 @@ public class KnockKnockConversation extends Conversation {
 
 			}
 			else{
-			String email;
-			for(char c: getEmail() )
+			String email = "";
+			for(char c: pc.getEmail().toCharArray() )
 				email += c + ',';
 			String name = pc.getName();
 			response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>, would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, " <speak> would you like me to repeat their email address? </speak>", true);
@@ -297,8 +302,8 @@ public class KnockKnockConversation extends Conversation {
 
 		if(STATE_GET_EMAIL_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			String name = pc.getName();
-			String email;
-			for(char c: getEmail() )
+			String email = "";
+			for(char c: pc.getEmail().toCharArray() )
 				email += c + ',';;
 			String phone = pc.getPhone();
 			response = newTellResponse("<speak>" + name + " s email is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as> their phone number is <say-as interpret-as=\"telephone\">" + phone + "</say-as>. </speak>", true);
@@ -307,8 +312,8 @@ public class KnockKnockConversation extends Conversation {
 		}
 		else if (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			String name = pc.getName();
-			String email;
-			for(char c: getEmail() )
+			String email = "";
+			for(char c: pc.getEmail().toCharArray() )
 				email += c + ',';
 			response = newTellResponse("<speak>" + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + " </say-as> . </speak>", true);
 			cachedList = null;
@@ -339,7 +344,8 @@ public class KnockKnockConversation extends Conversation {
 		}
 		else if(STATE_GET_JOKE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 		getJoke();
-		return newTellResponse(joke, false);
+		//return newTellResponse(joke, false);
+		return null; //TODO:need to implement new joke format
 		}
 
 		else
@@ -434,8 +440,8 @@ public class KnockKnockConversation extends Conversation {
 			{
 				//Email, but no Phone
 				String name = pc.getName();
-				String email;
-				for(char c: getEmail() )
+				String email = "";
+				for(char c: pc.getEmail().toCharArray() )
 					email += c + ',';
 				response = newAskResponse("<speak>" + name + " has no phone listed, but their email is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as> . Would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat the email address. </speak>", true);
 				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
@@ -445,8 +451,8 @@ public class KnockKnockConversation extends Conversation {
 			{
 				//Email and Phone
 				String name = pc.getName();
-				String email;
-				for(char c: getEmail() )
+				String email = "";
+				for(char c: pc.getEmail().toCharArray() )
 					email += c + ',';
 				String phone = pc.getPhone();
 				response = newAskResponse("<speak>" + name + "s email is " + " <say-as interpret-as=\"spell-out\">" + email +  "</say-as>, their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as> . Would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat " + name + "'s contact info? </speak>", true);
@@ -756,8 +762,9 @@ public class KnockKnockConversation extends Conversation {
 	
 	private SpeechletResponse handleJokeIntent(IntentRequest intentReq, Session session)
 	{
-		getJoke();
-		return newTellResponse(joke, false);
+	//	getJoke();
+	//	return newTellResponse(joke, false);
+		return null; //TODO:Need askResponse with beginning of joke, and a what intent which tells the rest.
 	}
 
 	public static void GetEmailPhone(String name2) throws ClassNotFoundException, SQLException
@@ -877,13 +884,13 @@ public class KnockKnockConversation extends Conversation {
 	}
 	private static void getJoke()
 	{
+		Connection con = null;
 		try
 		{
 
 		Class.forName("com.mysql.jdbc.Driver");
 		con = DriverManager.getConnection("jdbc:mysql://cwolf.cs.sonoma.edu:3306/restrella", "restrella", "");
 		Statement stmnt = con.createStatement();
-		email = "yes";
 		String sql = "SELECT jokes.opener, jokes.punchline FROM jokes WHERE joke_id = " + Math.random() * 50 + 1;
 		PreparedStatement prep = con.prepareStatement(sql);
 		ResultSet rs = prep.executeQuery();
