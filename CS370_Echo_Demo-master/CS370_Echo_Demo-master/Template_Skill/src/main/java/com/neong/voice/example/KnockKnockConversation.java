@@ -59,6 +59,7 @@ public class KnockKnockConversation extends Conversation {
 	private final static String INTENT_MORE_INFO = "MoreInfoIntent";
 	private final static String INTENT_HELP = "HelpIntent";
 	private final static String INTENT_TELLJOKE = "IntentTellJoke";
+	private final static String INTENT_LOCATION = "locationIntent";
 
 	//State keys 
 	private final static Integer STATE_GET_PROFESSOR = 2;
@@ -89,6 +90,7 @@ public class KnockKnockConversation extends Conversation {
 		supportedIntentNames.add(INTENT_REPEAT);
 		supportedIntentNames.add(INTENT_HELP);
 		supportedIntentNames.add(INTENT_TELLJOKE);
+		supportedIntentNames.add(INTENT_LOCATION);
 
 	}
 
@@ -144,19 +146,23 @@ public class KnockKnockConversation extends Conversation {
 		//User asks for help
 		else if (INTENT_HELP.equals(intentName)){
 			response = handleHelpIntent(intentReq, session);
-			//added comment
 		}
 		//CASE X:
+		// User asks for location
+		else if (INTENT_LOCATION.equals(intentName)){
+			response = handleLocationIntent(intentReq, session);
+		}
+		//CASE XI:
 		//User says yeas somewhere.
 		else if (INTENT_YES.equals(intentName)){
 			response = handleYesIntent(intentReq, session);
 		}
-		//CASE XI:
+		//CASE XII:
 		//User says no somewhere
 		else if(INTENT_NO.equals(intentName)){
 			response = handleNoIntent(intentReq, session);
 		}
-		//CASE XII:
+		//CASE XIII:
 		//User says tell me a joke
 		else if(INTENT_TELLJOKE.equals(intentName)){
 			response = handleJokeIntent(intentReq, session);
@@ -172,7 +178,7 @@ public class KnockKnockConversation extends Conversation {
 	}
 	//TODO:(done) put if(cachedList.size() > 1) block into function
 	// -> set global duplicates to true if set.size() < cachedList.size()
-	private /*SpeechletResponse*/String makeListOfDistinctProfessors(Session session)
+	private String makeListOfDistinctProfessors(Session session)
 	{
 
 			session.setAttribute(SESSION_PROF_STATE, STATE_AMBIGUOUS_PROF);
@@ -180,20 +186,7 @@ public class KnockKnockConversation extends Conversation {
 			
 			Set<String> distinct = new HashSet<String>();
 			for(int i = 0; i < cachedList.size(); i++)
-			{
 				distinct.add(cachedList.get(i).getName());
-				/*
-				if(profAttributeName.equals("name"))
-					
-
-				if(profAttributeName.equals("building_name"));
-				{
-					if(cachedList.get(i).getBuildingName() == null)
-						distinct.add("in the eternal ether");
-					else
-						distinct.add(cachedList.get(i).getBuildingName());
-				}*/
-			}
 		
 			
 			if(distinct.size() < cachedList.size())
@@ -216,7 +209,6 @@ public class KnockKnockConversation extends Conversation {
 				i++;
 			}
 			return list;
-			//return newAskResponse("Did you mean, " + list + ", say first and last name please", false, "Did you mean, " + list, false);
 	}
 	
 
