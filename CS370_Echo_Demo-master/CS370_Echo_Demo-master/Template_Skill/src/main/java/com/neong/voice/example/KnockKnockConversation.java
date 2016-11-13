@@ -239,7 +239,7 @@ public class KnockKnockConversation extends Conversation {
 			else{
 			String email = pc.getEmail();
 			String name = pc.getName();
-			response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>, would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, " <speak> would you like me to repeat their email address? </speak>", true);
+			response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> would you like me to repeat their email address?  You can say repeat, more information, or tell me a joke</speak>", true);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 			}
 		}
@@ -408,7 +408,7 @@ public class KnockKnockConversation extends Conversation {
 				//Phone, but no Email
 				String name = pc.getName();
 				String phone = pc.getPhone();
-				response = newAskResponse("<speak>" + name + " has no email listed, but their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as> . Would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat the phone number </speak>", true);
+				response = newAskResponse("<speak>" + name + " has no email listed, but their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as> . Would you like me to repeat that? </speak>", true, "<speak> I did not catch that, You can say repeat, more information, or tell me a joke </speak>", true);
 				session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
 				cachedProf = pc;
 			}
@@ -420,7 +420,7 @@ public class KnockKnockConversation extends Conversation {
 				//Email, but no Phone
 				String name = pc.getName();
 				String email = pc.getEmail();
-				response = newAskResponse("<speak>" + name + " has no phone listed, but their email is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as> . Would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat the email address. </speak>", true);
+				response = newAskResponse("<speak>" + name + " has no phone listed, but their email is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as> . Would you like me to repeat that?</speak>", true, "<speak> I did not catch that, You can say repeat or ask for more information.</speak>", true);
 				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 				cachedProf = pc;
 			}
@@ -430,7 +430,7 @@ public class KnockKnockConversation extends Conversation {
 				String name = pc.getName();
 				String email = pc.getEmail();
 				String phone = pc.getPhone();
-				response = newAskResponse("<speak>" + name + "s email is " + " <say-as interpret-as=\"spell-out\">" + email +  "</say-as>, their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as> . Would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat " + name + "'s contact info? </speak>", true);
+				response = newAskResponse("<speak>" + name + "s email is " + " <say-as interpret-as=\"spell-out\">" + email +  "</say-as>, their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as> . Would you like me to repeat that?</speak>", true, "<speak> I did not catch that, You can say repeat, more information, or tell me a joke.</speak>", true);
 			}
 		}	
 		return response;
@@ -658,13 +658,17 @@ public class KnockKnockConversation extends Conversation {
 	private SpeechletResponse handleJokeIntent(IntentRequest intentReq, Session session)
 	{
 		getJoke();
-		return newTellResponse(joke, false);
+		return newTellResponse("<speak> " + joke + "</speak>", false);
 	}
 
 	public static void GetEmailPhone(String name2) throws ClassNotFoundException, SQLException
 	{
 		//Template url added with professor name asked for
 		name2 = name2.replace(" ", "%20");
+		if(name2.contains("'s"))
+		{
+			name2 = name2.replace("'s", "");
+		}
 		String full_url = "https://moonlight.cs.sonoma.edu/api/v1/directory/person/?format=json&search=" + name2;
 
 		ArrayList<ProfContact> array = new ArrayList<ProfContact>();
