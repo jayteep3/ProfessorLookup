@@ -553,6 +553,14 @@ public class KnockKnockConversation extends Conversation {
 			{
 				response = PhoneNumberIntentResponse(intentReq, session);
 			}
+			else if(STATE_GET_LOCATION.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0)
+			{
+				response = LocationIntentResponse(intentReq, session);
+			}
+			else
+			{
+				response = newTellResponse("error. I am unsure what peice of info was originally requested", false); //Should never happen, but if it does, heres an error message
+			}
 			return response;
 			
 			//something for if there is too far a match match
@@ -708,10 +716,33 @@ public class KnockKnockConversation extends Conversation {
 		return response;
 	}
 	
+	public SpeechletResponse LocationIntentResponse(IntentRequest intentReq, Session session)
+	{
+		ProfContact pc = new ProfContact();
+		SpeechletResponse response = null;
+		pc = cachedList.get(0);
+		// they have a location
+		if(pc.getBuildingName() != null && !pc.getBuildingName().isEmpty())
+		{
+			//We have building name
+			response = newAskResponse("<speak> " + pc.getName() + "'s " + "can be found at" + pc.getBuildingName() + " . Would you like me to repeat that or give you more info on " + pc.getName() + "? </speak>", true, "<speak>I didn't catch that, would you like me to repeat their location or give you more info?</speak>", true);
+			session.setAttribute(SESSION_PROF_STATE, STATE_GET_LOCATION);
+			cachedProf = pc;
+		}
+		// they don't have a location
+		else
+		{
+			response = newAskResponse("<speak> " + pc.getName() + "is in the eternal ether" + " . Would you like me to repeat that or give you more info on " + pc.getName() + "? </speak>", true, "<speak>I didn't catch that, would you like me to repeat their location or give you more info?</speak>", true);
+			session.setAttribute(SESSION_PROF_STATE, STATE_GET_LOCATION);
+			cachedProf = pc;
+		}
+		return response;
+	}
+	
 	public SpeechletResponse handleLocationIntent(IntentRequest intentReq, Session session)
 	{
-		Intent email_intent = intentReq.getIntent();
-		String professor_name = email_intent.getSlots().get("ProfessorName").getValue();
+		Intent location_intent = intentReq.getIntent();
+		String professor_name = location_intent.getSlots().get("ProfessorName").getValue();
 		ProfContact pc = new ProfContact();
 		SpeechletResponse response = null;
 
@@ -735,26 +766,12 @@ public class KnockKnockConversation extends Conversation {
 			String list = makeListOfDistinctProfessors(session);
 			
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_LOCATION);
-			return newAskResponse("Did you mean" + list + "say first name and last name  please", false, "Did you mean, " + list, false);
-
+			session.setAttribute(SESSION_PROF_STATE_2, STATE_AMBIGUOUS_PROF);
+			response = newAskResponse("Did you mean" + list + "say first name and last name  please", false, "Did you mean, " + list, false);
 		}
-		pc = cachedList.get(0);
-		// they have a location
-
-		if(pc.getBuildingName() != null && !pc.getBuildingName().isEmpty())
-		{
-			//We have building name
-			response = newAskResponse("<speak> " + professor_name + "'s " + "can be found at" + pc.getBuildingName() + " . Would you like me to repeat that or give you more info on " + professor_name + "? </speak>", true, "<speak>I didn't catch that, would you like me to repeat their location or give you more info?</speak>", true);
-			session.setAttribute(SESSION_PROF_STATE, STATE_GET_LOCATION);
-			cachedProf = pc;
-		}
-		// they don't have a location
 		else
 		{
-			
-			response = newAskResponse("<speak> " + professor_name + "is in the eternal ether" + " . Would you like me to repeat that or give you more info on " + professor_name + "? </speak>", true, "<speak>I didn't catch that, would you like me to repeat their location or give you more info?</speak>", true);
-			session.setAttribute(SESSION_PROF_STATE, STATE_GET_LOCATION);
-			cachedProf = pc;
+			response = LocationIntentResponse(intentReq, session);
 		}
 		return response;
 
