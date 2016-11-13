@@ -262,6 +262,9 @@ public class KnockKnockConversation extends Conversation {
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 			}
 		}
+		else if (STATE_GET_LOCATION.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
+			//TODO
+		}
 		else
 			response = newTellResponse("<speak> Peace out cub scout! </speak>", true);
 			cachedList = null;
