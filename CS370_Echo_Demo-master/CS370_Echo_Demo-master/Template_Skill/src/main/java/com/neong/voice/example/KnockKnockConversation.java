@@ -324,11 +324,27 @@ public class KnockKnockConversation extends Conversation {
 			String phone = pc.getPhone();
 			response = newTellResponse("<speak>" + name + "s phone number is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as> . </speak>", true);
 			cachedList = null;
-
+		}
+		else if (STATE_GET_LOCATION.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
+			if(pc.getBuildingName() != null && !pc.getBuildingName().isEmpty())
+			{
+				//We have building name
+				response = newTellResponse("<speak> " + pc.getName() + "can be found at" + pc.getBuildingName() + "</speak>", true);
+				session.setAttribute(SESSION_PROF_STATE, STATE_GET_LOCATION);
+			}
+			// they don't have a location
+			else
+			{
+				response = newTellResponse("<speak> " + pc.getName() + "is in the eternal ether" + "</speak>", true);
+				session.setAttribute(SESSION_PROF_STATE, STATE_GET_LOCATION);
+			}
+			cachedList = null;
 		}
 		else
+		{
 			response = newTellResponse("<speak> Watchu talkin about willis? </speak>", true);
 			cachedList = null;
+		}
 
 		return response;
 	}
@@ -727,14 +743,12 @@ public class KnockKnockConversation extends Conversation {
 			//We have building name
 			response = newAskResponse("<speak> " + pc.getName() + "'s " + "can be found at" + pc.getBuildingName() + " . Would you like me to repeat that or give you more info on " + pc.getName() + "? </speak>", true, "<speak>I didn't catch that, would you like me to repeat their location or give you more info?</speak>", true);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_LOCATION);
-			cachedProf = pc;
 		}
 		// they don't have a location
 		else
 		{
 			response = newAskResponse("<speak> " + pc.getName() + "is in the eternal ether" + " . Would you like me to repeat that or give you more info on " + pc.getName() + "? </speak>", true, "<speak>I didn't catch that, would you like me to repeat their location or give you more info?</speak>", true);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_LOCATION);
-			cachedProf = pc;
 		}
 		return response;
 	}
