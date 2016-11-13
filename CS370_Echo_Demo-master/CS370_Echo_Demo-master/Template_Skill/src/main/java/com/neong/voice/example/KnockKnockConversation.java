@@ -258,7 +258,7 @@ public class KnockKnockConversation extends Conversation {
 			for(char c: pc.getEmail().toCharArray() )
 				email += c + ',';
 			String name = pc.getName();
-			response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> would you like me to repeat their email address?  You can say repeat, more information, or tell me a joke</speak>", true);
+			response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 			}
 		}
@@ -344,8 +344,7 @@ public class KnockKnockConversation extends Conversation {
 		}
 		else if(STATE_GET_JOKE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 		getJoke();
-		//return newTellResponse(joke, false);
-		return null; //TODO:need to implement new joke format
+		return newTellResponse("<speak>" + joke_opener + ",,," + joke_punchline + "</speak>", true);
 		}
 
 		else
@@ -779,9 +778,8 @@ public class KnockKnockConversation extends Conversation {
 	
 	private SpeechletResponse handleJokeIntent(IntentRequest intentReq, Session session)
 	{
-	//	getJoke();
-	//	return newTellResponse(joke, false);
-		return null; //TODO:Need askResponse with beginning of joke, and a what intent which tells the rest.
+		getJoke();
+		return newTellResponse("<speak>" + joke_opener + ",,," + joke_punchline + "</speak>", true);
 	}
 
 	public static void GetEmailPhone(String name2) throws ClassNotFoundException, SQLException
@@ -910,9 +908,9 @@ public class KnockKnockConversation extends Conversation {
 		{
 
 		Class.forName("com.mysql.jdbc.Driver");
-		con = DriverManager.getConnection("jdbc:mysql://cwolf.cs.sonoma.edu:3306/restrella", "restrella", "");
+		con = DriverManager.getConnection("jdbc:mysql://cwolf.cs.sonoma.edu:3306/restrella", "restrella", "Xtlatilpa5");
 		Statement stmnt = con.createStatement();
-		String sql = "SELECT jokes.opener, jokes.punchline FROM jokes WHERE joke_id = " + Math.random() * 50 + 1;
+		String sql = "SELECT jokes.opener, jokes.punchline FROM jokes WHERE joke_id = " +( 1 + (int) (Math.random() * 50 ));
 		PreparedStatement prep = con.prepareStatement(sql);
 		ResultSet rs = prep.executeQuery();
 		rs.next();
