@@ -264,9 +264,10 @@ public class KnockKnockConversation extends Conversation {
 			//TODO
 		}
 		else
+		{
 			response = newTellResponse("<speak> Peace out cub scout! </speak>", true);
-		cachedList = null;
-
+			cachedList = null;
+		}
 		return response;
 	}
 
@@ -286,7 +287,6 @@ public class KnockKnockConversation extends Conversation {
 				"get me contact info for ProfessorName.";
 
 		response = newTellResponse("<speak>" + office_hours_intent + contact_information_combo_intent + "</speak>", true);
-		cachedList = null;
 
 		return response;
 	}
@@ -308,8 +308,6 @@ public class KnockKnockConversation extends Conversation {
 				email += c + ',';;
 				String phone = pc.getPhone();
 				response = newTellResponse("<speak>" + name + " s email is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as> their phone number is <say-as interpret-as=\"telephone\">" + phone + "</say-as>. </speak>", true);
-				cachedList = null;
-
 		}
 		else if (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			String name = pc.getName();
@@ -339,7 +337,6 @@ public class KnockKnockConversation extends Conversation {
 				response = newTellResponse("<speak> " + pc.getName() + "is in the eternal ether" + "</speak>", true);
 				session.setAttribute(SESSION_PROF_STATE, STATE_GET_LOCATION);
 			}
-			cachedList = null;
 		}
 		else
 		{
@@ -454,9 +451,8 @@ public class KnockKnockConversation extends Conversation {
 			{
 				//Email, but no Phone
 				String name = pc.getName();
-				String email = "";
-				for(char c: pc.getEmail().toCharArray() )
-					email += c + ',';
+				String email = pc.getEmail();
+				email.replace("", ", ").trim();
 				response = newAskResponse("<speak>" + name + " has no phone listed, but their email is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as> . Would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat the email address. </speak>", true);
 				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 			}
@@ -595,14 +591,7 @@ public class KnockKnockConversation extends Conversation {
 
 		pc = cachedList.get(0);
 		String phone_number = pc.getPhone();
-
-		if(pc.getName().toLowerCase() == "kathy morris")
-		{
-			//neither phone nor email exist
-			response = newAskResponse("Sorry there is no contact information for " + pc.getName() + ". Would you like to hear a joke instead? ", false, "Would you like to hear a joke instead? ", false);					cachedList = null;
-			session.setAttribute(SESSION_PROF_STATE, STATE_GET_JOKE);
-		}
-		else if(phone_number != null && !phone_number.isEmpty())
+		if(phone_number != null && !phone_number.isEmpty())
 		{
 			// phone number exists
 			response = newAskResponse("<speak> Here is " + pc.getName() + "'s phone number: " + " <say-as interpret-as=\"telephone\">" + phone_number + "</say-as> . Would you like me to repeat that or give you more info on " + pc.getName() + "?</speak>", true, "<speak> I didn't catch that, would you like me to repeat their phone number or give you more info? </speak>", true);
@@ -627,6 +616,7 @@ public class KnockKnockConversation extends Conversation {
 		// assume contact info for the professor is stored in our data structure
 		ProfContact pc = new ProfContact();
 		SpeechletResponse response = null;
+		
 		if(professor_name != null && !professor_name.isEmpty())
 			//We have prof name
 		{
@@ -686,7 +676,6 @@ public class KnockKnockConversation extends Conversation {
 		String professor_name = email_intent.getSlots().get("ProfessorName").getValue();
 		ProfContact pc = new ProfContact();
 		SpeechletResponse response = null;
-		pc = cachedList.get(0);
 		if(professor_name != null && !professor_name.isEmpty())
 			//we have prof name
 		{
