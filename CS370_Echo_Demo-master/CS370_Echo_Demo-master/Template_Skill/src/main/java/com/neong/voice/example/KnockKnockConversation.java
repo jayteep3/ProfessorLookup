@@ -252,11 +252,22 @@ public class KnockKnockConversation extends Conversation {
 
 			}
 			else{
-				String email = "";
-				for(char c: pc.getEmail().toCharArray() )
-					email += c + ',';
+				String emailSite = "";
+				String email = pc.getEmail();
+				char [] emailArray = email.toCharArr()
+				for(char c: emailArray )
+				{
+					if(c == '@')
+					{
+						emailSite += c + ',';
+						for(char ch: emailArray)
+							emailSite += ch;
+					}
+					else
+						email += c + ',';
+				}
 				String name = pc.getName();
-				response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true);
+				response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>" + emailSite + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true);
 				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 			}
 		}
