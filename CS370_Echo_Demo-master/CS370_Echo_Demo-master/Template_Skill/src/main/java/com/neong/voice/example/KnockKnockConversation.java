@@ -252,10 +252,14 @@ public class KnockKnockConversation extends Conversation {
 
 			}
 			else{
-				String sp = "";
+				String sp = "@ sonoma . e, d, u";
+				String name = pc.getName();
 				String email = pc.getEmail();
 				String [] parts = email.split("@");
 				String fp = parts[0].replace("",", ");
+				if(fp.contains(".")){
+					fp.replaceAll(".", "dot");
+				}
 				if(parts[1].toLowerCase() == "sonoma.edu" )
 				{
 					sp = "@ sonoma . e d u ";
@@ -266,13 +270,13 @@ public class KnockKnockConversation extends Conversation {
 				}
 				else if(parts[1].toLowerCase() == "yahoo.com" )
 				{
-					sp = "@ yahoo . com"
+					sp = "@ yahoo . com";
 				}
 				else if(parts[1].toLowerCase() == "hotmail.com" )
 				{
 					sp = "@ hot mail . com";
 				}
-				response = response = newAskResponse("<speak> " + name + "s email address is " + fp + sp + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true); 
+				response = newAskResponse("<speak> " + name + "s email address is " + fp + sp + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true); 
 
 				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 			}
@@ -320,10 +324,13 @@ public class KnockKnockConversation extends Conversation {
 
 		if(STATE_GET_EMAIL_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			String name = pc.getName();
-			String sp = "";
+			String sp = "@ sonoma . e, d, u";
 				String email = pc.getEmail();
 				String [] parts = email.split("@");
 				String fp = parts[0].replace("",", ");
+				if(fp.contains(".")){
+					fp.replaceAll(".", "dot");
+				}
 				if(parts[1].toLowerCase() == "sonoma.edu" )
 				{
 					sp = "@ sonoma . e d u ";
@@ -334,7 +341,7 @@ public class KnockKnockConversation extends Conversation {
 				}
 				else if(parts[1].toLowerCase() == "yahoo.com" )
 				{
-					sp = "@ yahoo . com"
+					sp = "@ yahoo . com";
 				}
 				else if(parts[1].toLowerCase() == "hotmail.com" )
 				{
@@ -345,14 +352,17 @@ public class KnockKnockConversation extends Conversation {
 		}
 		else if (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			String name = pc.getName();
-			String sp = "";
+			String sp = "@ sonoma . e, d, u";
 				String email = pc.getEmail();
 				String [] parts = email.split("@");
 				String fp = parts[0].replace("",", ");
+				if(fp.contains(".")){
+					fp.replaceAll(".", "dot");
+				}
 				if(parts[1].toLowerCase() == "sonoma.edu" )
 				{
 					sp = "@ sonoma . e d u ";
-					response = response = newAskResponse("<speak> " + name + "s email address is " + fp + sp + ", would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true); 
+					response = newAskResponse("<speak> " + name + "s email address is " + fp + sp + ", would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true); 
 				}
 				else if(parts[1].toLowerCase() == "gmail.com" )
 				{
@@ -360,7 +370,7 @@ public class KnockKnockConversation extends Conversation {
 				}
 				else if(parts[1].toLowerCase() == "yahoo.com" )
 				{
-					sp = "@ yahoo . com"
+					sp = "@ yahoo . com";
 				}
 				else if(parts[1].toLowerCase() == "hotmail.com" )
 				{
@@ -504,15 +514,17 @@ public class KnockKnockConversation extends Conversation {
 			{
 				//Email, but no Phone
 				String name = pc.getName();
-				String email = "";
-				String sp = "";
+				String sp = "@ sonoma . e, d, u";
 				String email = pc.getEmail();
 				String [] parts = email.split("@");
 				String fp = parts[0].replace("",", ");
+						if(fp.contains(".")){
+							fp.replaceAll(".", "dot");
+						}
 				if(parts[1].toLowerCase() == "sonoma.edu" )
 				{
 					sp = "@ sonoma . e d u ";
-					response = response = newAskResponse("<speak> " + name + "s email address is " + fp + sp + ", would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true); 
+					response = newAskResponse("<speak> " + name + "s email address is " + fp + sp + ", would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true); 
 				}
 				else if(parts[1].toLowerCase() == "gmail.com" )
 				{
@@ -520,7 +532,7 @@ public class KnockKnockConversation extends Conversation {
 				}
 				else if(parts[1].toLowerCase() == "yahoo.com" )
 				{
-					sp = "@ yahoo . com"
+					sp = "@ yahoo . com";
 				}
 				else if(parts[1].toLowerCase() == "hotmail.com" )
 				{
@@ -535,15 +547,17 @@ public class KnockKnockConversation extends Conversation {
 			{
 				//Email and Phone
 				String name = pc.getName();
-				String email = "";
-				String sp = "";
+				String sp = "@ sonoma . e, d, u";
 				String email = pc.getEmail();
 				String [] parts = email.split("@");
 				String fp = parts[0].replace("",", ");
+				if(fp.contains(".")){
+					fp.replaceAll(".", "dot");
+				}
 				if(parts[1].toLowerCase() == "sonoma.edu" )
 				{
 					sp = "@ sonoma . e d u ";
-					response = response = newAskResponse("<speak> " + name + "s email address is " + fp + sp + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true); 
+					response = newAskResponse("<speak> " + name + "s email address is " + fp + sp + ", would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true); 
 				}
 				else if(parts[1].toLowerCase() == "gmail.com" )
 				{
@@ -551,7 +565,7 @@ public class KnockKnockConversation extends Conversation {
 				}
 				else if(parts[1].toLowerCase() == "yahoo.com" )
 				{
-					sp = "@ yahoo . com"
+					sp = "@ yahoo . com";
 				}
 				else if(parts[1].toLowerCase() == "hotmail.com" )
 				{
@@ -560,7 +574,7 @@ public class KnockKnockConversation extends Conversation {
 				}
 				
 				String phone = pc.getPhone();
-				response = newAskResponse("<speak>" + name + "s email is " + fp + sp + "</say-as>, their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as> . Would you like me to repeat that?</speak>", true, "<speak> I did not catch that, You can say repeat, more information, or tell me a joke.</speak>", true);
+				response = newAskResponse("<speak>" + name + "s email is " + fp + sp + ", their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as> . Would you like me to repeat that?</speak>", true, "<speak> I did not catch that, You can say repeat, more information, or tell me a joke.</speak>", true);
 				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL_PHONE);
 			}
 		}	
