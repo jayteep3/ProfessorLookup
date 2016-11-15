@@ -634,7 +634,7 @@ public class KnockKnockConversation extends Conversation {
 			{
 				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL_PHONE);
 				String list = makeListOfDistinctProfessors(session);
-				return newAskResponse("Did you mean, " + list + ", say first and last name please", false, "Did you mean, " + list, false);
+				return newAskResponse("<speak> Did you mean, " + list + ", say first and last name please </speak>", false, "<speak> Did you mean, " + list + "</speak>", false);
 			}
 			else
 			{
@@ -644,7 +644,7 @@ public class KnockKnockConversation extends Conversation {
 
 		else
 		{
-			response = newAskResponse("I did not hear a professor name, can you try again", false, "I didn't catch that,  Can I have a professor name ", false);
+			response = newAskResponse("<speak> I did not hear a professor name, can you try again </speak>", false, "<speak> I didn't catch that,  Can I have a professor name </speak>", false);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PROFESSOR);
 		}
 		return response;
@@ -700,7 +700,7 @@ public class KnockKnockConversation extends Conversation {
 			}
 			else
 			{
-				response = newTellResponse("error. I am unsure what peice of info was originally requested", false); //Should never happen, but if it does, heres an error message
+				response = newTellResponse("<speak> error. I am unsure what peice of information was originally requested </speak>", false); //Should never happen, but if it does, heres an error message
 			}
 			return response;
 
@@ -732,7 +732,7 @@ public class KnockKnockConversation extends Conversation {
 		else if(pc.getEmail() != null && !pc.getEmail().isEmpty())
 		{
 			// phone number doesn't exist, but email does
-			response = newAskResponse("This professor has no phone number, would you like their email ", false, "Would you like their email?", false);
+			response = newAskResponse("<speak> This professor has no phone number, would you like their email </speak>", false, "<speak> Would you like their email? </speak>", false);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 		}
 		return response;
@@ -797,7 +797,7 @@ public class KnockKnockConversation extends Conversation {
 		else if(pc.getPhone() != null && !pc.getPhone().isEmpty())
 		{
 			//No email, but we have phone
-			response = newAskResponse("This professor has no email address listed. Would you like their phone?  ", false, "Would you like their phone?", false);
+			response = newAskResponse("<speak> This professor has no email address listed. Would you like their phone?  </speak>", false, " <speak> Would you like their phone? </speak>", false);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PHONE);
 		}
 		return response;
@@ -823,7 +823,7 @@ public class KnockKnockConversation extends Conversation {
 			if(cachedList.size() > 1)
 			{
 				String list = makeListOfDistinctProfessors(session);
-				return newAskResponse("Did you mean, " + list + ", say first and last name please", false, "Did you mean, " + list, false);
+				return newAskResponse("<speak> Did you mean, " + list + ", say first and last name please </speak>", false, "<speak> Did you mean, " + list + "</speak>", false);
 				//return 
 			}
 			else
@@ -834,7 +834,7 @@ public class KnockKnockConversation extends Conversation {
 		else
 			//professor name is null or empty
 		{
-			response = newAskResponse("I did not hear a professor name, can you try again", false, "I didn't catch that,  Can I have a professor name ", false);
+			response = newAskResponse("<speak> I did not hear a professor name, can you try again</speak>", false, "<speak> I didn't catch that,  Can I have a professor name </speak>", false);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_PROFESSOR);
 		}
 		return response;
@@ -889,7 +889,7 @@ public class KnockKnockConversation extends Conversation {
 
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_LOCATION);
 			session.setAttribute(SESSION_PROF_STATE_2, STATE_AMBIGUOUS_PROF);
-			response = newAskResponse("Did you mean" + list + "say first name and last name  please", false, "Did you mean, " + list, false);
+			response = newAskResponse("<speak> Did you mean" + list + "say first name and last name  please </speak>", false, "<speak> Did you mean, " + list + "</speak>", false);
 		}
 		else
 		{
