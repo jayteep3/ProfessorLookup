@@ -252,11 +252,41 @@ public class KnockKnockConversation extends Conversation {
 
 			}
 			else{
-				String email = "";
-				for(char c: pc.getEmail().toCharArray() )
+				String emailSite = "";
+				String emailExtension = "";
+				String email = pc.getEmail();
+				String[] parts = email.split("@");
+				String fp = parts[0];
+				String sp = parts[1];
+				char [] fpArray = fp.toCharArray();
+				for(char c: fpArray )
+				{
 					email += c + ',';
+				}
+				sp = "@ " + sp;
+				char [] spArray = sp.toCharArray();
+				parts = sp.split(".");
+				String tp =  parts[1];
+				tp = ". " + tp;
+				char [] tpArray = tp.toCharArray();
+				for(char ch: spArray)
+				{
+					emailSite += ch;
+				}
+				for(char cha: tpArray)
+				{
+					emailExtension += cha;
+				}
 				String name = pc.getName();
-				response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true);
+				if(emailSite.contains("sonoma"))
+				{
+					response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>" + emailSite + "</say-as interpret-as =\"spell-out\">" + emailExtension + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true);
+				}
+				else if(emailSite.contains("gmail"))
+				{
+					String gmail = "@ g mail";
+					response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>" + gmail+ "</say-as interpret-as =\"spell-out\">" + emailExtension + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true);
+				}	
 				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 			}
 		}
@@ -266,8 +296,8 @@ public class KnockKnockConversation extends Conversation {
 		else
 		{
 			response = newTellResponse("<speak> Peace out cub scout! </speak>", true);
-			cachedList = null;
-		}
+		cachedList = null;
+
 		return response;
 	}
 
@@ -303,18 +333,79 @@ public class KnockKnockConversation extends Conversation {
 
 		if(STATE_GET_EMAIL_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			String name = pc.getName();
-			String email = "";
-			for(char c: pc.getEmail().toCharArray() )
-				email += c + ',';;
-				String phone = pc.getPhone();
-				response = newTellResponse("<speak>" + name + " s email is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as> their phone number is <say-as interpret-as=\"telephone\">" + phone + "</say-as>. </speak>", true);
+			String emailSite = "";
+			String emailExtension = "";
+			String email = pc.getEmail();
+			String[] parts = email.split("@");
+			String fp = parts[0];
+			String sp = parts[1];
+			char [] fpArray = fp.toCharArray();
+			for(char c: fpArray )
+			{
+				email += c + ',';
+			}
+			sp = "@" + sp;
+			char [] spArray = sp.toCharArray();
+			parts = sp.split(".");
+			String tp =  parts[1];
+			tp = "." + tp;
+			char [] tpArray = tp.toCharArray();
+			for(char ch: spArray)
+			{
+				emailSite += ch;
+			}
+			for(char cha: tpArray)
+			{
+				emailExtension += cha;
+			}	
+			String phone = pc.getPhone();
+			if(emailSite.contains("sonoma"))
+				{
+					response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>" + emailSite + "</say-as interpret-as =\"spell-out\">" + emailExtension + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true);
+				}
+				else if(emailSite.contains("gmail"))
+				{
+					String gmail = "@ g mail";
+					response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>" + gmail+ "</say-as interpret-as =\"spell-out\">" + emailExtension + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true);
+				}			cachedList = null;
+
 		}
 		else if (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			String name = pc.getName();
-			String email = "";
-			for(char c: pc.getEmail().toCharArray() )
+			String emailSite = "";
+			String emailExtension = "";
+			String email = pc.getEmail();
+			String[] parts = email.split("@");
+			String fp = parts[0];
+			String sp = parts[1];
+			char [] fpArray = fp.toCharArray();
+			for(char c: fpArray )
+			{
 				email += c + ',';
-			response = newTellResponse("<speak>" + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + " </say-as> . </speak>", true);
+			}
+			sp = "@" + sp;
+			char [] spArray = sp.toCharArray();
+			parts = sp.split(".");
+			String tp =  parts[1];
+			tp = "." + tp;
+			char [] tpArray = tp.toCharArray();
+			for(char ch: spArray)
+			{
+				emailSite += ch;
+			}
+			for(char cha: tpArray)
+			{
+				emailExtension += cha;
+			}	
+			if(emailSite.contains("sonoma"))
+				{
+					response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>" + emailSite + "</say-as interpret-as =\"spell-out\">" + emailExtension + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true);
+				}
+				else if(emailSite.contains("gmail"))
+				{
+					String gmail = "@ g mail";
+					response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>" + gmail+ "</say-as interpret-as =\"spell-out\">" + emailExtension + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true);
+				}
 			cachedList = null;
 
 		}
