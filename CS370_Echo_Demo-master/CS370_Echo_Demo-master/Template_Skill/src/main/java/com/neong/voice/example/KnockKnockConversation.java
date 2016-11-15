@@ -48,21 +48,21 @@ public class KnockKnockConversation extends Conversation {
 
 	//Intent names
 
-	private final static String INTENT_OFFICE_HOURS = "officehoursIntent";
-	private final static String INTENT_CONTACTINFO = "ContactInformationIntent";
-	private final static String INTENT_PHONE_NUMBER = "ContactInformationPhoneIntent";
-	private final static String INTENT_EMAIL_ADDRESS = "ContactInformationEmailIntent";
-	private final static String INTENT_CLASSES = "ClassesTaughtIntent";
-	private final static String INTENT_COMBO = "ContactInformationComboIntent";
-	private final static String INTENT_CLARIFY_PROF = "ProfessorNameIntent";
-	private final static String INTENT_YES = "AMAZON.YesIntent";
-	private final static String INTENT_NO = "AMAZON.NoIntent";
-	private final static String INTENT_STOP = "AMAZON.StopIntent";
-	private final static String INTENT_REPEAT = "RepeatIntent";
-	private final static String INTENT_MORE_INFO = "MoreInfoIntent";
-	private final static String INTENT_HELP = "HelpIntent";
-	private final static String INTENT_TELLJOKE = "IntentTellJoke";
-	private final static String INTENT_LOCATION = "locationIntent";
+	private final static String INTENT_OFFICE_HOURS = "officehoursIntent"; // 1
+	private final static String INTENT_CONTACTINFO = "ContactInformationIntent"; // 2
+	private final static String INTENT_PHONE_NUMBER = "ContactInformationPhoneIntent"; // 3
+	private final static String INTENT_EMAIL_ADDRESS = "ContactInformationEmailIntent"; // 4
+	private final static String INTENT_CLASSES = "ClassesTaughtIntent"; // 5
+	private final static String INTENT_COMBO = "ContactInformationComboIntent"; // 6
+	private final static String INTENT_CLARIFY_PROF = "ProfessorNameIntent"; // 7
+	private final static String INTENT_YES = "AMAZON.YesIntent"; // 8
+	private final static String INTENT_NO = "AMAZON.NoIntent"; // 9
+	private final static String INTENT_STOP = "AMAZON.StopIntent"; // 10
+	private final static String INTENT_REPEAT = "RepeatIntent"; // 11
+	private final static String INTENT_MORE_INFO = "MoreInfoIntent"; //12
+	private final static String INTENT_HELP = "HelpIntent"; // 13
+	private final static String INTENT_TELLJOKE = "IntentTellJoke"; // 14
+	private final static String INTENT_LOCATION = "locationIntent"; // 15
 
 	//State keys 
 	private final static Integer STATE_GET_PROFESSOR = 2;
@@ -111,65 +111,69 @@ public class KnockKnockConversation extends Conversation {
 		Intent intent = intentReq.getIntent();
 		String intentName = (intent != null) ? intent.getName() : null;
 		SpeechletResponse response = null;
-		//CASE I:
+		//CASE 1:
 		//User asks for professors office hours
 		if(INTENT_OFFICE_HOURS.equals(intentName)){
 			response = handleOfficeHoursIntent(intentReq, session);
 		}
-		//CASE II:
+		//CASE 2:
 		//User does not clarify whether they want email or phone
 		else if (INTENT_COMBO.equals(intentName)){
 			response = handleContactInformationIntent(intentReq, session);
 		}
-		//CASE III:
+		//CASE 3:
 		//User specifically asks for phone
 		else if (INTENT_PHONE_NUMBER.equals(intentName)){
 			response = handlePhoneNumberIntent(intentReq, session);
 		}
-		//CASE IV:
+		//CASE 4:
 		//User specifically asks for email
 		else if (INTENT_EMAIL_ADDRESS.equals(intentName)){
 			response = handleEmailAddressIntent(intentReq, session);
 		}
-		//CASE VI:
+		//CASE 5:
 		//User has not given professor name
 		else if (INTENT_CLARIFY_PROF.equals(intentName)) {
 			response = handleProfessorNameIntent(intentReq, session);
 		}
-		//CASE VII:
+		//CASE 6:
 		//User asks for information to be repeated.
 		else if (INTENT_REPEAT.equals(intentName)){
 			response = handleRepeatIntent(intentReq, session);
 		}
-		//CASE VIII:
+		//CASE 7:
 		//User asks for more information
 		else if (INTENT_MORE_INFO.equals(intentName)){
 			response = handleMoreInfoIntent(intentReq, session);
 		}
-		//CASE IX:
+		//CASE 8:
 		//User asks for help
 		else if (INTENT_HELP.equals(intentName)){
 			response = handleHelpIntent(intentReq, session);
 		}
-		//CASE X:
+		//CASE 9:
 		// User asks for location
 		else if (INTENT_LOCATION.equals(intentName)){
 			response = handleLocationIntent(intentReq, session);
 		}
-		//CASE XI:
+		//CASE 10:
 		//User says yeas somewhere.
 		else if (INTENT_YES.equals(intentName)){
 			response = handleYesIntent(intentReq, session);
 		}
-		//CASE XII:
+		//CASE 11:
 		//User says no somewhere
 		else if(INTENT_NO.equals(intentName)){
 			response = handleNoIntent(intentReq, session);
 		}
-		//CASE XIII:
+		//CASE 12:
 		//User says tell me a joke
 		else if(INTENT_TELLJOKE.equals(intentName)){
 			response = handleJokeIntent(intentReq, session);
+		}
+		//CASE 13:
+		else if(INTENT_STOP.equals(intentName)){
+			response = handleStopIntent(intentReq, session);
 		}
 		else {
 			response = newTellResponse("<speak> Whatchu talkin' bout! </speak>", true);
@@ -215,7 +219,7 @@ public class KnockKnockConversation extends Conversation {
 		return list;
 	}
 
-
+	// what does this do 
 	private SpeechletResponse respondToSessionEndRequest(SessionEndedRequest sessionEndedReq, Session session)
 	{
 		SpeechletResponse response = null;
@@ -223,6 +227,10 @@ public class KnockKnockConversation extends Conversation {
 		response.setShouldEndSession(true);
 		return response;
 
+	}
+	private SpeechletResponse handleStopIntent(IntentRequest intentReq, Session session)
+	{	
+		return newTellResponse("<speak> ok, see you later alligator </speak>", true);
 	}
 	private SpeechletResponse handleMoreInfoIntent(IntentRequest intentReq, Session session){
 		//If they have already gotten email/phone, give them the other.
@@ -281,9 +289,24 @@ public class KnockKnockConversation extends Conversation {
 				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 			}
 		}
+
 		else if (STATE_GET_LOCATION.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			//TODO
+			// check which parameters are null and give what we do have 
+			//If they have already gotten email/phone, give them the other.
+			if(pc.getEmail() == null || pc.getEmail().isEmpty()) {
+				String phonenum = pc.getPhone(); // give phone
+				if(pc.getPhone() == null || pc.getPhone().isEmpty()) {
+					// both are null
+					response = newTellResponse (" <speak> This professor has no more info available </speak> ", false);
+				}
+				// else{
+				//	TODO response = newTellResponse (" <speak> <>")
+			}
+			// TODO check other cases 
 		}
+
+
 		else
 		{
 			response = newTellResponse("<speak> Peace out cub scout! </speak>", true);
@@ -297,17 +320,15 @@ public class KnockKnockConversation extends Conversation {
 		SpeechletResponse response = null;
 
 
-		String office_hours_intent = "Here are some things you can say to get your professor's office hours. " +
-				"where can I find ProfessorName office, or " +
-				"where is ProfessorName, or " +
-				"Locate ProfessorName, or " +
-				"pinpoint ProfessorName. ";
+		String location_intent = "Here are some things you can ask to get a professor's location . " +
+				"where can I find Professor Smith's office, or " +
+				"Locate Professor Smith, ";
 
-		String contact_information_combo_intent = "Here are some things you can say to get your professor's contact information. " +
-				"what is ProfessorName contact info, or " +
-				"get me contact info for ProfessorName.";
+		String contact_information_combo_intent = ",, To get a professor's contact info. say something like. " +
+				"what is Professor Smith's contact info, or " +
+				"get me contact info for Professor Smith.";
 
-		response = newTellResponse("<speak>" + office_hours_intent + contact_information_combo_intent + "</speak>", true);
+		response = newTellResponse("<speak>" + location_intent + contact_information_combo_intent + "</speak>", true);
 
 		return response;
 	}
@@ -325,60 +346,60 @@ public class KnockKnockConversation extends Conversation {
 		if(STATE_GET_EMAIL_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			String name = pc.getName();
 			String sp = "@ sonoma . e, d, u";
-				String email = pc.getEmail();
-				String [] parts = email.split("@");
-				String fp = parts[0].replace("",", ");
-				if(fp.contains(".")){
-					fp.replaceAll(".", "dot");
-				}
-				if(parts[1].toLowerCase() == "sonoma.edu" )
-				{
-					sp = "@ sonoma . e d u ";
-				}
-				else if(parts[1].toLowerCase() == "gmail.com" )
-				{
-					sp = "@ g mail . com ";
-				}
-				else if(parts[1].toLowerCase() == "yahoo.com" )
-				{
-					sp = "@ yahoo . com";
-				}
-				else if(parts[1].toLowerCase() == "hotmail.com" )
-				{
-					sp = "@ hot mail . com";
-				}
+			String email = pc.getEmail();
+			String [] parts = email.split("@");
+			String fp = parts[0].replace("",", ");
+			if(fp.contains(".")){
+				fp.replaceAll(".", "dot");
+			}
+			if(parts[1].toLowerCase() == "sonoma.edu" )
+			{
+				sp = "@ sonoma . e d u ";
+			}
+			else if(parts[1].toLowerCase() == "gmail.com" )
+			{
+				sp = "@ g mail . com ";
+			}
+			else if(parts[1].toLowerCase() == "yahoo.com" )
+			{
+				sp = "@ yahoo . com";
+			}
+			else if(parts[1].toLowerCase() == "hotmail.com" )
+			{
+				sp = "@ hot mail . com";
+			}
 			response = newAskResponse("<speak> " + name + "s email address is " + fp + sp + ", would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true); 
 
 		}
 		else if (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			String name = pc.getName();
 			String sp = "@ sonoma . e, d, u";
-				String email = pc.getEmail();
-				String [] parts = email.split("@");
-				String fp = parts[0].replace("",", ");
-				if(fp.contains(".")){
-					fp.replaceAll(".", "dot");
-				}
-				if(parts[1].toLowerCase() == "sonoma.edu" )
-				{
-					sp = "@ sonoma . e d u ";
-					response = newAskResponse("<speak> " + name + "s email address is " + fp + sp + ", would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true); 
-				}
-				else if(parts[1].toLowerCase() == "gmail.com" )
-				{
-					sp = "@ g mail . com ";
-				}
-				else if(parts[1].toLowerCase() == "yahoo.com" )
-				{
-					sp = "@ yahoo . com";
-				}
-				else if(parts[1].toLowerCase() == "hotmail.com" )
-				{
-					sp = "@ hot mail . com";
-					 
-				}
+			String email = pc.getEmail();
+			String [] parts = email.split("@");
+			String fp = parts[0].replace("",", ");
+			if(fp.contains(".")){
+				fp.replaceAll(".", "dot");
+			}
+			if(parts[1].toLowerCase() == "sonoma.edu" )
+			{
+				sp = "@ sonoma . e d u ";
+				response = newAskResponse("<speak> " + name + "s email address is " + fp + sp + ", would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true); 
+			}
+			else if(parts[1].toLowerCase() == "gmail.com" )
+			{
+				sp = "@ g mail . com ";
+			}
+			else if(parts[1].toLowerCase() == "yahoo.com" )
+			{
+				sp = "@ yahoo . com";
+			}
+			else if(parts[1].toLowerCase() == "hotmail.com" )
+			{
+				sp = "@ hot mail . com";
+
+			}
 			response = newAskResponse("<speak> " + name + "s email address is " + fp + sp + ", would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true);
-				
+
 
 		}
 		else if (STATE_GET_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
@@ -443,7 +464,7 @@ public class KnockKnockConversation extends Conversation {
 		{
 			cachedList = null;
 
-			return newTellResponse("<speak> No thank you? sheesh, last time i help you.</speak>", true);
+			return newTellResponse("<speak> Okie dokie.</speak>", true);
 		}
 		cachedList = null;
 
@@ -518,9 +539,9 @@ public class KnockKnockConversation extends Conversation {
 				String email = pc.getEmail();
 				String [] parts = email.split("@");
 				String fp = parts[0].replace("",", ");
-						if(fp.contains(".")){
-							fp.replaceAll(".", "dot");
-						}
+				if(fp.contains(".")){
+					fp.replaceAll(".", "dot");
+				}
 				if(parts[1].toLowerCase() == "sonoma.edu" )
 				{
 					sp = "@ sonoma . e d u ";
@@ -537,9 +558,9 @@ public class KnockKnockConversation extends Conversation {
 				else if(parts[1].toLowerCase() == "hotmail.com" )
 				{
 					sp = "@ hot mail . com";
-					 
+
 				}
-				
+
 				response = newAskResponse("<speak>" + name + " has no phone listed, but their email is " + fp + sp + "Would you like me to repeat that? You can say repeat or ask for more information.</speak>", true, "<speak> I did not catch that, did you want me to repeat the email address. </speak>", true);
 				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 			}
@@ -570,9 +591,9 @@ public class KnockKnockConversation extends Conversation {
 				else if(parts[1].toLowerCase() == "hotmail.com" )
 				{
 					sp = "@ hot mail . com";
-					 
+
 				}
-				
+
 				String phone = pc.getPhone();
 				response = newAskResponse("<speak>" + name + "s email is " + fp + sp + ", their phone is " + " <say-as interpret-as=\"telephone\">" + phone + "</say-as> . Would you like me to repeat that?</speak>", true, "<speak> I did not catch that, You can say repeat, more information, or tell me a joke.</speak>", true);
 				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL_PHONE);
@@ -727,7 +748,7 @@ public class KnockKnockConversation extends Conversation {
 		// assume contact info for the professor is stored in our data structure
 		ProfContact pc = new ProfContact();
 		SpeechletResponse response = null;
-		
+
 		if(professor_name != null && !professor_name.isEmpty())
 			//We have prof name
 		{
@@ -828,7 +849,7 @@ public class KnockKnockConversation extends Conversation {
 		if(pc.getBuildingName() != null && !pc.getBuildingName().isEmpty())
 		{
 			//We have building name
-			response = newAskResponse("<speak> " + pc.getName() + "'s " + "can be found at" + pc.getBuildingName() + " . Would you like me to repeat that or give you more info on " + pc.getName() + "? </speak>", true, "<speak>I didn't catch that, would you like me to repeat their location or give you more info?</speak>", true);
+			response = newAskResponse("<speak> " + pc.getName() + " can be found at " + pc.getBuildingName() + " . Would you like me to repeat that or give you more info on " + pc.getName() + "? </speak>", true, "<speak>I didn't catch that, would you like me to repeat their location or give you more info?</speak>", true);
 			session.setAttribute(SESSION_PROF_STATE, STATE_GET_LOCATION);
 		}
 		// they don't have a location
@@ -872,8 +893,10 @@ public class KnockKnockConversation extends Conversation {
 		}
 		else
 		{
+
 			response = LocationIntentResponse(intentReq, session);
 		}
+		session.setAttribute(SESSION_PROF_STATE, STATE_GET_LOCATION);
 		return response;
 
 	}
@@ -1022,12 +1045,12 @@ public class KnockKnockConversation extends Conversation {
 				if(rs.wasNull()){
 					joke_opener = x + "";
 				}
-			
+
 				joke_punchline = rs.getString(2);
 				if(rs.wasNull()){
 					joke_punchline = x + "";
 				}
-			
+
 			}
 			return;
 		}
