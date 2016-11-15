@@ -284,7 +284,7 @@ public class KnockKnockConversation extends Conversation {
 				}
 				else if(emailSite.contains("gmail"))
 				{
-					string gmail = "@ g mail";
+					String gmail = "@ g mail";
 					response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>" + gmail+ "</say-as interpret-as =\"spell-out\">" + emailExtension + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true);
 				}	
 				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
@@ -333,7 +333,6 @@ public class KnockKnockConversation extends Conversation {
 
 		if(STATE_GET_EMAIL_PHONE.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
 			String name = pc.getName();
-			String email = "";
 			String emailSite = "";
 			String emailExtension = "";
 			String email = pc.getEmail();
@@ -366,7 +365,7 @@ public class KnockKnockConversation extends Conversation {
 				}
 				else if(emailSite.contains("gmail"))
 				{
-					string gmail = "@ g mail";
+					String gmail = "@ g mail";
 					response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>" + gmail+ "</say-as interpret-as =\"spell-out\">" + emailExtension + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true);
 				}			cachedList = null;
 
@@ -404,7 +403,7 @@ public class KnockKnockConversation extends Conversation {
 				}
 				else if(emailSite.contains("gmail"))
 				{
-					string gmail = "@ g mail";
+					String gmail = "@ g mail";
 					response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>" + gmail+ "</say-as interpret-as =\"spell-out\">" + emailExtension + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true);
 				}
 			cachedList = null;
