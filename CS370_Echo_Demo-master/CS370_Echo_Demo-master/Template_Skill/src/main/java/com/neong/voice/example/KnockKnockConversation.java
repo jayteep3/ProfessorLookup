@@ -283,7 +283,7 @@ public class KnockKnockConversation extends Conversation {
 		else
 		{
 			response = newTellResponse("<speak> Peace out cub scout! </speak>", true);
-		cachedList = null;
+		}
 
 		return response;
 	}
