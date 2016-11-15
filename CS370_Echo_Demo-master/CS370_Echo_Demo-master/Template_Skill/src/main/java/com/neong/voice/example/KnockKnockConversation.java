@@ -263,11 +263,11 @@ public class KnockKnockConversation extends Conversation {
 				{
 					email += c + ',';
 				}
-				sp = "@" + sp;
+				sp = "@ " + sp;
 				char [] spArray = sp.toCharArray();
 				parts = sp.split(".");
 				String tp =  parts[1];
-				tp = "." + tp;
+				tp = ". " + tp;
 				char [] tpArray = tp.toCharArray();
 				for(char ch: spArray)
 				{
@@ -278,7 +278,15 @@ public class KnockKnockConversation extends Conversation {
 					emailExtension += cha;
 				}
 				String name = pc.getName();
-				response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>" + emailSite + "</say-as interpret-as =\"spell-out\">" + emailExtension + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true);
+				if(emailSite.contains("sonoma"))
+				{
+					response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>" + emailSite + "</say-as interpret-as =\"spell-out\">" + emailExtension + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true);
+				}
+				else if(emailSite.contains("gmail"))
+				{
+					string gmail = "@ g mail";
+					response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>" + gmail+ "</say-as interpret-as =\"spell-out\">" + emailExtension + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true);
+				}	
 				session.setAttribute(SESSION_PROF_STATE, STATE_GET_EMAIL);
 			}
 		}
@@ -352,8 +360,15 @@ public class KnockKnockConversation extends Conversation {
 				emailExtension += cha;
 			}	
 			String phone = pc.getPhone();
-			response = newTellResponse("<speak>" + name + " s email is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as> their phone number is <say-as interpret-as=\"telephone\">" + phone + "</say-as>. </speak>", true);
-			cachedList = null;
+			if(emailSite.contains("sonoma"))
+				{
+					response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>" + emailSite + "</say-as interpret-as =\"spell-out\">" + emailExtension + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true);
+				}
+				else if(emailSite.contains("gmail"))
+				{
+					string gmail = "@ g mail";
+					response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>" + gmail+ "</say-as interpret-as =\"spell-out\">" + emailExtension + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true);
+				}			cachedList = null;
 
 		}
 		else if (STATE_GET_EMAIL.compareTo((Integer)session.getAttribute(SESSION_PROF_STATE)) == 0){
@@ -383,7 +398,15 @@ public class KnockKnockConversation extends Conversation {
 			{
 				emailExtension += cha;
 			}	
-			response = newTellResponse("<speak>" + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + " </say-as> . </speak>", true);
+			if(emailSite.contains("sonoma"))
+				{
+					response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>" + emailSite + "</say-as interpret-as =\"spell-out\">" + emailExtension + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true);
+				}
+				else if(emailSite.contains("gmail"))
+				{
+					string gmail = "@ g mail";
+					response = newAskResponse("<speak> " + name + "s email address is " + " <say-as interpret-as=\"spell-out\">" + email + "</say-as>" + gmail+ "</say-as interpret-as =\"spell-out\">" + emailExtension + "</say-as>, would you like me to repeat that?</speak>", true, " <speak> I didn't catch that, You can say something like repeat, more information, or tell me a joke</speak>", true);
+				}
 			cachedList = null;
 
 		}
